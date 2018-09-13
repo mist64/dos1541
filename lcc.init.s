@@ -1,4 +1,3 @@
-.page 'lcc.init'
 ;
 ;
 ;
@@ -70,4 +69,3 @@ cntint	lda #%01101111  ; data direction
 	lda #$4
 	sta af
 ;
-.end

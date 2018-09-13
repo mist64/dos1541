@@ -1,4 +1,3 @@
-.page 'lcc.wrt'
 ;
 ;
 ;
@@ -302,4 +301,3 @@ sectsk	jsr srch        ; sector seek
 	jmp done
 ;
 ;
-.end

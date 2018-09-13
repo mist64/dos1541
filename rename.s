@@ -1,4 +1,3 @@
-.page 'copy'
 ; copy file(s) to one file
 ;
 copy	;filenames, optimize
@@ -49,14 +48,12 @@ cop10
 ;
 cy
 	jsr chkio       ;check files for existence
-.skip
 	lda fildrv
 	and #1
 	sta drvnum
 	jsr opniwr      ;open internal write chnl
 	jsr addfil      ;add to directory
 	ldx f1cnt
-.skip
 cy10	stx f2ptr       ;set up read file
 	jsr opirfl
 ;
@@ -167,7 +164,6 @@ cyext	jsr setdrn      ;copy rel records
 	sta ssind
 	jmp addr1
 ;
-.page 'rename'
 ; rename file name in directory
 rename	jsr alldrs      ;set both drive #'s
 	lda fildrv+1
@@ -198,8 +194,6 @@ rn10	sta fildrv
 	jsr wrtout      ;write sector out
 	jsr watjob
 	jmp endcmd
-.skip
-.skip
 ; check i/o file for exist
 chkin
 	lda pattyp+1    ;1st file bears type
@@ -226,5 +220,3 @@ ck25	lda filtrk,x
 ck30	dex
 	bpl ck25
 	rts
-.skip
-.end

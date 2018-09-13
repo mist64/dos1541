@@ -3,4 +3,3 @@
 ;*=*+$3a1
 cchksm	.byte 0
 freec0	*=*+255         ; c0 patch space
-.end

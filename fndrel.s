@@ -1,4 +1,3 @@
-.page 'fndrel'
 ;********************************
 ;*
 ;* find relative file
@@ -192,4 +191,3 @@ add100	lda result+3,x
 ;
 ;
 ;
-.end

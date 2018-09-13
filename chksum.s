@@ -1,4 +1,3 @@
-.page 'chksum
 	*= $bf00
 	sei
 	ldx #$ff
@@ -30,7 +29,7 @@ genchk	;.a=address
 	ldx #32
 	ldy #0
 chk1
-	adc (temp)y
+	adc (temp),y
 	iny
 	bne chk1
 ;
@@ -45,4 +44,3 @@ chk1
 	sbc temp+1
 	sbc #0          ;.a=checksum byte
 	rts
-.end

@@ -1,4 +1,3 @@
-.page 'tsutil'
 ;*
 ;*
 ;*********************************
@@ -72,14 +71,14 @@ getlnk	jsr set00
 nullnk
 	jsr set00
 	lda #0
-	sta (dirbuf)y
+	sta (dirbuf),y
 	iny
 	ldx lindx
 	lda nr,x
 	tax
 	dex
 	txa
-	sta (dirbuf)y
+	sta (dirbuf),y
 	rts
 ;
 ;*
@@ -189,4 +188,3 @@ rdlnk	lda #0
 	sta sector
 	rts
 ;
-.end

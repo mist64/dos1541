@@ -1,4 +1,3 @@
-.page 'lcc.fmt4'
 ;
 ;
 ;
@@ -169,4 +168,3 @@ fbg10	ldy bytcnt      ; get pointer
 ;
 fbg15	jmp put4bg      ; done, return
 ;
-.end

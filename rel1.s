@@ -1,4 +1,3 @@
-.page 'rel1'
 ;***********************************
 ;*
 ;*     routine: nxtrec
@@ -127,4 +126,3 @@ nrbu70	;read trk,sec link
 ;
 nrbu20	rts
 ;
-.end

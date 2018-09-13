@@ -1,4 +1,3 @@
-.page 'lcc.end'
 ;
 ;
 ;
@@ -207,4 +206,3 @@ end33	lda pcr2        ; disable s.o. to 6502
 ;
 ;
 ;
-.end

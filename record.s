@@ -1,4 +1,3 @@
-.page 'record'
 ;*********************************
 ;* record: position relative     *
 ;*         pointers to given     *
@@ -122,10 +121,10 @@ p75
 ;
 p80
 	ldy #0          ;get proper block
-	lda (r3)y
+	lda (r3),y
 	sta track
 	iny
-	lda (r3)y
+	lda (r3),y
 	sta sector
 	jmp strdbl      ;get next block, too.
 ;rts
@@ -134,14 +133,13 @@ bhere
 	jsr gethdr      ;get the header
 bhere2
 	ldy #0
-	lda (r3)y
+	lda (r3),y
 	cmp track
 	beq bh10        ;test sector, too.
 	rts
 bh10
 	iny
-	lda (r3)y
+	lda (r3),y
 	cmp sector      ;set .z
 	rts
 ;
-.end

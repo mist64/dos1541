@@ -1,4 +1,3 @@
-.page 'copy all'
 ;
 ; set up subroutine
 ;
@@ -16,8 +15,6 @@ pups1	lda #0
 	sta filtbl
 	rts
 ;
-.end
-.page 'copy all'
 ;
 ; copy disk to disk routines
 ;
@@ -94,10 +91,9 @@ exlp2	jsr trfnme      ;transfer name
 ;
 trfnme	ldy #3          ;both indexes
 	sty filtbl      ;begining of filename1
-trf0	lda (dirbuf)y   ;move it
+trf0	lda (dirbuf),y   ;move it
 	sta cmdbuf,y
 	iny
 	cpy #19         ;all 16 chars passed?
 	bne trf0
 	rts
-.end

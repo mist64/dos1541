@@ -1,4 +1,3 @@
-.page 'mem-rd,wrt
 ; memory access commands
 ;  "-" must be 2nd char
 mem	lda cmdbuf+1
@@ -21,7 +20,6 @@ mem	lda cmdbuf+1
 	bne memerr      ;error
 ; execute
 memex	jmp (temp)
-.skip
 memrd
 	lda (temp),y
 	sta data
@@ -45,10 +43,8 @@ memrd
 m30
 	jsr fndrch
 	jmp ge15
-.skip
 memerr	lda #badcmd     ;bad command
 	jmp cmderr
-.skip
 memwrt	;write
 m10	lda cmdbuf+6,y
 	sta (temp),y    ;transfer from cmdbuf
@@ -56,5 +52,3 @@ m10	lda cmdbuf+6,y
 	cpy cmdbuf+5    ;# of bytes to write
 	bcc m10
 	rts
-.skip
-.end

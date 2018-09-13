@@ -1,6 +1,4 @@
-.page 'parse & execute'
 ;parse & execute string in cmdbuf
-.skip
 parsxq
 	lda #0
 	sta wbam
@@ -25,7 +23,6 @@ ps10	lda cmdtbl,x
 	lda #badcmd     ;no such cmd
 	jmp cmderr
 ps20	stx cmdnum      ;x= cmd #
-.skip
 	cpx #pcmd       ;cmds not parsed
 	bcc ps30
 	jsr tagcmd      ;set tables, pointers &patterns
@@ -35,7 +32,6 @@ ps30	ldx cmdnum
 	lda cjumph,x
 	sta temp+1
 	jmp (temp)      ;command table jump
-.skip
 ; successful command termination
 endcmd
 	lda #0
@@ -47,7 +43,6 @@ endsav
 	ldy #0
 	tya
 	sty track
-.skip
 scrend	sty sector      ;scratch entry
 	sty cb
 	jsr errmsg
@@ -75,7 +70,6 @@ cmderr	ldy #0
 	sty track
 	sty sector
 	jmp cmder2
-.skip
 simprs	ldx #0          ;simple parser
 	stx filtbl
 	lda #':
@@ -85,7 +79,6 @@ simprs	ldx #0          ;simple parser
 	dey
 	sty filtbl
 sp10	jmp setany      ;set drive #
-.page 'parse-tagcmd'
 prscln
 	ldy #0
 	ldx #0
@@ -96,7 +89,6 @@ prscln
 ;  set up cmd structure
 ;  image & file stream ptrs
 ;
-.skip
 tagcmd
 	jsr prscln
 	bne tc30
@@ -152,8 +144,6 @@ tc75
 tc80	sta erword      ;**could be warning
 	lda #badsyn     ;err: bad syntax
 	jmp cmderr
-.skip
-.page 'parse'
 ;parse string
 ;  looks for special chars,
 ;  returning when var'bl char
@@ -163,7 +153,6 @@ tc80	sta erword      ;**could be warning
 ;   y: in: index, cmdbuf
 ;     out: new ptr, =0 if none
 ;         (z=1) if y=0
-.skip
 parse	sta char        ;save var'bl char
 pr10	cpy cmdsiz      ;stay in string
 	bcs pr30
@@ -199,9 +188,7 @@ pr35	lda cmdsiz
 	sta pattyp,x
 pr40	tya             ;z is set
 	rts
-.skip
 ;initialize command tables, ptrs, etc.
-.skip
 cmdset	ldy buftab+cbptr
 	beq cs08
 	dey
@@ -216,7 +203,6 @@ cmdset	ldy buftab+cbptr
 	iny
 cs07	iny
 cs08	sty cmdsiz      ;set cmd string size
-.skip
 	cpy #cmdlen+1
 	ldy #$ff
 	bcc cmdrst
@@ -248,5 +234,3 @@ cs10	sta filtbl-1,x
 	dex
 	bne cs10
 	rts
-.skip
-.end

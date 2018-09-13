@@ -1,4 +1,3 @@
-.page 'lcc.read'
 ;
 ;
 ;
@@ -136,4 +135,3 @@ sync10	bit timer1      ; test for time out
 ;
 ;
 ;
-.end

@@ -1,4 +1,3 @@
-.page 'rel4'
 ;*
 ;*
 ;**********************************
@@ -82,4 +81,3 @@ fndl20	tya             ;found the end char
 	sec
 	rts
 ;
-.end

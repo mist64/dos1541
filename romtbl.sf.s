@@ -1,11 +1,10 @@
-.page 'romtbl'
 dirtrk	.byt 18         ;directory track #
 bamsiz	.byt 4          ;# bytes/track in bam
 mapoff	.byt 4          ;offset of bam in sector
 dsknam	.byt $90        ;offset of disk name in bam sector
 ;
 ;   command search table
-cmdtbl	.byt 'vidmbup&crsn'
+cmdtbl	.byt "vidmbup&crsn"
 ; validate-dir init-drive duplicate
 ; memory-op block-op user
 ; position dskcpy utlodr rename scratch new
@@ -27,7 +26,6 @@ cjumph	.byt >verdir,>intdrv,>duplct
 	.byt >rename,>scrtch,>new
 	*=cjumph+ncmds
 val=0 ;validate (verify) cmd #
-.skip
 ; structure images for cmds
 pcmd	=9
 	.byt %01010001  ; dskcpy
@@ -40,20 +38,18 @@ ldcmd	=*-struct       ; load cmd image
 ;            --- ---
 ;            pgdrpgdr
 ;            fs1 fs2
-.skip
 ;   bit reps:  not pattern
 ;              not greater than one file 
 ;              not default drive(s) 
 ;              required filename
-.skip
-modlst	.byt 'rwam'     ; mode table
+modlst	.byt "rwam"     ; mode table
 nmodes	=*-modlst
 ;file type table
-tplst	.byt 'dspul'
-typlst	.byt 'dspur'    ;del, seq, prog, user, relative
+tplst	.byt "dspul"
+typlst	.byt "dspur"    ;del, seq, prog, user, relative
 ntypes	=*-typlst
-tp1lst	.byt 'eerse'
-tp2lst	.byt 'lqgrl'
+tp1lst	.byt "eerse"
+tp2lst	.byt "lqgrl"
 ledmsk	.byt led0,led1
 ;
 ; error flag vars for bit
@@ -77,5 +73,3 @@ offset	;for recovery
 bufind
 	.byte $03,$04,$05,$06,$07,$07
 ;
-.skip
-.end

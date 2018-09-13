@@ -1,4 +1,3 @@
-.page 'close'
 ; close the file associated with sa
 ;
 close
@@ -186,9 +185,9 @@ clsdir	ldx lindx       ;save lindx
 clsd4
 	pha
 	lda #0
-	sta (r0)y
+	sta (r0),y
 	iny
-	sta (r0)y
+	sta (r0),y
 	pla
 	ldy temp+2
 	sta (r0),y
@@ -221,4 +220,3 @@ clsd6	ldx wlindx
 	jmp fndwch      ;restore lindx
 ;
 ;
-.end

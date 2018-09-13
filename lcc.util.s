@@ -1,4 +1,3 @@
-.page'lcc.util'
 ;
 ;
 ;  * utiliy routines
@@ -50,4 +49,3 @@ trnoff	ldx cdrive      ; start time out of current drive
 ;
 ;
 ;
-.end

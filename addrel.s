@@ -1,4 +1,3 @@
-.page 'addrel'
 ;*********************************
 ;* addrel: add blocks to relative*
 ;*         file.                 *
@@ -175,5 +174,4 @@ ar70
 	jsr setflg
 	lda #norec
 	jsr cmderr
-.end
 	jsr dblbuf

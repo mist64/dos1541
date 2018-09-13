@@ -1,4 +1,3 @@
-.page 'leds'
 ;
 ;turn on activity led specified
 ; by drvnum
@@ -7,7 +6,6 @@ setlds	sei
 	lda #$ff-led1-led0
 	and ledprt
 	pha
-.skip
 	lda drvnum
 	beq leds0
 	pla
@@ -51,4 +49,3 @@ erron	sei
 	tax	;restore .x
 	cli
 	rts
-.end

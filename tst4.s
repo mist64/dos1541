@@ -1,4 +1,3 @@
-.page 'tst4'
 ;
 ; get next char from a chanl
 ;
@@ -241,4 +240,3 @@ drdbyt	sta temp+2
 ; index table containing high
 ; byte address of buffers
 ;
-.end

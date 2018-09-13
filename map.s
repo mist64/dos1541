@@ -1,5 +1,3 @@
-.page 'newmap'
-.skip
 ;
 ; build a new map on diskette
 ;
@@ -98,7 +96,6 @@ sb20
 	sta track
 ;
 	jmp dowrit      ;write it out
-.page 'numfre'
 ;
 ; set bit map ptr, read in bam if nec.
 ;
@@ -122,4 +119,3 @@ numfre
 	lda ndbh,x
 	sta nbtemp+1
 	rts
-.end

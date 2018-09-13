@@ -1,4 +1,3 @@
-.page 'tstflg'
 ;*
 ;*
 ;**********************************
@@ -46,7 +45,6 @@ tstwrt	jsr getact
 	rts
 ;*
 ;*
-.page 'test channel'
 ;
 ; test for active files from
 ; lindx table
@@ -89,4 +87,3 @@ tstc40	stx temp+2      ;save x
 ;
 ;
 ;
-.end

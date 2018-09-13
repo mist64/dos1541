@@ -1,8 +1,6 @@
-.page 'ver-dir'
 ; validate files with bam
 ;  create new bam according to 
 ;  contents of files entered in dir
-.skip
 verdir
 valdat
 ;validate is soft-load
@@ -15,7 +13,6 @@ valdat
 	sta delind
 	jsr srchst      ;search for first file
 	bne vd25        ;found one
-.skip
 vd10	lda #0          ;set directory sectors...
 	sta sector      ;...in bam
 	lda dirtrk
@@ -25,7 +22,6 @@ vd10	lda #0          ;set directory sectors...
 	sta wbam
 	jsr scrbam      ;write out bams
 	jmp endcmd
-.skip
 vd15	iny
 	lda (dirbuf),y
 	pha             ;save track
@@ -71,4 +67,3 @@ mrk1	jsr wused
 	jsr nxtbuf
 	jmp mrk2
 ;
-.end

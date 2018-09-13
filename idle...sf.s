@@ -1,5 +1,3 @@
-.page 'idle...sf'
-.skip3
 ; idle loop, waiting for something to do
 idle
 	cli
@@ -110,4 +108,3 @@ idl12
 	sta ledprt      ;set leds
 	jmp idl1        ;back to top of lop
 ;
-.end

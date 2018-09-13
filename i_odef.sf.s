@@ -1,4 +1,3 @@
-.page 'i/odef.sf'
 ;*****************************
 ;*      i/o definitions      *
 ;*****************************
@@ -15,11 +14,8 @@ rdytlk	=$88            ; talk no eoi
 rdylst	=$1             ; ready to listen
 rndrdy	=rdytlk+rdylst  ; random chnrdy
 rndeoi	=eoiout+rdylst  ; random w/ eoi
-.ski 3
 ;i/o registers
-.skip
 ; mos 6522-a
-.ski
 	* =$1800
 ;ieee control port
 pb	*=*+1           ; serial port
@@ -56,4 +52,3 @@ ledprt=$1c00  ; on pb of $1c00
 ledout=$1c02 ; ddrb  of $1c00 for output-led
 ;
 ;
-.end

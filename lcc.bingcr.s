@@ -1,4 +1,3 @@
-.page 'lcc.bingcr - fast'
 ;   fast binary to gcr
 ;
 ;
@@ -253,4 +252,3 @@ bing20	lda chksum      ; store chksum
 ;
 ;
 ;
-.end

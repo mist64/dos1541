@@ -1,4 +1,3 @@
-.page 'jobs...sf'
 ;
 ; use lastjob for drive #
 ; cmd is used for job command
@@ -354,4 +353,3 @@ seth
 ; sta hdrs+1,y  ;4/12***********
 	rts 
 ;
-.end

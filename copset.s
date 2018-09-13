@@ -1,4 +1,3 @@
-.page 'disk copy'
 ;
 ; dskcpy check for type
 ; and parses special case
@@ -51,7 +50,6 @@ dx0020	lda image       ;chk for normal
 	and #%11011001
 	bne dx0010
 	jmp copy
-.end
 prseq
 	lda #'=         ;special case
 	jsr parse
@@ -71,4 +69,3 @@ x0020	lda cmdbuf,y
 	beq x0015
 	sta fildrv      ;dest drv
 	rts
-.end

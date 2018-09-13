@@ -9,4 +9,3 @@ killp	;kill protection
 ; pla
 	rts
 ;
-.end

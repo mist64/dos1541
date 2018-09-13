@@ -1,4 +1,3 @@
-.page 'open channel'
 ; opchnl
 ;
 ; open a read chanl with 2 buffers
@@ -195,4 +194,3 @@ putss	pha
 	lda ss,x
 	jmp putb1
 ;
-.end

@@ -1,4 +1,3 @@
-.page 'irq'
 ;
 ;
 ;
@@ -31,4 +30,3 @@ irq20	pla             ; restore .y,.x,.a
 ;
 ;
 ;
-.end

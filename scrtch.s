@@ -1,4 +1,3 @@
-.page 'scratch'
 ; scratch file(s)
 scrtch	jsr fs1set      ;set up for 1 stream
 	jsr alldrs
@@ -27,23 +26,19 @@ sc17	ldx entfnd
 	lda #$20
 	and pattyp,x
 	bne sc20        ;created, not closed
-.skip
 	lda filtrk,x    ;delete by links
 	sta track
 	lda filsec,x
 	sta sector
 	jsr delfil
-.skip
 sc20	inc r0
 sc25	jsr ffre
 	bpl sc15
-.skip
 sc30	lda r0          ;finished, set
 	sta track       ; file count
 	lda #1
 	ldy #0
 	jmp scrend      ;end of scratch
-.skip
 delfil	jsr frets       ;delete file by links
 	jsr opnird      ;update bam
 	jsr bam2x
@@ -67,11 +62,8 @@ del2	lda #0
 del1	jsr frets
 	jsr nxtbuf
 	jmp del2
-.skip
 deldir	ldy #0          ;delete dir entry
 	tya
 	sta (dirbuf),y
 	jsr wrtout
 	jmp watjob
-.skip
-.end

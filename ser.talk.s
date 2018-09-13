@@ -1,4 +1,3 @@
-.page 'ser.talk'
 ;
 ;
 ;
@@ -128,7 +127,6 @@ debnc	lda pb
 	bne debnc
 	rts
 ;
-.end
 ; additions after code sent to japan.
 ; rsr 3/30/81 add verify error correction
 ; rsr 3/31/81 change ordering to detect verify error

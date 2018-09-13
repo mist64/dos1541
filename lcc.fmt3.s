@@ -1,4 +1,3 @@
-.page 'lcc.fmt3'
 ;
 ;
 ;
@@ -102,4 +101,3 @@ fmtend	lda #$ff        ; clear ftnum
 ;
 ;
 ;
-.end

@@ -1,4 +1,3 @@
-.page 'lcc.fmt1'
 ;
 fmtvar	=$620           ; put format vars in jump buffer
 cnt	= fmtvar
@@ -217,4 +216,3 @@ cnt20	txa             ; #bytes=count*2
 	sta acr1
 ;
 ;
-.end

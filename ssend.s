@@ -1,4 +1,3 @@
-.page 'ssend'
 ;*********************************
 ;* ssend: position ss & buftab   *
 ;*        to end of last record. *
@@ -17,7 +16,7 @@ se10
 	dey
 	bmi break
 se20
-	lda (dirbuf)y   ;look for last ss #
+	lda (dirbuf),y   ;look for last ss #
 	beq se10        ;t=0: not yet
 	tya
 	lsr a
@@ -31,10 +30,10 @@ se20
 se30
 	ldy #0          ;set ssind
 	sty dirbuf
-	lda (dirbuf)y   ;debug
+	lda (dirbuf),y   ;debug
 	bne break
 	iny
-	lda (dirbuf)y
+	lda (dirbuf),y
 	tay             ;back up to track
 	dey
 	sty ssind
@@ -44,4 +43,3 @@ se30
 break
 	lda #$67
 	jsr cmder2
-.end

@@ -1,4 +1,3 @@
-.page 'newss'
 ;*********************************
 ;* newss: generate new ss & fix  *
 ;*        old ss's to reflect it.*
@@ -25,14 +24,14 @@ newss
 	lda #0
 	jsr ssdir
 	ldy #2
-	lda (dirbuf)y   ;get ss #
+	lda (dirbuf),y   ;get ss #
 	pha
 	lda #0
 	jsr setpnt
 	pla
 	clc
 	adc #1
-	sta (dirbuf)y   ;put ss # in new ss
+	sta (dirbuf),y   ;put ss # in new ss
 	asl a
 	adc #4
 	sta r3          ;save position
@@ -42,17 +41,17 @@ newss
 	sta r4
 	lda track
 	sta r1          ;save for ss update
-	sta (dirbuf)y   ;put track in ss
+	sta (dirbuf),y   ;put track in ss
 	iny
 	lda sector
 	sta r2          ;save for ss update
-	sta (dirbuf)y   ;put sector in ss
+	sta (dirbuf),y   ;put sector in ss
 	ldy #0
 	tya
-	sta (dirbuf)y   ;null link
+	sta (dirbuf),y   ;null link
 	iny
 	lda #ssioff+1   ;ptr to last byte
-	sta (dirbuf)y
+	sta (dirbuf),y
 ;
 	lda #ssioff
 	jsr setpnt
@@ -74,10 +73,10 @@ ns20
 	jsr setpnt      ;set link to new ss
 	ldy #0
 	lda track
-	sta (dirbuf)y
+	sta (dirbuf),y
 	iny
 	lda sector
-	sta (dirbuf)y
+	sta (dirbuf),y
 	jmp ns50
 ns40
 	jsr getact
@@ -90,10 +89,10 @@ ns50
 	dec r4
 	ldy r3          ;get new ss link ptr
 	lda r1
-	sta (dirbuf)y   ;put track in
+	sta (dirbuf),y   ;put track in
 	iny
 	lda r2
-	sta (dirbuf)y   ;put sector in
+	sta (dirbuf),y   ;put sector in
 ;
 	jsr wrtout      ;write it back...
 	jsr watjob      ;...& wait
@@ -102,4 +101,3 @@ ns50
 	bcs ns40        ;more ss to update!
 ;
 	jmp dblbuf      ;reset active buffer
-.end

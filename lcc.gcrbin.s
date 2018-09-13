@@ -1,4 +1,3 @@
-.page 'gcrbin.fast'
 mask1=$f8
 mask2=$07
 mask2x=$c0
@@ -288,4 +287,3 @@ gcrb20
 ;
 ;
 ;
-.end

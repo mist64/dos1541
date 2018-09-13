@@ -1,4 +1,3 @@
-.page 'tst2'
 ;
 ;*******************************
 ;************  l r u i n t  ****
@@ -213,7 +212,6 @@ putb1	asl a           ;save the byte in buffer
 intdrv	jsr simprs
 	jsr initdr
 id20	jmp endcmd
-.skip
 ; initialize drive (drvnum)
 ;
 itrial
@@ -429,7 +427,6 @@ getpre	jsr getact
 	tax
 	ldy lindx
 	rts
-.skip
 ; read byte from active buffer
 ; and set flag if last data byte
 ; if last then z=1 else z=0 ;
@@ -458,7 +455,6 @@ getb1	lda (buftab,x)
 rdbyt	jsr getbyt
 	bne rd3
 	sta data
-.skip
 rd0	lda lstchr,y
 	beq rd1
 	lda #eoiout
@@ -486,15 +482,12 @@ rd4	jsr getbyt
 	sta lstchr,y
 	lda data
 	rts
-.skip 2
-.skip
 ; write a char to chanl and write 
 ; buffer out to disk if its full
 ;
 wrtbyt	jsr putbyt
 	beq wrt0
 	rts
-.skip
 wrt0	jsr setdrn
 	jsr nxtts
 	lda #0
@@ -530,4 +523,3 @@ setdrn	jsr getact
 	and #1
 	sta drvnum
 	rts
-.end

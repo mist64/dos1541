@@ -1,11 +1,9 @@
-.page 'set drive'
 ;set 1st drive and table pointers
 onedrv	lda f2cnt
 	sta f1cnt
 	lda #1
 	sta f2cnt
 	sta f2ptr
-.skip
 ;set up all drives from f2cnt
 alldrs	ldy lstdrv      ;set up drive #'s...
 	ldx #0          ;...into file entry table... 
@@ -20,14 +18,12 @@ ad10	stx f1ptr       ;...on sector ptr byte
 	cpx f2cnt
 	bcc ad10
 	rts
-.skip
 ;set drive number
 ;  determines drive # from text or
 ;  uses default (-d)
 ;  a: in,out: index, cmdbuf
 ;  y: in: default drive!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ;    out: drive number, - if default
-.skip
 setdrv	tax             ;x= cmdbuf index
 	ldy #0          ;set default drive to zero!!!!!!!!!!!!!!!!!!!!!
 	lda #':
@@ -41,7 +37,6 @@ sd22	and #1          ;convert to numeric
 sd24	tay             ;restore drive
 	txa             ;a=index & xxxxfile
 	rts             ;              ^
-.skip 2
 sd40	lda cmdbuf,x
 	inx             ; xxx:file
 	inx             ;   --^
@@ -55,7 +50,6 @@ sd50	=* ;    ^           ^
 	ora #$80        ;        ^          ^
 	and #$81        ;drive= -default
 	bne sd24        ;finish testing
-.skip
 ;set drive from any config.
 setany	lda #0
 	sta image
@@ -80,7 +74,6 @@ togdrv	lda drvnum
 	and #1
 	sta drvnum
 	rts
-.skip
 ;set ptrs to one file stream & chk type
 fs1set	ldy #0
 	lda f1cnt
@@ -99,7 +92,6 @@ fs10	cmp typlst,y
 fs15	tya
 	sta typflg
 	rts
-.skip
 ;test char in accum for "0" or "1"
 tst0v1	cmp #'0
 	beq t0v1
@@ -108,4 +100,3 @@ tst0v1	cmp #'0
 	ora #$80
 t0v1	and #$81
 	rts
-.end

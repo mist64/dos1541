@@ -1,4 +1,3 @@
-.page ' tstfnd '
 ; next track & sector
 ;  returns next available track & sector
 ;  given current t & s
@@ -62,13 +61,11 @@ fndnxt	lda sector
 	sta cmd
 	cmp sector
 	bcs fndn0
-.skip
 	sec
 	lda sector
 	sbc lstsec
 	sta sector
 	beq fndn0
-.skip
 	dec sector
 fndn0
 	jsr getsec
@@ -124,7 +121,7 @@ its2	;track:= dirtrk+r0
 its3
 	jsr setbam      ;set ptr
 ;if @b[.y]=0 then goto its1
-	lda (bmpnt)y
+	lda (bmpnt),y
 	beq its1
 fndsec
 	pla
@@ -169,7 +166,6 @@ gs20
 	lda #0
 gs30
 	rts             ;(z=1): used
-.skip
 ;bit map validity check
 avck
 	lda temp
@@ -183,7 +179,7 @@ ac10	;for .x:=7 to 0 do;
 	ldx #7          ;count the bits
 ac20	;if @b[.y] & bmask[x]
 ;  then temp:=temp+1
-	lda (bmpnt)y
+	lda (bmpnt),y
 	and	bmask,x
 	beq ac30
 	inc temp
@@ -195,7 +191,7 @@ ac30	;end .x
 	bne ac10
 ;if @b[.y] <> temp
 ;  then cmder2(direrr);
-	lda (bmpnt)y
+	lda (bmpnt),y
 	cmp temp
 	bne ac40        ;counts do not match
 ;
@@ -205,7 +201,6 @@ ac30	;end .x
 ac40
 	lda #direrr
 	jsr cmder2
-.skip
 ; .a=track # ,returns #sectors on this track
 maxsec	ldx nzones
 max1	cmp trknum-1,x
@@ -214,4 +209,3 @@ max1	cmp trknum-1,x
 	lda numsec,x
 	rts
 ;
-.end

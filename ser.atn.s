@@ -1,4 +1,3 @@
-.page 'ser.atn'
 ;
 ;
 ;
@@ -127,7 +126,6 @@ atn122	bit pb
 	bpl atns20      ;exit out same way after atn done
 	bmi atn122      ;jmp
 ;
-.end
 ; rsr 12/8/80 fix inverted logic
 ; rsr 12/16/80 fix bad logic
 ; rsr 12/31/80 fix eoiflg and logic

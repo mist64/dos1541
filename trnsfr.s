@@ -1,4 +1,3 @@
-.page 'transfer'
 ;transfer filename from cmd to buffer
 ; a: string size
 ; x: starting index in cmdbuf
@@ -12,20 +11,17 @@ trname	pha
 	tax
 	beq tn20
 	bcc tn20
-.skip
 	lda #$a0
 tn10	sta (dirbuf),y
 	iny
 	dex
 	bne tn10
 tn20	rts
-.skip 2
 ;transfer cmd buffer to other buffer
 ; uses current buffer ptr
 ; limit: ending index+1 in cmd buf
 ; x: starting index in cmd buf
 ; y: buffer #
-.skip
 trcmbf	tya
 	asl a
 	tay
@@ -47,7 +43,6 @@ tr20	rts
 ;
 ;find the limit of the string in cmdbuf
 ; pointed to by x
-.skip
 fndlmt	lda #0
 	sta strsiz
 	txa
@@ -69,8 +64,6 @@ fl10	stx limit
 	pla
 	tax
 	rts
-.skip
-.page 'trnsfr-getnam'
 ; get file entry from directory
 ; called by stdir, getdir
 getnam	lda sa          ;save variables
@@ -83,7 +76,6 @@ getnam	lda sa          ;save variables
 	pla
 	sta sa
 	rts
-.skip
 gnsub	lda #irsa
 	sta sa
 	jsr fndrch
@@ -95,7 +87,6 @@ gnsub	lda #irsa
 	jsr msgfre      ;send blocks free
 	clc             ;(c=0): end
 	rts             ;terminate
-.skip
 gn05	lda drvflg      ;(drvflg=0):
 	beq gn10        ; send file name
 gn050
@@ -106,14 +97,12 @@ gn050
 	jsr msgfre
 	sec
 	jmp togdrv
-.skip
 gn051	lda #0
 	sta nbtemp+1
 	sta drvflg      ;reset flag
 	jsr newdir
 	sec
 	rts
-.skip
 gn10	ldx #dirlen     ;set number blocks
 	ldy #29         ; & adjust spacing
 	lda (dirbuf),y
@@ -131,9 +120,7 @@ gn12	dey
 	cmp #100
 	bcc gn14
 	dex
-.skip
 gn14	jsr blknb       ;clear name buffer
-.skip
 	lda (dirbuf),y  ;set type chars
 	pha 
 	asl a           ;(used in bcs)
@@ -167,7 +154,6 @@ gn22	lda (dirbuf),y
 	dey
 	cpy #3
 	bcs gn22
-.skip
 	lda #'"         ;send name in quotes
 	sta nambuf,x
 gn30	inx
@@ -187,18 +173,15 @@ gn37	inx
 	and nambuf,x
 	sta nambuf,x
 	bpl gn37
-.skip
 gn40	jsr fndfil
 	sec
 gn45	rts
-.skip
 blknb	ldy #nbsiz      ;blank nambuf
 	lda #$20
 blknb1	sta nambuf-1,y
 	dey
 	bne blknb1
 	rts
-.skip
 ;new directory in listing
 newdir
 	jsr bam2x
@@ -216,14 +199,13 @@ newdir
 	lda dsknam
 	sta dirbuf
 	ldy #22
-.skip
 nd10	lda (dirbuf),y
 	cmp #$a0
 	bne nd20
 	lda #'1         ;version # 1
 	.byte $2c
 nd15
-	lda (dirbuf)y
+	lda (dirbuf),y
 	cmp #$a0
 	bne nd20
 ;
@@ -240,7 +222,6 @@ nd20
 	lda #$20
 	sta nambuf+19
 	rts
-.skip
 msgfre	jsr blknb
 	ldy #msglen-1
 msg1	lda fremsg,y
@@ -248,7 +229,5 @@ msg1	lda fremsg,y
 	dey
 	bpl msg1
 	jmp numfre
-.skip
-fremsg	.byte 'blocks free.'
+fremsg	.byte "blocks free."
 msglen	=*-fremsg
-.end

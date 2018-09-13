@@ -1,4 +1,3 @@
-.page 'ssutil'
 ;*********************************
 ;* b0tob0: transfer bytes from   *
 ;*         one buf to other.     *
@@ -20,8 +19,8 @@ b0tob0
 	tay
 	dey
 b02
-	lda (temp)y
-	sta (temp+2)y
+	lda (temp),y
+	sta (temp+2),y
 	dey
 	bpl b02
 	rts
@@ -55,7 +54,7 @@ ssset
 	lda #0
 	jsr ssdir
 	ldy #2
-	lda (dirbuf)y
+	lda (dirbuf),y
 	rts
 ;
 ;*********************************
@@ -124,7 +123,7 @@ ssp20
 ;* ibwt: write.                  *
 ;*   regs: in: .a= buf # for r/w *
 ;*             .x= lindx         *
-;*         (dirbuf)y   points to *
+;*         (dirbuf),y   points to *
 ;*         t&s to be r/w.        *
 ;*********************************
 ;
@@ -144,10 +143,10 @@ ibop
 	ora drvnum
 	sta cmd
 ;
-	lda (dirbuf)y
+	lda (dirbuf),y
 	sta track
 	iny
-	lda (dirbuf)y
+	lda (dirbuf),y
 	sta sector
 	lda jobnum
 	jsr seth
@@ -188,4 +187,3 @@ addt12
 addrts
 	rts
 ;
-.end

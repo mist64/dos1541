@@ -1,4 +1,3 @@
-.page 'lcc.conhdr'
 ;
 ;
 ;
@@ -54,4 +53,3 @@ conhdr	lda bufpnt+1    ;save buffer pointer
 	rts
 ;
 ;
-.end

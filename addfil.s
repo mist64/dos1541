@@ -1,6 +1,4 @@
-.page 'addfil'
 ; add file to directory
-.skip
 addfil	lda sa          ;save variables 
 	pha
 	lda lindx
@@ -21,13 +19,11 @@ addfil	lda sa          ;save variables
 	eor lstjob,x
 	lsr a
 	bcc af08        ;same drive as required
-.skip
 	ldx #1
 	stx delind      ;look for deleted entry
 	jsr srchst
 	beq af15        ;all full, new sector 
 	bne af20        ;found one
-.skip
 af08	lda delsec
 	beq af10        ;deleted entry not located
 	cmp sector
@@ -35,7 +31,6 @@ af08	lda delsec
 	sta sector
 	jsr drtrd       ;read sector in
 	jmp af20
-.skip
 af10	lda #1          ;find deleted entry
 	sta delind
 	jsr search
@@ -102,4 +97,3 @@ af50	jsr drtwrt      ;write it out
 	sta fildrv
 	rts
 ;
-.end

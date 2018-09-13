@@ -1,4 +1,3 @@
-.pag vector
 echksm	.byt 0          ;$e-$f checksum
 nmi	jmp (vnmi)
 ;
@@ -14,7 +13,6 @@ pea7a	sta ledprt      ;patch for power-on errors
 	.word trnoff
 ublock	.word ublkrd
 	.word ublkwt
-.skip
 	.word $0500     ;links to buffer #2
 	.word $0503
 	.word $0506
@@ -25,4 +23,3 @@ ublock	.word ublkrd
 	.word nmi
 	.word dskint
 	.word sysirq
-.end

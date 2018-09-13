@@ -1,4 +1,3 @@
-.page 'ser.listn'
 ;
 ;
 ;
@@ -131,4 +130,3 @@ tatn20	jmp atns20
 ;
 ;
 ;
-.end

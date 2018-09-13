@@ -1,5 +1,3 @@
-.page 'frets'
-.skip 
 ; mark a track,sector as free in bam
 wfree
 	jsr fixbam
@@ -119,7 +117,7 @@ clrbam
 	ldy #0
 	tya
 clb1
-	sta (bmpnt)y
+	sta (bmpnt),y
 	iny
 	bne clb1
 	rts
@@ -312,4 +310,3 @@ bam2x	;leave in .x
 	rts
 ;
 ;
-.end

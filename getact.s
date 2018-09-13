@@ -1,4 +1,3 @@
-.page 'getact'
 ;*********************************
 ;* getact: get active buffer #   *
 ;*   vars: buf0,buf1,lindx       *
@@ -89,4 +88,3 @@ putina	ldx lindx
 pi1	sta buf1,x
 	rts
 ;
-.end

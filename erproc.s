@@ -1,6 +1,4 @@
-.page 'erproc'
 ; error processing 
-.skip
 ; controller errors
 ;  0  (1)  no error
 ; 20  (2)  can't find block header
@@ -13,7 +11,6 @@
 ; 27  (9)  checksum error in header
 ; 28  (10) data extends into next block
 ; 29  (11) disk i.d. mismatch
-.skip
 ; command errors
 ; 30  general syntax
 ; 31  invalid command
@@ -21,11 +18,9 @@
 ; 33  invalid filname
 ; 34  no file given
 ; 39  command file not found
-.skip
 ; 50  record not present
 ; 51  overflow in record
 ; 52  file too large
-.skip
 ; 60  file open for write
 ; 61  file not open
 ; 62  file not found
@@ -34,15 +29,12 @@
 ; 65  no block
 ; 66  illegal track or sector
 ; 67  illegal system t or s
-.skip
 ; 70  no channels available
 ; 71  directory error
 ; 72  disk full
 ; 73  cbm dos v2.6 v170
 ; 74  drive not ready
-.skip
 ;  1  files scratched response
-.skip2
 badsyn	=$30
 badcmd	=$31
 longln	=$32
@@ -65,85 +57,81 @@ direrr	=$71
 dskful	=$72
 cbmv2	=$73
 nodriv	=$74
-.page
 ; error message table
 ;   leading errror numbers,
 ;   text with 1st & last chars 
 ;   or'ed with $80,
 ;   tokens for key words are
 ;   less than $10 (and'ed w/ $80)
-.skip 2
 errtab	;" ok"
-	.byt 0,$a0,'o',$cb
+	.byt 0,$a0,"o",$cb
 ;"read error"
 	.byt $20,$21,$22,$23,$24,$27
-	.byt $d2,'ead',$89
+	.byt $d2,"ead",$89
 ;" file too large"
-	.byte $52,$83,' too larg',$c5
+	.byte $52,$83," too larg",$c5
 ;" record not present"
-	.byte $50,$8b,6,' presen',$d4
+	.byte $50,$8b,6," presen",$d4
 ;"overflow in record"
-	.byte $51,$cf,'verflow '
-	.byte 'in',$8b
+	.byte $51,$cf,"verflow "
+	.byte "in",$8b
 ;" write error"
 	.byt $25,$28,$8a,$89
 ;" write protect on"
-	.byt $26,$8a,' protect o',$ce
+	.byt $26,$8a," protect o",$ce
 ;" disk id mismatch"
-	.byt $29,$88,' id',$85
+	.byt $29,$88," id",$85
 ;"syntax error"
 	.byt $30,$31,$32,$33,$34
-	.byt $d3,'yntax',$89
+	.byt $d3,"yntax",$89
 ;" write file open"
 	.byt $60,$8a,3,$84
 ;" file exists"
-	.byt $63,$83,' exist',$d3
+	.byt $63,$83," exist",$d3
 ;" file type mismatch"
-	.byt $64,$83,' type',$85
+	.byt $64,$83," type",$85
 ;"no block"
-	.byt $65,$ce,'o bloc',$cb
+	.byt $65,$ce,"o bloc",$cb
 ;"illegal track or sector"
-	.byte $66,$67,$c9,'llegal track'
-	.byte ' or secto',$d2
+	.byte $66,$67,$c9,"llegal track"
+	.byte " or secto",$d2
 ;" file not open"
 	.byt $61,$83,6,$84
 ;" file not found"
 	.byt $39,$62,$83,6,$87
 ;" files scratched"
-	.byt 1,$83,'s scratche',$c4
+	.byt 1,$83,"s scratche",$c4
 ;"no channel"
-	.byt $70,$ce,'o channe',$cc
+	.byt $70,$ce,"o channe",$cc
 ;"dir error"
-	.byt $71,$c4,'ir',$89
+	.byt $71,$c4,"ir",$89
 ;" disk full"
-	.byt $72,$88,' ful',$cc
+	.byt $72,$88," ful",$cc
 ;"cbm dos v2.6 4030"
-	.byte $73,$c3,'bm dos v2.6 v17',$b0
+	.byte $73,$c3,"bm dos v2.6 v17",$b0
 ;"drive not ready"
-	.byte $74,$c4,'rive',6,' read',$d9
-.skip
+	.byte $74,$c4,"rive",6," read",$d9
 ; error token key words
 ;   words used more than once
 ;"error"
-	.byt 9,$c5,'rro',$d2
+	.byt 9,$c5,"rro",$d2
 ;"write"
-	.byt $a,$d7,'rit',$c5
+	.byt $a,$d7,"rit",$c5
 ;"file"
-	.byt 3,$c6,'il',$c5
+	.byt 3,$c6,"il",$c5
 ;"open"
-	.byt 4,$cf,'pe',$ce
+	.byt 4,$cf,"pe",$ce
 ;"mismatch"
-	.byt 5,$cd,'ismatc',$c8
+	.byt 5,$cd,"ismatc",$c8
 ;"not"
-	.byt 6,$ce,'o',$d4
+	.byt 6,$ce,"o",$d4
 ;"found"
-	.byt 7,$c6,'oun',$c4
+	.byt 7,$c6,"oun",$c4
 ;"disk"
-	.byt 8,$c4,'is',$cb
+	.byt 8,$c4,"is",$cb
 ;"record"
-	.byte $b,$d2,'ecor',$c4
+	.byte $b,$d2,"ecor",$c4
 etend	=*
-.page
 ; controller error entry
 ;   .a= error #
 ;   .x= job #
@@ -156,7 +144,6 @@ error	pha
 	sta track
 	lda hdrs+1,x    ;4/12*********
 	sta sector
-.skip
 	pla
 	and #$f         ;convert controller...
 	beq err1        ;...errors to dos errors
@@ -216,7 +203,6 @@ cmder3
 	sta lindx
 	jmp tlerr
 ;
-.skip
 ; talker error recovery
 ;  if command channel, release dav
 ;  if data channel, force not ready
@@ -225,7 +211,6 @@ tlkerr
 	jsr fndrch
 	jsr iterr
 	bne tlerr       ;finish
-.skip
 ; listener error recovery
 ;  if command channel, release rfd
 ;  if data channel, force not ready
@@ -240,7 +225,6 @@ tlerr
 	jsr frechn
 err10
 	jmp idle
-.page
 ; convert hex to bcd
 hexdec	tax
 	lda #0
@@ -252,10 +236,9 @@ hex0	cpx #0
 	dex
 	jmp hex0
 hex5	cld
-.skip
 ; convert bcd to ascii dec
 ;  return bcd in .x
-;  store ascii in (temp)y
+;  store ascii in (temp),y
 bcddec	tax
 	lsr a
 	lsr a
@@ -266,10 +249,9 @@ bcddec	tax
 bcd2
 	and #$f
 	ora #$30
-	sta (cb+2)y
+	sta (cb+2),y
 	iny
 	rts
-.ski
 ; transfer error message to
 ;  error buffer
 ;
@@ -295,7 +277,6 @@ errmsg
 	sta chndat+errchn
 	txa             ;error # in .x
 	jsr ermove      ;move message
-.skip
 ermsg2	lda #',
 	sta (cb+2),y
 	iny

@@ -1,4 +1,3 @@
-.page 'lcc.seek'
 ;
 ;
 ;
@@ -217,4 +216,3 @@ cnvbin	lda bufpnt
 ;
 ;
 ;
-.end

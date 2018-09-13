@@ -1,4 +1,3 @@
-.page 'list directory'
 ; start the directory loading function
 ; get the buffer and get it started
 ;
@@ -6,10 +5,8 @@ stdir	lda #0
 	sta sa
 	lda #1          ;allocate chanl and 1 bufefer
 	jsr getrch
-.skip
 	lda #0
 	jsr setpnt
-.skip
 	ldx lindx
 	lda #0
 	sta lstchr,x
@@ -118,4 +115,3 @@ gd1
 	pla
 	rts
 ;
-.end

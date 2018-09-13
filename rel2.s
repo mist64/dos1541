@@ -1,4 +1,3 @@
-.page 'rel2'
 ;**********************************
 ;*
 ;* relput
@@ -150,4 +149,3 @@ cdirty	jsr gaflgs
 	rts
 ;
 ;
-.end

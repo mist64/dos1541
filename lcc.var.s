@@ -1,4 +1,3 @@
-.page 'lcc.var'
 ;
 drvst	*=*+2
 drvtrk	*=*+2
@@ -85,4 +84,3 @@ tim	=58             ;irq rate for 15ms
 ;
 ;
 ;
-.end

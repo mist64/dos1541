@@ -1,4 +1,3 @@
-.page 'tst3'
 ;
 ;
 ; .a=#buffers needed
@@ -48,7 +47,6 @@ frechn	lda sa
 	cmp #$f
 	bne freco
 	rts
-.skip
 freco
 frerd
 frewrt	ldx sa
@@ -338,4 +336,3 @@ fnd30	eor #$ff        ;toggle bit mask
 	sta linuse
 	tya             ;return lindx in .a
 	rts
-.end

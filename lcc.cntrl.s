@@ -1,4 +1,3 @@
-.page 'lcc.cntrl'
 ;
 ;
 ;
@@ -219,4 +218,3 @@ setj10	ldy #0
 ;
 ;
 ;
-.end

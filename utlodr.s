@@ -1,4 +1,3 @@
-.page 'utlodr'
 ;********************************
 ;*utlodr-utility loader used to
 ; load user programs or system
@@ -41,7 +40,6 @@
 ; utility or user program.
 ;
 ;********************************
-.pag
 ;********************************
 ;
 ;*first writing-
@@ -55,7 +53,6 @@
 ; 09-apr-81 rsr - change for serial bus
 ;
 ;********************************
-.pag
 ;********************************
 ;
 ;*routines external to this
@@ -107,7 +104,6 @@
 ;   outputs to utlodr-none
 ;
 ;********************************
-.pag
 boot2
 	rts             ;exit
 ;
@@ -234,12 +230,10 @@ utld50	lda eoiflg      ;check for end of file
 	pla
 	sta r2
 	jmp (r2)
-.pag
 ;********************************
 ;
 ;*local routines used by utlodr
 ;
-.ski
 ;********************************
 ;
 ;*gtabyt-fetches a byte from the
@@ -263,7 +257,6 @@ gtabyt	jsr gibyte      ;fetch a byte to data loc
 ;
 gtabye	lda data
 	rts
-.ski 2
 ;********************************
 ;
 ;*addsum-adds up checksum into
@@ -284,4 +277,3 @@ addsum	clc
 	sta r1          ;save new checksum
 	rts
 ;
-.end

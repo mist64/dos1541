@@ -1,11 +1,9 @@
-.page 'open'
 ;open channel from ieee
 ;  parses the input string that is 
 ;  sent as an open data channel,
 ;  load, or save.  channels are allocated
 ;  and the directory is searched for
 ;  the filename contained in the string.
-.skip
 open
 	lda sa
 	sta tempsa
@@ -18,7 +16,6 @@ open
 	bne op021
 	lda prgtrk
 	beq op0415      ;no last prog, init 0
-.skip
 op02	;load last program
 	sta track
 	lda prgdrv
@@ -35,13 +32,11 @@ op02	;load last program
 endrd	ldx lindx
 	sta filtyp,y
 	jmp endcmd
-.skip
 op021	cpx #'$ 
 	bne op041
 	lda tempsa      ;load directory
 	bne op04
 	jmp loadir
-.skip
 op04	jsr simprs      ;open dir as seq file
 	lda dirtrk
 	sta track
@@ -51,18 +46,15 @@ op04	jsr simprs      ;open dir as seq file
 	lda drvnum
 	ora #seqtyp+seqtyp
 	jmp endrd
-.skip
 op041	cpx #'#         ;"#" is direct access 
 	bne op042
 	jmp opnblk
-.skip
 op0415	lda #prgtyp     ;program type
 	sta typflg
 	lda #0
 	sta drvnum
 	sta lstdrv
 	jsr initdr
-.skip
 op042
 	jsr prscln      ;look for ":"
 	bne op049
@@ -79,7 +71,6 @@ op10	dey             ;back up to ":"
 op20	sty filtbl      ;save filename ptr
 	lda #$8d        ;look for cr-shifted
 	jsr parse
-.skip
 	inx
 	stx f2cnt
 	jsr onedrv
@@ -157,7 +148,6 @@ op77	lda #$20        ;open write
 	beq op80
 	jsr deldir      ;created
 	jmp opwrit
-.skip
 op80	lda filtrk
 	bne op81
 	jmp opwrit      ;not found, ok!
@@ -171,7 +161,6 @@ op81	lda cmdbuf
 op815
 	lda #badfn
 	jmp cmderr
-.skip
 ;********* check for bug here******
 op82
 	lda pattyp      ;replace
@@ -181,7 +170,6 @@ op82
 	cmp #reltyp
 	beq op115
 ;
-.skip
 	jsr opnwch
 	lda lindx
 	sta wlindx
@@ -201,7 +189,6 @@ op82
 	iny
 	lda sector
 	sta (dirbuf),y
-.skip
 	ldx wlindx
 	lda entsec
 	sta dsec,x
@@ -212,7 +199,6 @@ op82
 	jmp opfin
 ;**********************************
 ;
-.skip
 op90	lda filtrk      ;open read (& load)
 	bne op100
 op95
@@ -265,13 +251,13 @@ op125
 ;**********************
 opread
 	ldy #19
-	lda (dirbuf)y
+	lda (dirbuf),y
 	sta trkss
 	iny
-	lda (dirbuf)y
+	lda (dirbuf),y
 	sta secss
 	iny
-	lda (dirbuf)y
+	lda (dirbuf),y
 	ldx rec
 	sta rec
 	txa
@@ -295,7 +281,6 @@ op130
 	sta dind,y
 	rts
 ;
-.skip
 opwrit
 	lda fildrv
 	and #1
@@ -318,7 +303,6 @@ opfin
 	sta prgsec
 opf1
 	jmp endsav
-.skip
 cktm
 	ldy filtbl,x    ;get ptr
 	lda cmdbuf,y    ;get char
@@ -375,13 +359,11 @@ loadir
 	ldx cmdsiz
 	dex
 	beq ld02
-.skip
 ld01	dex             ;load by name
 	bne ld03
 	lda cmdbuf+1
 	jsr tst0v1
 	bmi ld03
-.skip
 ld02	;load dir with a star
 	sta fildrv
 	inc f1cnt
@@ -393,7 +375,6 @@ ld02	;load dir with a star
 	sta cmdbuf      ;cover both cases
 	sta cmdbuf+1
 	bne ld10        ;(branch)
-.skip
 ld03
 	jsr prscln
 	bne ld05        ;found ":"
@@ -403,11 +384,9 @@ ld03
 ld05	dey
 	dey
 	sty filtbl
-.skip
 	jsr tc35        ;parse & set tables
 	jsr fs1set
 	jsr alldrs
-.skip
 ld10	jsr optsch      ;new directory
 	jsr newdir
 	jsr ffst
@@ -422,5 +401,3 @@ ld20	jsr stdir       ;start directory
 	lda #0
 	sta buftab+cbptr
 	rts
-.skip
-.end

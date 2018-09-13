@@ -1,4 +1,3 @@
-.pag 'ramvar.sf'
 ;permanent address variables
 ;
 	*=zp2
@@ -8,10 +7,8 @@ nmiflg	*=*+1
 autofg	*=*+1
 secinc	*=*+1           ;sector inc for seq
 revcnt	*=*+1           ; error recovery count
-.skip
-bufs	= $300          ; start of data bufs
+;bufs	= $300          ; start of data bufs
 fbufs	= bufs          ;format download image
-.ski 2
 ;*
 ;*********************************
 ;*
@@ -116,11 +113,9 @@ strsiz	*=*+1
 ;zp:  ssnum  *=*+1
 ;zp:  ssind  *=*+1
 ;zp:  relptr *=*+1
-.skip
 tempsa	*=*+1           ; temporary sa
 ;zp:  eoiflg *=*+1           ; temp eoi
 cmd	*=*+1           ; temp job command
-.skip
 lstsec	*=*+1           ; 
 bufuse	*=*+2           ; buffer allocation
 ;zp:  jobnum *=*+1           ; current job #
@@ -133,7 +128,6 @@ lbused	*=*+1           ;last buffer used
 rec	*=*+1
 trkss	*=*+1
 secss	*=*+1
-.page
 ;*
 ;********************************
 ;*
@@ -153,7 +147,6 @@ prgsec	*=*+1           ; last program sector
 wlindx	*=*+1           ; write lindx
 rlindx	*=*+1           ; read lindx
 nbtemp	*=*+2           ; # blocks temp
-.skip 3
 cmdsiz	*=*+1           ; command string size
 char	*=*+1           ; char under parser
 limit	*=*+1           ; ptr limit in compar
@@ -166,12 +159,10 @@ filtbl	*=*+mxfils+1    ; filename pointer
 ;zp:   fildat *=*+mxfils      ; drive #, pattern
 filtrk	*=*+mxfils      ; 1st link/track
 filsec	*=*+mxfils      ;         /sector
-.skip
 ;  channel tables
 ;zp:  filtyp *=*+mxchns ; channel file type
 ;zp:  chnrdy *=*+mxchns      ; channel status
 ;zp:   lstchr *=*+mxchns      ; channel last char ptr
-.skip
 patflg	*=*+1           ; pattern presence flag
 image	*=*+1           ; file stream image
 drvcnt	*=*+1           ; number of drv searches
@@ -193,7 +184,6 @@ toff	*=*+1           ;total track offset
 ubam	*=*+2           ; last bam update ptr
 tbam	*=*+4           ; track # of bam image
 bam	*=*+16          ; bam images
-.ski
 ;*
 ;*****************************************
 ;*
@@ -209,5 +199,3 @@ ndbl	*=*+2           ; # of disk blocks free
 ndbh	*=*+2
 phase	*=*+2
 ramend=*
-.skip 2
-.end

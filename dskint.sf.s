@@ -1,4 +1,3 @@
-.page 'dskint.sf'
 ;
 ; error display routine
 ; blinks the (error #)+1 in all three leds
@@ -34,7 +33,6 @@ pd21	adc #1          ;count inner ctr
 	cpx #$fc        ;waited between counts ?
 	bne pe40        ;no
 	beq pe20        ;always - all again
-.skip 3
 dskint
 	sei
 	cld
@@ -99,7 +97,6 @@ rt20	adc (ip),y      ;total checksum in a
 ;
 	cpx #$c0        ;done both roms ?
 	bne rm10        ;no
-.skip 3
 ; test all common ram
 ;
 cr20	lda #$01        ;start of 1st block
@@ -140,7 +137,6 @@ ra40	dey
 	beq diagok
 ;
 perr2	jmp perr
-.skip 3
 ;
 diagok
 	ldx #topwrt
@@ -212,14 +208,12 @@ dskin2
 	lda #$ff
 	sta buf0+blindx
 	sta buf1+blindx
-.skip
 	lda #errchn
 	sta lintab+errsa
 	lda #cmdchn+$80
 	sta lintab+cmdsa
 	lda #lxint      ;lindx 0 to 5 free
 	sta linuse
-.skip
 	lda #rdylst
 	sta chnrdy+cmdchn
 	lda #rdytlk
@@ -241,7 +235,6 @@ dskin2
 ;**********************************
 ;
 	jsr cntint
-.skip 3
 ; set indirect vectors
 	lda #<diagok
 	sta vnmi
@@ -252,7 +245,6 @@ dskin2
 	sta secinc
 	lda #5
 	sta revcnt      ;set up recovery count
-.skip
 ;*
 ;*******************************
 ;*
@@ -283,4 +275,3 @@ seterr	lda #$73
 ;
 	jsr boot
 ;
-.end

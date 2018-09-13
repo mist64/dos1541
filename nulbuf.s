@@ -1,4 +1,3 @@
-.page 'nulbuf'
 ;*********************************
 ;* nulbuf: set null records in   *
 ;*         act-buf for extention *
@@ -60,4 +59,3 @@ an10
 	rts
 ;
 ;
-.end

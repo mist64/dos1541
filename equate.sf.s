@@ -1,4 +1,3 @@
-.page 'equate.sf'
 ;******************************
 ;*  equates
 ;******************************
@@ -39,7 +38,6 @@ iwsa	=18             ;internal write sa #
 dosver	=2 ;dos version
 fm2030	=$42            ;2030 format version
 fm4040	=$41            ;4040 format version
-.skip
 ;controller job types
 read	=$80
 write	=$90
@@ -49,9 +47,7 @@ secsek	=seek+8
 bump	=$c0
 jumpc	=$d0
 exec	=$e0
-.skip
 mxfils	=5 ; max # filenames in string
 dirlen	=24             ;directory length used
 nbsiz	=27             ;nambuf text size
 cmdlen	=41             ;length of command buffer
-.skip

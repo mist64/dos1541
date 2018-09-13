@@ -1,10 +1,7 @@
-.page 'duplicate'
 ; duplicate disk
-.skip
 duplct
 	lda #badcmd
 	jmp cmderr
-.skip
 ; transfer format code to buffer 0
 ;  & start controller formatting
 format
@@ -30,4 +27,3 @@ fmt105	lda jobs+3
 fmt110	rts
 ;
 ;
-.end

@@ -16,7 +16,7 @@ sstest
 	bne st20        ;not this ss
 ;
 	ldy ssind
-	lda (dirbuf)y
+	lda (dirbuf),y
 	beq st10
 	bit er0         ;ok, resident
 	rts
@@ -31,7 +31,7 @@ st20
 	tay
 	lda #4
 	sta dirbuf
-	lda (dirbuf)y
+	lda (dirbuf),y
 	bne st40
 st30
 	bit er3         ;way out of range
@@ -39,4 +39,3 @@ st30
 st40
 	bit er1         ;not res, range???
 	rts
-.end

@@ -18,9 +18,7 @@
 ;*   commodore business machines (cbm)        *
 ;*                                            *
 ;**********************************************
-.skip 3
 ; ****listing date --10:00 06 may    1981 ****
-.skip 3
 ;**********************************************
 ;*   this software is furnished for use in    *
 ;*  the single drive floppy disk unit only.   *
@@ -36,9 +34,7 @@
 ;*  reliability of this software. rsr         *
 ;*                                            *
 ;**********************************************
-.pag 'common'
 ; common area defines
-.skip
 	*=0
 jobs	*=*+6           ; job que
 hdrs	*=*+12          ; job headers
@@ -49,5 +45,4 @@ wpsw	*=*+2           ;write protect change flag
 lwpt	*=*+2           ;last state of wp switch
 ;
 ;
-.end
 ; rsr
