@@ -64,73 +64,73 @@ nodriv	=$74
 ;   tokens for key words are
 ;   less than $10 (and'ed w/ $80)
 errtab	;" ok"
-	.byt 0,$a0,"o",$cb
+	.byt 0,$a0,"O",$cb
 ;"read error"
 	.byt $20,$21,$22,$23,$24,$27
-	.byt $d2,"ead",$89
+	.byt $d2,"EAD",$89
 ;" file too large"
-	.byte $52,$83," too larg",$c5
+	.byte $52,$83," TOO LARG",$c5
 ;" record not present"
-	.byte $50,$8b,6," presen",$d4
+	.byte $50,$8b,6," PRESEN",$d4
 ;"overflow in record"
-	.byte $51,$cf,"verflow "
-	.byte "in",$8b
+	.byte $51,$cf,"VERFLOW "
+	.byte "IN",$8b
 ;" write error"
 	.byt $25,$28,$8a,$89
 ;" write protect on"
-	.byt $26,$8a," protect o",$ce
+	.byt $26,$8a," PROTECT O",$ce
 ;" disk id mismatch"
-	.byt $29,$88," id",$85
+	.byt $29,$88," ID",$85
 ;"syntax error"
 	.byt $30,$31,$32,$33,$34
-	.byt $d3,"yntax",$89
+	.byt $d3,"YNTAX",$89
 ;" write file open"
 	.byt $60,$8a,3,$84
 ;" file exists"
-	.byt $63,$83," exist",$d3
+	.byt $63,$83," EXIST",$d3
 ;" file type mismatch"
-	.byt $64,$83," type",$85
+	.byt $64,$83," TYPE",$85
 ;"no block"
-	.byt $65,$ce,"o bloc",$cb
+	.byt $65,$ce,"O BLOC",$cb
 ;"illegal track or sector"
-	.byte $66,$67,$c9,"llegal track"
-	.byte " or secto",$d2
+	.byte $66,$67,$c9,"LLEGAL TRACK"
+	.byte " OR SECTO",$d2
 ;" file not open"
 	.byt $61,$83,6,$84
 ;" file not found"
 	.byt $39,$62,$83,6,$87
 ;" files scratched"
-	.byt 1,$83,"s scratche",$c4
+	.byt 1,$83,"S SCRATCHE",$c4
 ;"no channel"
-	.byt $70,$ce,"o channe",$cc
+	.byt $70,$ce,"O CHANNE",$cc
 ;"dir error"
-	.byt $71,$c4,"ir",$89
+	.byt $71,$c4,"IR",$89
 ;" disk full"
-	.byt $72,$88," ful",$cc
+	.byt $72,$88," FUL",$cc
 ;"cbm dos v2.6 4030"
-	.byte $73,$c3,"bm dos v2.6 v17",$b0
+	.byte $73,$c3,"BM DOS V2.6 V17",$b0
 ;"drive not ready"
-	.byte $74,$c4,"rive",6," read",$d9
+	.byte $74,$c4,"RIVE",6," READ",$d9
 ; error token key words
 ;   words used more than once
 ;"error"
-	.byt 9,$c5,"rro",$d2
+	.byt 9,$c5,"RRO",$d2
 ;"write"
-	.byt $a,$d7,"rit",$c5
+	.byt $a,$d7,"RIT",$c5
 ;"file"
-	.byt 3,$c6,"il",$c5
+	.byt 3,$c6,"IL",$c5
 ;"open"
-	.byt 4,$cf,"pe",$ce
+	.byt 4,$cf,"PE",$ce
 ;"mismatch"
-	.byt 5,$cd,"ismatc",$c8
+	.byt 5,$cd,"ISMATC",$c8
 ;"not"
-	.byt 6,$ce,"o",$d4
+	.byt 6,$ce,"O",$d4
 ;"found"
-	.byt 7,$c6,"oun",$c4
+	.byt 7,$c6,"OUN",$c4
 ;"disk"
-	.byt 8,$c4,"is",$cb
+	.byt 8,$c4,"IS",$cb
 ;"record"
-	.byte $b,$d2,"ecor",$c4
+	.byte $b,$d2,"ECOR",$c4
 etend	=*
 ; controller error entry
 ;   .a= error #

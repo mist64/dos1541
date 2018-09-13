@@ -174,4 +174,4 @@ ar70
 	jsr setflg
 	lda #norec
 	jsr cmderr
-	jsr dblbuf
+;	jsr dblbuf

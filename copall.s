@@ -14,6 +14,7 @@ pups1	lda #0
 	lda filtbl+1    ;fn1=fn2
 	sta filtbl
 	rts
+.if 0
 ;
 ;
 ; copy disk to disk routines
@@ -97,3 +98,4 @@ trf0	lda (dirbuf),y   ;move it
 	cpy #19         ;all 16 chars passed?
 	bne trf0
 	rts
+.endif

@@ -11,12 +11,12 @@ mem	lda cmdbuf+1
 ;
 	ldy #0
 	lda cmdbuf+2
-	cmp #'r
+	cmp #'R
 	beq memrd       ;read
 	jsr killp       ;kill protect
-	cmp #'w
+	cmp #'W
 	beq memwrt      ;write
-	cmp #'e
+	cmp #'E
 	bne memerr      ;error
 ; execute
 memex	jmp (temp)

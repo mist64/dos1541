@@ -4,7 +4,7 @@ mapoff	.byt 4          ;offset of bam in sector
 dsknam	.byt $90        ;offset of disk name in bam sector
 ;
 ;   command search table
-cmdtbl	.byt "vidmbup&crsn"
+cmdtbl	.byt "VIDMBUP&CRSN"
 ; validate-dir init-drive duplicate
 ; memory-op block-op user
 ; position dskcpy utlodr rename scratch new
@@ -15,7 +15,7 @@ cjumpl	.byt <verdir,<intdrv,<duplct
 	.byt <record
 	.byt <utlodr
 	.byt <dskcpy
-	.byt <rename,<scrtch,<new
+		.byt <rename,<scrtch,<new
 ;	*=cjumpl+ncmds
 ;  jump table high
 cjumph	.byt >verdir,>intdrv,>duplct
@@ -42,14 +42,14 @@ ldcmd	=*-struct       ; load cmd image
 ;              not greater than one file 
 ;              not default drive(s) 
 ;              required filename
-modlst	.byt "rwam"     ; mode table
+modlst	.byt "RWAM"     ; mode table
 nmodes	=*-modlst
 ;file type table
-tplst	.byt "dspul"
-typlst	.byt "dspur"    ;del, seq, prog, user, relative
+tplst	.byt "DSPUL"
+typlst	.byt "DSPUR"    ;del, seq, prog, user, relative
 ntypes	=*-typlst
-tp1lst	.byt "eerse"
-tp2lst	.byt "lqgrl"
+tp1lst	.byt "EERSE"
+tp2lst	.byt "LQGRL"
 ledmsk	.byt led0,led1
 ;
 ; error flag vars for bit

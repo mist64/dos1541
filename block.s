@@ -123,7 +123,7 @@ blk60
 	lda bcjmp,x
 	sta temp
 	jmp (temp)      ;goto command
-bctab	.byt "afrwep"
+bctab	.byt "AFRWEP"
 nbcmds	=*-bctab
 bcjmp	.word blkalc    ;block-allocate
 	.word blkfre    ;block-free

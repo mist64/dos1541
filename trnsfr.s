@@ -229,5 +229,5 @@ msg1	lda fremsg,y
 	dey
 	bpl msg1
 	jmp numfre
-fremsg	.byte "blocks free."
+fremsg	.byte "BLOCKS FREE."
 msglen	=*-fremsg

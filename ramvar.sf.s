@@ -90,7 +90,7 @@ jobnum	.res 1          ; current job #
 lrutbl	.res mxchns-1   ;least recently used table
 nodrv	.res 2          ; no drive flag
 ;XXXdskver	.res 2          ; disk version from 18.0
-dskver=$ff
+dskver=$101
 zpend=*
 .segment "S0200"
 cmdbuf	.res cmdlen+1
