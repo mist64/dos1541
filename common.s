@@ -35,14 +35,14 @@
 ;*                                            *
 ;**********************************************
 ; common area defines
-	*=0
-jobs	*=*+6           ; job que
-hdrs	*=*+12          ; job headers
-dskid	*=*+4           ;master copy of disk id
-header	*=*+5           ;image of last header
-actjob	*=*+1           ;controller's active job
-wpsw	*=*+2           ;write protect change flag
-lwpt	*=*+2           ;last state of wp switch
+.segment "S0000" : zeropage
+jobs	.res 6          ; job que
+hdrs	.res 12         ; job headers
+dskid	.res 4          ;master copy of disk id
+header	.res 5          ;image of last header
+actjob	.res 1          ;controller's active job
+wpsw	.res 2          ;write protect change flag
+lwpt	.res 2          ;last state of wp switch
 ;
 ;
 ; rsr

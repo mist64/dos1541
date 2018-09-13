@@ -16,7 +16,7 @@ cjumpl	.byt <verdir,<intdrv,<duplct
 	.byt <utlodr
 	.byt <dskcpy
 	.byt <rename,<scrtch,<new
-	*=cjumpl+ncmds
+;	*=cjumpl+ncmds
 ;  jump table high
 cjumph	.byt >verdir,>intdrv,>duplct
 	.byt >mem,>block,>user
@@ -24,7 +24,7 @@ cjumph	.byt >verdir,>intdrv,>duplct
 	.byt >utlodr
 	.byt >dskcpy
 	.byt >rename,>scrtch,>new
-	*=cjumph+ncmds
+;	*=cjumph+ncmds
 val=0 ;validate (verify) cmd #
 ; structure images for cmds
 pcmd	=9

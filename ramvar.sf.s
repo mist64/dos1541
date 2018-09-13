@@ -1,12 +1,11 @@
 ;permanent address variables
 ;
-	*=zp2
 ;
-vnmi	*=*+2           ;indirect for nmi
-nmiflg	*=*+1
-autofg	*=*+1
-secinc	*=*+1           ;sector inc for seq
-revcnt	*=*+1           ; error recovery count
+vnmi	.res 2          ;indirect for nmi
+nmiflg	.res 1
+autofg	.res 1
+secinc	.res 1          ;sector inc for seq
+revcnt	.res 1          ; error recovery count
 ;bufs	= $300          ; start of data bufs
 fbufs	= bufs          ;format download image
 ;*
@@ -16,25 +15,25 @@ fbufs	= bufs          ;format download image
 ;*
 ;*********************************
 ;*
-usrjmp	*=*+2           ; user jmp table ptr
-bmpnt	*=*+2           ; bit map pointer
-temp	*=*+6           ; temp work space
-ip	*=*+2           ; indirect ptr variable
-lsnadr	*=*+1           ; listen address
-tlkadr	*=*+1           ;talker address
-lsnact	*=*+1           ; active listener flag
-tlkact	*=*+1           ; active talker flag 
-adrsed	*=*+1           ; addressed flag
-atnpnd	*=*+1           ;attention pending flag
-atnmod	*=*+1           ;in atn mode
-prgtrk	*=*+1           ;last prog accessed
-drvnum	*=*+1           ;current drive #
-track	*=*+1           ;current track
-sector	*=*+1           ;current sector
-lindx	*=*+1           ;logical index
-sa	*=*+1           ;secondary address
-orgsa	*=*+1           ;original sa
-data	*=*+1           ; temp data byte
+usrjmp	.res 2          ; user jmp table ptr
+bmpnt	.res 2          ; bit map pointer
+temp	.res 6          ; temp work space
+ip	.res 2          ; indirect ptr variable
+lsnadr	.res 1          ; listen address
+tlkadr	.res 1          ;talker address
+lsnact	.res 1          ; active listener flag
+tlkact	.res 1          ; active talker flag
+adrsed	.res 1          ; addressed flag
+atnpnd	.res 1          ;attention pending flag
+atnmod	.res 1          ;in atn mode
+prgtrk	.res 1          ;last prog accessed
+drvnum	.res 1          ;current drive #
+track	.res 1          ;current track
+sector	.res 1          ;current sector
+lindx	.res 1          ;logical index
+sa	.res 1          ;secondary address
+orgsa	.res 1          ;original sa
+data	.res 1          ; temp data byte
 ;*
 ;*
 t0	=temp
@@ -42,17 +41,17 @@ t1	=temp+1
 t2	=temp+2
 t3	=temp+3
 t4	=temp+4
-r0	*=*+1
-r1	*=*+1
-r2	*=*+1
-r3	*=*+1
-r4	*=*+1
-result	*=*+4
-accum	*=*+5
-dirbuf	*=*+2
-icmd	*=*+1           ;ieee cmd in
-mypa	*=*+1           ; my pa flag
-cont	*=*+1           ; bit counter for ser
+r0	.res 1
+r1	.res 1
+r2	.res 1
+r3	.res 1
+r4	.res 1
+result	.res 4
+accum	.res 5
+dirbuf	.res 2
+icmd	.res 1          ;ieee cmd in
+mypa	.res 1          ; my pa flag
+cont	.res 1          ; bit counter for ser
 ;*
 ;*********************
 ;*
@@ -60,45 +59,46 @@ cont	*=*+1           ; bit counter for ser
 ;*
 ;***********************
 ;*
-buftab	*=*+cbptr+4     ; buffer byte pointers
+buftab	.res cbptr+4    ; buffer byte pointers
 cb=buftab+cbptr
-buf0	*=*+mxchns+1
-buf1	*=*+mxchns+1
+buf0	.res mxchns+1
+buf1	.res mxchns+1
 nbkl
-recl	*=*+mxchns
+recl	.res mxchns
 nbkh
-rech	*=*+mxchns
-nr	*=*+mxchns
-rs	*=*+mxchns
-ss	*=*+mxchns
-f1ptr	*=*+1           ; file stream 1 pointer
+rech	.res mxchns
+nr	.res mxchns
+rs	.res mxchns
+ss	.res mxchns
+f1ptr	.res 1          ; file stream 1 pointer
 ;
 ;***********************
 ; $4300 vars moved to zp
 ;
-recptr	*=*+1
-ssnum	*=*+1
-ssind	*=*+1
-relptr	*=*+1
-entsec	*=*+mxfils      ; sector of directory entry
-entind	*=*+mxfils      ; index of directory entry
-fildrv	*=*+mxfils      ; default flag, drive #
-pattyp	*=*+mxfils      ; pattern,replace,closed-flags,type
-filtyp	*=*+mxchns      ; channel file type
-chnrdy	*=*+mxchns      ; channel status
-eoiflg	*=*+1           ; temp eoi
-jobnum	*=*+1           ; current job #
-lrutbl	*=*+mxchns-1    ;least recently used table
-nodrv	*=*+2           ; no drive flag
-dskver	*=*+2           ; disk version from 18.0
+recptr	.res 1
+ssnum	.res 1
+ssind	.res 1
+relptr	.res 1
+entsec	.res mxfils     ; sector of directory entry
+entind	.res mxfils     ; index of directory entry
+fildrv	.res mxfils     ; default flag, drive #
+pattyp	.res mxfils     ; pattern,replace,closed-flags,type
+filtyp	.res mxchns     ; channel file type
+chnrdy	.res mxchns     ; channel status
+eoiflg	.res 1          ; temp eoi
+jobnum	.res 1          ; current job #
+lrutbl	.res mxchns-1   ;least recently used table
+nodrv	.res 2          ; no drive flag
+;XXXdskver	.res 2          ; disk version from 18.0
+dskver=$ff
 zpend=*
-	*=$200
-cmdbuf	*=*+cmdlen+1
-cmdnum	*=*+1           ; command #
-lintab	*=*+maxsa+1     ; sa:lindx table
-chndat	*=*+mxchns      ; channel data byte
-lstchr	*=*+mxchns      ; channel last char ptr
-type	*=*+1           ; active file type
+.segment "S0200"
+cmdbuf	.res cmdlen+1
+cmdnum	.res 1          ; command #
+lintab	.res maxsa+1    ; sa:lindx table
+chndat	.res mxchns     ; channel data byte
+lstchr	.res mxchns     ; channel last char ptr
+type	.res 1          ; active file type
 ;
 ;*
 ;*******************
@@ -108,26 +108,26 @@ type	*=*+1           ; active file type
 ;*******************
 ;*
 ;  *=$4300
-strsiz	*=*+1
-;zp:  recptr *=*+1
-;zp:  ssnum  *=*+1
-;zp:  ssind  *=*+1
-;zp:  relptr *=*+1
-tempsa	*=*+1           ; temporary sa
-;zp:  eoiflg *=*+1           ; temp eoi
-cmd	*=*+1           ; temp job command
-lstsec	*=*+1           ; 
-bufuse	*=*+2           ; buffer allocation
-;zp:  jobnum *=*+1           ; current job #
-mdirty	*=*+2           ;bam 0 & 1 dirty flags
-entfnd	*=*+1           ;dir-entry found flag
-dirlst	*=*+1           ;dir listing flag
-cmdwat	*=*+1           ;command waiting flag
-linuse	*=*+1           ;lindx use word
-lbused	*=*+1           ;last buffer used
-rec	*=*+1
-trkss	*=*+1
-secss	*=*+1
+strsiz	.res 1
+;zp:  recptr .res 1
+;zp:  ssnum  .res 1
+;zp:  ssind  .res 1
+;zp:  relptr .res 1
+tempsa	.res 1          ; temporary sa
+;zp:  eoiflg .res 1          ; temp eoi
+cmd	.res 1          ; temp job command
+lstsec	.res 1          ;
+bufuse	.res 2          ; buffer allocation
+;zp:  jobnum .res 1          ; current job #
+mdirty	.res 2          ;bam 0 & 1 dirty flags
+entfnd	.res 1          ;dir-entry found flag
+dirlst	.res 1          ;dir listing flag
+cmdwat	.res 1          ;command waiting flag
+linuse	.res 1          ;lindx use word
+lbused	.res 1          ;last buffer used
+rec	.res 1
+trkss	.res 1
+secss	.res 1
 ;*
 ;********************************
 ;*
@@ -135,55 +135,55 @@ secss	*=*+1
 ;*
 ;********************************
 ;*
-lstjob	*=*+bfcnt       ; last job
-;zp:  lintab *=*+maxsa+1     ; sa:lindx table
-;zp:  chndat *=*+mxchns      ; channel data byte
-dsec	*=*+mxchns      ; sector of directory entry
-dind	*=*+mxchns      ; index of directory entry
-erword	*=*+1           ; error word for recovery
-erled	*=*+1           ; error led mask for flashing
-prgdrv	*=*+1           ; last program drive
-prgsec	*=*+1           ; last program sector
-wlindx	*=*+1           ; write lindx
-rlindx	*=*+1           ; read lindx
-nbtemp	*=*+2           ; # blocks temp
-cmdsiz	*=*+1           ; command string size
-char	*=*+1           ; char under parser
-limit	*=*+1           ; ptr limit in compar
-f1cnt	*=*+1           ; file stream 1 count
-f2cnt	*=*+1           ; file stream 2 count
-f2ptr	*=*+1           ; file stream 2 pointer
+lstjob	.res bfcnt      ; last job
+;zp:  lintab .res maxsa+1    ; sa:lindx table
+;zp:  chndat .res mxchns     ; channel data byte
+dsec	.res mxchns     ; sector of directory entry
+dind	.res mxchns     ; index of directory entry
+erword	.res 1          ; error word for recovery
+erled	.res 1          ; error led mask for flashing
+prgdrv	.res 1          ; last program drive
+prgsec	.res 1          ; last program sector
+wlindx	.res 1          ; write lindx
+rlindx	.res 1          ; read lindx
+nbtemp	.res 2          ; # blocks temp
+cmdsiz	.res 1          ; command string size
+char	.res 1          ; char under parser
+limit	.res 1          ; ptr limit in compar
+f1cnt	.res 1          ; file stream 1 count
+f2cnt	.res 1          ; file stream 2 count
+f2ptr	.res 1          ; file stream 2 pointer
 ;  parser tables
-filtbl	*=*+mxfils+1    ; filename pointer
-;zp:   filent *=*+mxfils      ; directory entry
-;zp:   fildat *=*+mxfils      ; drive #, pattern
-filtrk	*=*+mxfils      ; 1st link/track
-filsec	*=*+mxfils      ;         /sector
+filtbl	.res mxfils+1   ; filename pointer
+;zp:   filent .res mxfils     ; directory entry
+;zp:   fildat .res mxfils     ; drive #, pattern
+filtrk	.res mxfils     ; 1st link/track
+filsec	.res mxfils     ;         /sector
 ;  channel tables
-;zp:  filtyp *=*+mxchns ; channel file type
-;zp:  chnrdy *=*+mxchns      ; channel status
-;zp:   lstchr *=*+mxchns      ; channel last char ptr
-patflg	*=*+1           ; pattern presence flag
-image	*=*+1           ; file stream image
-drvcnt	*=*+1           ; number of drv searches
-drvflg	*=*+1           ; drive search flag
-lstdrv	*=*+1           ; last drive w/o error
-found	*=*+1           ; found flag in dir searches
-dirsec	*=*+1           ; directory sector
-delsec	*=*+1           ; sector of 1st avail entry
-delind	*=*+1           ; index  "
-lstbuf	*=*+1           ; =0 if last block
-index	*=*+1           ; current index in buffer
-filcnt	*=*+1           ; counter, file entries
-typflg	*=*+1           ; match by type flag
-mode	*=*+1           ; active file mode (r,w)
-;zp:  type   *=*+1           ; active file type
-jobrtn	*=*+1           ;job return flag
-eptr	*=*+1           ;ptr for recovery
-toff	*=*+1           ;total track offset
-ubam	*=*+2           ; last bam update ptr
-tbam	*=*+4           ; track # of bam image
-bam	*=*+16          ; bam images
+;zp:  filtyp .res mxchns; channel file type
+;zp:  chnrdy .res mxchns     ; channel status
+;zp:   lstchr .res mxchns     ; channel last char ptr
+patflg	.res 1          ; pattern presence flag
+image	.res 1          ; file stream image
+drvcnt	.res 1          ; number of drv searches
+drvflg	.res 1          ; drive search flag
+lstdrv	.res 1          ; last drive w/o error
+found	.res 1          ; found flag in dir searches
+dirsec	.res 1          ; directory sector
+delsec	.res 1          ; sector of 1st avail entry
+delind	.res 1          ; index  "
+lstbuf	.res 1          ; =0 if last block
+index	.res 1          ; current index in buffer
+filcnt	.res 1          ; counter, file entries
+typflg	.res 1          ; match by type flag
+mode	.res 1          ; active file mode (r,w)
+;zp:  type   .res 1          ; active file type
+jobrtn	.res 1          ;job return flag
+eptr	.res 1          ;ptr for recovery
+toff	.res 1          ;total track offset
+ubam	.res 2          ; last bam update ptr
+tbam	.res 4          ; track # of bam image
+bam	.res 16         ; bam images
 ;*
 ;*****************************************
 ;*
@@ -192,10 +192,10 @@ bam	*=*+16          ; bam images
 ;********************************************
 ;*
 ;    *=$4400-36-36
-nambuf	*=*+36          ; directory buffer
-errbuf	*=*+36          ; error msg buffer
-wbam	*=*+1           ; don't-write-bam flag
-ndbl	*=*+2           ; # of disk blocks free
-ndbh	*=*+2
-phase	*=*+2
+nambuf	.res 36         ; directory buffer
+errbuf	.res 36         ; error msg buffer
+wbam	.res 1          ; don't-write-bam flag
+ndbl	.res 2          ; # of disk blocks free
+ndbh	.res 2
+phase	.res 2
 ramend=*

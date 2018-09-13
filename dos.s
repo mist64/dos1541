@@ -1,11 +1,11 @@
 .feature labels_without_colons, pc_assignment, missing_char_term
-.segment "SC000"
 
 .include "common.s"
 .include "lcc.var.s"
 .include "equate.sf.s"
-.include "i_odef.sf.s"
 .include "ramvar.sf.s"
+.include "i_odef.sf.s"
+.include "lcc.i_o.s"
 .include "rom....sf.s"
 .include "leds.s"
 .include "parsex.s"
@@ -56,7 +56,6 @@
 .include "frets.s"
 .include "tstfnd.s"
 .include "system.s"
-.include "lcc.i_o.s"
 .include "lcc.init.s"
 .include "lcc.cntrl.s"
 .include "lcc.seek.s"
@@ -74,4 +73,3 @@
 .include "irq.s"
 .include "romtbl.sf.s"
 .include "vector.s"
-.include "chksum.s"

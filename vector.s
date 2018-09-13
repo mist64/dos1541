@@ -8,7 +8,7 @@ pea7a	sta ledprt      ;patch for power-on errors
 ;
 ;default table for user command
 ;
-	*= $ffe6
+.segment "SFFE6"
 	.word format
 	.word trnoff
 ublock	.word ublkrd
@@ -19,7 +19,7 @@ ublock	.word ublkrd
 	.word $0509
 	.word $050c
 	.word $050f
-	*= $fffa
+.segment "SFFFA"
 	.word nmi
 	.word dskint
 	.word sysirq

@@ -1,54 +1,54 @@
 ;
-drvst	*=*+2
-drvtrk	*=*+2
-stab	*=*+10
+drvst	.res 2
+drvtrk	.res 2
+stab	.res 10
 ;    variables
 ;
 ; pointers
-savpnt	*=*+2
-bufpnt	*=*+2
-hdrpnt	*=*+2
+savpnt	.res 2
+bufpnt	.res 2
+hdrpnt	.res 2
 ;
 ;
-gcrpnt	*=*+1
-gcrerr	*=*+1           ; indicates gcr decode error
-bytcnt	*=*+1
-bitcnt	*=*+1
-bid	*=*+1
-hbid	*=*+1
-chksum	*=*+1
-hinib	*=*+1
-byte	*=*+1
-drive	*=*+1
-cdrive	*=*+1
-jobn	*=*+1
-tracc	*=*+1
-nxtjob	*=*+1
-nxtrk	*=*+1
-sectr	*=*+1
-work	*=*+1
-job	*=*+1
-ctrack	*=*+1
-dbid	*=*+1           ; data block id
-acltim	*=*+1           ; acel time delay
-savsp	*=*+1           ; save stack pointer
-steps	*=*+1           ; steps to desired track
-tmp	*=*+1
-csect	*=*+1
-nexts	*=*+1
-nxtbf	*=*+1           ; pointer at next gcr source buffer
-nxtpnt	*=*+1           ; and next gcr byte location in buffer
-gcrflg	*=*+1           ; buffer in gcr image
-ftnum	*=*+1           ; current format track
-btab	*=*+4
-gtab	*=*+8
+gcrpnt	.res 1
+gcrerr	.res 1          ; indicates gcr decode error
+bytcnt	.res 1
+bitcnt	.res 1
+bid	.res 1
+hbid	.res 1
+chksum	.res 1
+hinib	.res 1
+byte	.res 1
+drive	.res 1
+cdrive	.res 1
+jobn	.res 1
+tracc	.res 1
+nxtjob	.res 1
+nxtrk	.res 1
+sectr	.res 1
+work	.res 1
+job	.res 1
+ctrack	.res 1
+dbid	.res 1          ; data block id
+acltim	.res 1          ; acel time delay
+savsp	.res 1          ; save stack pointer
+steps	.res 1          ; steps to desired track
+tmp	.res 1
+csect	.res 1
+nexts	.res 1
+nxtbf	.res 1          ; pointer at next gcr source buffer
+nxtpnt	.res 1          ; and next gcr byte location in buffer
+gcrflg	.res 1          ; buffer in gcr image
+ftnum	.res 1          ; current format track
+btab	.res 4
+gtab	.res 8
 ;
-as	*=*+1           ; # of steps to acel
-af	*=*+1           ; acel. factor
-aclstp	*=*+1           ; steps to go
-rsteps	*=*+1           ; # of run steps
-nxtst	*=*+2
-minstp	*=*+1           ; min reqired to acel
+as	.res 1          ; # of steps to acel
+af	.res 1          ; acel. factor
+aclstp	.res 1          ; steps to go
+rsteps	.res 1          ; # of run steps
+nxtst	.res 2
+minstp	.res 1          ; min reqired to acel
 ;
 ;
 ;

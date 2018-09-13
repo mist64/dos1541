@@ -2,7 +2,6 @@
 ;*  equates
 ;******************************
 ;
-zp2	=* ;save zero page for dos
 rom	=$c000          ;first rom address
 ;
 lrf	=$80            ;last record flag

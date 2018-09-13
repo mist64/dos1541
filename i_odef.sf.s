@@ -16,23 +16,23 @@ rndrdy	=rdytlk+rdylst  ; random chnrdy
 rndeoi	=eoiout+rdylst  ; random w/ eoi
 ;i/o registers
 ; mos 6522-a
-	* =$1800
+.segment "S1800"
 ;ieee control port
-pb	*=*+1           ; serial port
-pa1	*=*+1           ; unused port
-ddrb1	*=*+1
-ddra1	*=*+1           ;ieee data dir
-t1lc1	*=*+1           ; timer 1 low counter
-t1hc1	*=*+1           ; timer 1 hi counter
-t1ll1	*=*+1           ; timer 1 low latch
-t1hl1	*=*+1           ; timer 1 hi latch
-t2lc1	*=*+1           ; timer 2 low counter
-t2hc1	*=*+1           ; timer 2 hi counter
-sr1	*=*+1           ; shift reg
-acr1	*=*+1           ; aux control reg
-pcr1	*=*+1
-ifr1	*=*+1
-ier1	*=*+1
+pb	.res 1          ; serial port
+pa1	.res 1          ; unused port
+ddrb1	.res 1
+ddra1	.res 1          ;ieee data dir
+t1lc1	.res 1          ; timer 1 low counter
+t1hc1	.res 1          ; timer 1 hi counter
+t1ll1	.res 1          ; timer 1 low latch
+t1hl1	.res 1          ; timer 1 hi latch
+t2lc1	.res 1          ; timer 2 low counter
+t2hc1	.res 1          ; timer 2 hi counter
+sr1	.res 1          ; shift reg
+acr1	.res 1          ; aux control reg
+pcr1	.res 1
+ifr1	.res 1
+ier1	.res 1
 ;
 ;
 ;

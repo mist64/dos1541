@@ -1,5 +1,4 @@
 ;
-cntst= *
 ;
 ;
 ;
@@ -19,9 +18,9 @@ timer1	=$1805          ; timer 1 counter
 ;   mos 6522
 ;   address $1c00
 ;
-	* =$1c00
+.segment "S1C00"
 ;
-dskcnt	*=*+1           ; port b
+dskcnt	.res 1          ; port b
 ; disk i/o control lines
 ; bit 0: step in
 ; bit 1: step out
@@ -33,33 +32,32 @@ dskcnt	*=*+1           ; port b
 ; bit 7: sync detect
 ;
 ;
-data2	*=*+1           ; port a
+data2	.res 1          ; port a
 ; gcr data input and output port
 ;
-ddrb2	*=*+1           ; data direction control
-ddra2	*=*+1           ; data direction control
+ddrb2	.res 1          ; data direction control
+ddra2	.res 1          ; data direction control
 ;
-t1lc2	*=*+1           ; timer 1 low counter
-t1hc2	*=*+1           ; timer 1 hi countr
+t1lc2	.res 1          ; timer 1 low counter
+t1hc2	.res 1          ; timer 1 hi countr
 ;
-t1ll2	*=*+1           ; timer 1 low latch
-t1hl2	*=*+1           ; timer 1 hi latch
+t1ll2	.res 1          ; timer 1 low latch
+t1hl2	.res 1          ; timer 1 hi latch
 ;
-t2ll2	*=*+1           ; timer two low latch
-t2lh2	*=*+1           ; timer two hi latch
+t2ll2	.res 1          ; timer two low latch
+t2lh2	.res 1          ; timer two hi latch
 ;
-sr2	*=*+1           ; shift register
+sr2	.res 1          ; shift register
 ;
-acr2	*=*+1
+acr2	.res 1
 ;
-pcr2	*=*+1
+pcr2	.res 1
 ;
-ifr2	*=*+1
+ifr2	.res 1
 ;
-ier2	*=*+1
+ier2	.res 1
 ;
 ;
-	* =cntst
 ;
 ;
 ;
