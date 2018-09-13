@@ -1,4 +1,5 @@
 .feature labels_without_colons, pc_assignment, missing_char_term
+.segment "SC000"
 
 .include "common.s"
 .include "lcc.var.s"
