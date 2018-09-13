@@ -1,2 +1,0 @@
-.opt nol
-.file sfdos

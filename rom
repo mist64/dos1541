@@ -1,7 +1,0 @@
-	*=rom
-code	;controller format code
-	*=*+$3a1
-cdiag	;controller power up...
-	*=*+$80         ;...diagnostics & init.
-cchksm	.byte 0
-.end

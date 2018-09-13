@@ -1,4 +1,0 @@
-	*=$e000
-echksm
-	.byte 0         ;checksum for $e-$f rom
-.end

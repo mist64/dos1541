@@ -1,2 +1,0 @@
-.opt nolist
-.file master
