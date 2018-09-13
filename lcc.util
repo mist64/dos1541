@@ -1,53 +1,53 @@
-.PAGE'LCC.UTIL'
+.page'lcc.util'
 ;
 ;
-;  * UTILIY ROUTINES
+;  * utiliy routines
 ;
 ;
-ERRR	LDY JOBN        ; RETURN  JOB CODE
-	STA JOBS,Y
+errr	ldy jobn        ; return  job code
+	sta jobs,y
 ;
-	LDA GCRFLG      ; TEST IF BUFFER LEFT GCR
-	BEQ ERRR10      ; NO
+	lda gcrflg      ; test if buffer left gcr
+	beq errr10      ; no
 ;
-	JSR WTOBIN      ; CONVERT BACK TO BINARY
+	jsr wtobin      ; convert back to binary
 ;
-ERRR10
-	JSR TRNOFF      ; START TIMEOUT ON DRIVE
+errr10
+	jsr trnoff      ; start timeout on drive
 ;
-	LDX SAVSP
-	TXS             ; RESET STACK POINTER
+	ldx savsp
+	txs             ; reset stack pointer
 ;
-	JMP TOP         ; BACK TO THE TOP
-;
-;
-;
-TURNON	LDA #$A0        ; TURN ON DRIVE
-                ; DRVST=ACEL AND ON
-	STA DRVST
-;
-;
-	LDA DSKCNT      ; TURN MOTOR ON AND SELECT DRIVE
-	ORA #$04        ; TURN MOTOR ON
-	STA DSKCNT
-;
-	LDA #60         ; DELAY  1.5 SEC
-	STA ACLTIM
-;
-	RTS
+	jmp top         ; back to the top
 ;
 ;
 ;
-TRNOFF	LDX CDRIVE      ; START TIME OUT OF CURRENT DRIVE
-	LDA DRVST       ;STATUS=TIMEOUT
-	ORA #$10
-	STA DRVST
-;
-	LDA #255        ; 255*.025S TIME OUT
-	STA ACLTIM
-;
-	RTS
+turnon	lda #$a0        ; turn on drive
+                ; drvst=acel and on
+	sta drvst
 ;
 ;
+	lda dskcnt      ; turn motor on and select drive
+	ora #$04        ; turn motor on
+	sta dskcnt
 ;
-.END
+	lda #60         ; delay  1.5 sec
+	sta acltim
+;
+	rts
+;
+;
+;
+trnoff	ldx cdrive      ; start time out of current drive
+	lda drvst       ;status=timeout
+	ora #$10
+	sta drvst
+;
+	lda #255        ; 255*.025s time out
+	sta acltim
+;
+	rts
+;
+;
+;
+.end

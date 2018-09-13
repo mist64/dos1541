@@ -1,2 +1,2 @@
-.OPT NOLIST,NOSYM
-.FILE MASTER
+.opt nolist,nosym
+.file master

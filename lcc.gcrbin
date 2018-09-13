@@ -1,291 +1,291 @@
-.PAGE 'GCRBIN.FAST'
-MASK1=$F8
-MASK2=$07
-MASK2X=$C0
-MASK3=$3E
-MASK4=$01
-MASK4X=$F0
-MASK5=$0F
-MASK5X=$80
-MASK6=$7C
-MASK7=$03
-MASK7X=$E0
-MASK8=$1F
+.page 'gcrbin.fast'
+mask1=$f8
+mask2=$07
+mask2x=$c0
+mask3=$3e
+mask4=$01
+mask4x=$f0
+mask5=$0f
+mask5x=$80
+mask6=$7c
+mask7=$03
+mask7x=$e0
+mask8=$1f
 ;
 ;
 ;
 ;
 ;
-; FAST GCR TO BINARY CONVERSION
+; fast gcr to binary conversion
 ;
 ;
-GET4GB	LDY GCRPNT
+get4gb	ldy gcrpnt
 ;
-	LDA (BUFPNT),Y
-	AND #MASK1
-	LSR A
-	LSR A
-	LSR A
-	STA GTAB        ; HI NIBBLE
+	lda (bufpnt),y
+	and #mask1
+	lsr a
+	lsr a
+	lsr a
+	sta gtab        ; hi nibble
 ;
-	LDA (BUFPNT),Y
-	AND #MASK2
-	ASL A
-	ASL A
-	STA GTAB+1
+	lda (bufpnt),y
+	and #mask2
+	asl a
+	asl a
+	sta gtab+1
 ;
-	INY             ; NEXT BYTE
-	BNE XX05        ; TEST FOR NEXT BUFFER
-	LDA NXTBF
-	STA BUFPNT+1
-	LDY NXTPNT
+	iny             ; next byte
+	bne xx05        ; test for next buffer
+	lda nxtbf
+	sta bufpnt+1
+	ldy nxtpnt
 ;
-XX05	LDA (BUFPNT),Y
-	AND #MASK2X
-	ROL A
-	ROL A
-	ROL A
-	ORA GTAB+1
-	STA GTAB+1
+xx05	lda (bufpnt),y
+	and #mask2x
+	rol a
+	rol a
+	rol a
+	ora gtab+1
+	sta gtab+1
 ;
-	LDA (BUFPNT),Y
-	AND #MASK3
-	LSR A
-	STA GTAB+2
+	lda (bufpnt),y
+	and #mask3
+	lsr a
+	sta gtab+2
 ;
-	LDA (BUFPNT),Y
-	AND #MASK4
-	ASL A
-	ASL A
-	ASL A
-	ASL A
-	STA GTAB+3
+	lda (bufpnt),y
+	and #mask4
+	asl a
+	asl a
+	asl a
+	asl a
+	sta gtab+3
 ;
-	INY             ; NEXT
+	iny             ; next
 ;
-	LDA (BUFPNT),Y
-	AND #MASK4X
-	LSR A
-	LSR A
-	LSR A
-	LSR A
-	ORA GTAB+3
-	STA GTAB+3
+	lda (bufpnt),y
+	and #mask4x
+	lsr a
+	lsr a
+	lsr a
+	lsr a
+	ora gtab+3
+	sta gtab+3
 ;
-	LDA (BUFPNT),Y
-	AND #MASK5
-	ASL A
-	STA GTAB+4
+	lda (bufpnt),y
+	and #mask5
+	asl a
+	sta gtab+4
 ;
-	INY             ; NEXT BYTE
+	iny             ; next byte
 ;
-	LDA (BUFPNT),Y
-	AND #MASK5X
-	CLC
-	ROL A
-	ROL A
-	AND #1
-	ORA GTAB+4
-	STA GTAB+4
+	lda (bufpnt),y
+	and #mask5x
+	clc
+	rol a
+	rol a
+	and #1
+	ora gtab+4
+	sta gtab+4
 ;
-	LDA (BUFPNT),Y
-	AND #MASK6
-	LSR A
-	LSR A
-	STA GTAB+5
+	lda (bufpnt),y
+	and #mask6
+	lsr a
+	lsr a
+	sta gtab+5
 ;
-	LDA (BUFPNT),Y
-	AND #MASK7
-	ASL A
-	ASL A
-	ASL A
-	STA GTAB+6
+	lda (bufpnt),y
+	and #mask7
+	asl a
+	asl a
+	asl a
+	sta gtab+6
 ;
-	INY             ; TEST FOR OVERFLOW DURING WRITE TO BINARY CONVERSION
-	BNE XX06
-	LDA NXTBF
-	STA BUFPNT+1
-	LDY NXTPNT
+	iny             ; test for overflow during write to binary conversion
+	bne xx06
+	lda nxtbf
+	sta bufpnt+1
+	ldy nxtpnt
 ;
-XX06	LDA (BUFPNT),Y
-	AND #MASK7X
-	ROL A
-	ROL A
-	ROL A
-	ROL A
-	ORA GTAB+6
-	STA GTAB+6
+xx06	lda (bufpnt),y
+	and #mask7x
+	rol a
+	rol a
+	rol a
+	rol a
+	ora gtab+6
+	sta gtab+6
 ;
-	LDA (BUFPNT),Y
-	AND #MASK8
-	STA GTAB+7
-	INY
+	lda (bufpnt),y
+	and #mask8
+	sta gtab+7
+	iny
 ;
-	STY GCRPNT
-;
-;
-	LDX GTAB
-	LDA GCRHI,X
-	LDX GTAB+1
-	ORA GCRLO,X
-	STA BTAB
-;
-	LDX GTAB+2
-	LDA GCRHI,X
-	LDX GTAB+3
-	ORA GCRLO,X
-	STA BTAB+1
-;
-	LDX GTAB+4
-	LDA GCRHI,X
-	LDX GTAB+5
-	ORA GCRLO,X
-	STA BTAB+2
-;
-	LDX GTAB+6
-	LDA GCRHI,X
-	LDX GTAB+7
-	ORA GCRLO,X
-	STA BTAB+3
-;
-	RTS
+	sty gcrpnt
 ;
 ;
+	ldx gtab
+	lda gcrhi,x
+	ldx gtab+1
+	ora gcrlo,x
+	sta btab
 ;
-GCRHI	.BYTE $FF       ;ERROR
-	.BYTE $FF       ;ERROR
-	.BYTE $FF       ;ERROR
-	.BYTE $FF       ;ERROR
-	.BYTE $FF       ;ERROR
-	.BYTE $FF       ;ERROR
-	.BYTE $FF       ;ERROR
-	.BYTE $FF       ;ERROR
-	.BYTE $FF       ;ERROR
-	.BYTE $80
-	.BYTE $00
-	.BYTE $10
-	.BYTE $FF       ;ERROR
-	.BYTE $C0
-	.BYTE $40
-	.BYTE $50
-	.BYTE $FF       ;ERROR
-	.BYTE $FF       ;ERROR
-	.BYTE $20
-	.BYTE $30
-	.BYTE $FF       ;ERROR
-	.BYTE $F0
-	.BYTE $60
-	.BYTE $70
-	.BYTE $FF       ;ERROR
-	.BYTE $90
-	.BYTE $A0
-	.BYTE $B0
-	.BYTE $FF       ;ERROR
-	.BYTE $D0
-	.BYTE $E0
-	.BYTE $FF       ;ERROR
+	ldx gtab+2
+	lda gcrhi,x
+	ldx gtab+3
+	ora gcrlo,x
+	sta btab+1
+;
+	ldx gtab+4
+	lda gcrhi,x
+	ldx gtab+5
+	ora gcrlo,x
+	sta btab+2
+;
+	ldx gtab+6
+	lda gcrhi,x
+	ldx gtab+7
+	ora gcrlo,x
+	sta btab+3
+;
+	rts
 ;
 ;
 ;
-GCRLO	.BYTE $FF       ;ERROR
-	.BYTE $FF       ;ERROR
-	.BYTE $FF       ;ERROR
-	.BYTE $FF       ;ERROR
-	.BYTE $FF       ;ERROR
-	.BYTE $FF       ;ERROR
-	.BYTE $FF       ;ERROR
-	.BYTE $FF       ;ERROR
-	.BYTE $FF       ;ERROR
-	.BYTE 8
-	.BYTE $00
-	.BYTE 1
-	.BYTE $FF       ;ERROR
-	.BYTE $C
-	.BYTE 4
-	.BYTE 5
-	.BYTE $FF       ;ERROR
-	.BYTE $FF       ;ERROR
-	.BYTE 2
-	.BYTE 3
-	.BYTE $FF       ;ERROR
-	.BYTE $F
-	.BYTE 6
-	.BYTE 7
-	.BYTE $FF       ;ERROR
-	.BYTE 9
-	.BYTE $A
-	.BYTE $B
-	.BYTE $FF       ;ERROR
-	.BYTE $D
-	.BYTE $E
-	.BYTE $FF       ;ERROR
-;
-;
-GCRBIN	LDA #0          ; SETUP POINTERS
-	STA GCRPNT
-	STA SAVPNT
-	STA BYTCNT
-;
-	LDA #>OVRBUF
-	STA NXTBF
-;
-	LDA #255-TOPRD
-	STA NXTPNT
-;
-	LDA BUFPNT+1
-	STA SAVPNT+1
-;
-	JSR GET4GB
-;
-	LDA BTAB
-	STA BID         ; GET HEADER ID
-;
-	LDY BYTCNT
-	LDA BTAB+1
-	STA (SAVPNT),Y
-	INY
-;
-	LDA BTAB+2
-	STA (SAVPNT),Y
-	INY
-;
-	LDA BTAB+3
-	STA (SAVPNT),Y
-	INY
-;
-GCRB10	STY BYTCNT
-;
-	JSR GET4GB
-;
-	LDY BYTCNT
-;
-	LDA BTAB
-	STA (SAVPNT),Y
-	INY
-	BEQ GCRB20      ; TEST IF DONE YET
-;
-	LDA BTAB+1
-	STA (SAVPNT),Y
-	INY
-;
-	LDA BTAB+2
-	STA (SAVPNT),Y
-	INY
-;
-	LDA BTAB+3
-	STA (SAVPNT),Y
-	INY
-;
-	BNE GCRB10      ; JMP
-;
-GCRB20
-	LDA BTAB+1
-	STA CHKSUM
-	LDA SAVPNT+1    ;RESTORE BUFFER POINTER
-	STA BUFPNT+1
-;
-	RTS
+gcrhi	.byte $ff       ;error
+	.byte $ff       ;error
+	.byte $ff       ;error
+	.byte $ff       ;error
+	.byte $ff       ;error
+	.byte $ff       ;error
+	.byte $ff       ;error
+	.byte $ff       ;error
+	.byte $ff       ;error
+	.byte $80
+	.byte $00
+	.byte $10
+	.byte $ff       ;error
+	.byte $c0
+	.byte $40
+	.byte $50
+	.byte $ff       ;error
+	.byte $ff       ;error
+	.byte $20
+	.byte $30
+	.byte $ff       ;error
+	.byte $f0
+	.byte $60
+	.byte $70
+	.byte $ff       ;error
+	.byte $90
+	.byte $a0
+	.byte $b0
+	.byte $ff       ;error
+	.byte $d0
+	.byte $e0
+	.byte $ff       ;error
 ;
 ;
 ;
-.END
+gcrlo	.byte $ff       ;error
+	.byte $ff       ;error
+	.byte $ff       ;error
+	.byte $ff       ;error
+	.byte $ff       ;error
+	.byte $ff       ;error
+	.byte $ff       ;error
+	.byte $ff       ;error
+	.byte $ff       ;error
+	.byte 8
+	.byte $00
+	.byte 1
+	.byte $ff       ;error
+	.byte $c
+	.byte 4
+	.byte 5
+	.byte $ff       ;error
+	.byte $ff       ;error
+	.byte 2
+	.byte 3
+	.byte $ff       ;error
+	.byte $f
+	.byte 6
+	.byte 7
+	.byte $ff       ;error
+	.byte 9
+	.byte $a
+	.byte $b
+	.byte $ff       ;error
+	.byte $d
+	.byte $e
+	.byte $ff       ;error
+;
+;
+gcrbin	lda #0          ; setup pointers
+	sta gcrpnt
+	sta savpnt
+	sta bytcnt
+;
+	lda #>ovrbuf
+	sta nxtbf
+;
+	lda #255-toprd
+	sta nxtpnt
+;
+	lda bufpnt+1
+	sta savpnt+1
+;
+	jsr get4gb
+;
+	lda btab
+	sta bid         ; get header id
+;
+	ldy bytcnt
+	lda btab+1
+	sta (savpnt),y
+	iny
+;
+	lda btab+2
+	sta (savpnt),y
+	iny
+;
+	lda btab+3
+	sta (savpnt),y
+	iny
+;
+gcrb10	sty bytcnt
+;
+	jsr get4gb
+;
+	ldy bytcnt
+;
+	lda btab
+	sta (savpnt),y
+	iny
+	beq gcrb20      ; test if done yet
+;
+	lda btab+1
+	sta (savpnt),y
+	iny
+;
+	lda btab+2
+	sta (savpnt),y
+	iny
+;
+	lda btab+3
+	sta (savpnt),y
+	iny
+;
+	bne gcrb10      ; jmp
+;
+gcrb20
+	lda btab+1
+	sta chksum
+	lda savpnt+1    ;restore buffer pointer
+	sta bufpnt+1
+;
+	rts
+;
+;
+;
+.end

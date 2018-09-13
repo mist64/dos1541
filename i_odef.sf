@@ -1,59 +1,59 @@
-.PAGE 'I/ODEF.SF'
+.page 'i/odef.sf'
 ;*****************************
-;*      I/O DEFINITIONS      *
+;*      i/o definitions      *
 ;*****************************
 ;
-UNLSN	=$3F            ; IEEE UNLISTEN COMMAND
-UNTLK	=$5F            ; IEEE UNTALK COMMAND
-NOTRDY	=$0             ; NOT READY
-TALKER	=$80            ; IEEE TALKER FLAG
-LISNER	=1 ; IEEE LISTENER FLAG
-EOIOUT	=$80            ; TALK WITH EOI
-EOISND	=$08            ; NOT(EOI) TO SEND
-EOI	=$08            ; NOT(EOI) TO SEND
-RDYTLK	=$88            ; TALK NO EOI
-RDYLST	=$1             ; READY TO LISTEN
-RNDRDY	=RDYTLK+RDYLST  ; RANDOM CHNRDY
-RNDEOI	=EOIOUT+RDYLST  ; RANDOM W/ EOI
-.SKI 3
-;I/O REGISTERS
-.SKIP
-; MOS 6522-A
-.SKI
+unlsn	=$3f            ; ieee unlisten command
+untlk	=$5f            ; ieee untalk command
+notrdy	=$0             ; not ready
+talker	=$80            ; ieee talker flag
+lisner	=1 ; ieee listener flag
+eoiout	=$80            ; talk with eoi
+eoisnd	=$08            ; not(eoi) to send
+eoi	=$08            ; not(eoi) to send
+rdytlk	=$88            ; talk no eoi
+rdylst	=$1             ; ready to listen
+rndrdy	=rdytlk+rdylst  ; random chnrdy
+rndeoi	=eoiout+rdylst  ; random w/ eoi
+.ski 3
+;i/o registers
+.skip
+; mos 6522-a
+.ski
 	* =$1800
-;IEEE CONTROL PORT
-PB	*=*+1           ; SERIAL PORT
-PA1	*=*+1           ; UNUSED PORT
-DDRB1	*=*+1
-DDRA1	*=*+1           ;IEEE DATA DIR
-T1LC1	*=*+1           ; TIMER 1 LOW COUNTER
-T1HC1	*=*+1           ; TIMER 1 HI COUNTER
-T1LL1	*=*+1           ; TIMER 1 LOW LATCH
-T1HL1	*=*+1           ; TIMER 1 HI LATCH
-T2LC1	*=*+1           ; TIMER 2 LOW COUNTER
-T2HC1	*=*+1           ; TIMER 2 HI COUNTER
-SR1	*=*+1           ; SHIFT REG
-ACR1	*=*+1           ; AUX CONTROL REG
-PCR1	*=*+1
-IFR1	*=*+1
-IER1	*=*+1
+;ieee control port
+pb	*=*+1           ; serial port
+pa1	*=*+1           ; unused port
+ddrb1	*=*+1
+ddra1	*=*+1           ;ieee data dir
+t1lc1	*=*+1           ; timer 1 low counter
+t1hc1	*=*+1           ; timer 1 hi counter
+t1ll1	*=*+1           ; timer 1 low latch
+t1hl1	*=*+1           ; timer 1 hi latch
+t2lc1	*=*+1           ; timer 2 low counter
+t2hc1	*=*+1           ; timer 2 hi counter
+sr1	*=*+1           ; shift reg
+acr1	*=*+1           ; aux control reg
+pcr1	*=*+1
+ifr1	*=*+1
+ier1	*=*+1
 ;
 ;
 ;
-;  BITS FOR SERIAL HANDSHAKE
+;  bits for serial handshake
 ;
-DATIN	=$1             ;DATA IN LINE
-DATOUT	=$2             ; DATA OUT
-CLKIN	=$4             ;CLOCK IN
-CLKOUT	=$8             ;CLOCK OUT
-ATNA	=$10            ;ATNA ACK
-ATN	=$80            ; ATN IN
-;
-;
-LED0	=8 ; ACT LED
-LED1	=0 ; NO LED
-LEDPRT=$1C00  ; ON PB OF $1C00
-LEDOUT=$1C02 ; DDRB  OF $1C00 FOR OUTPUT-LED
+datin	=$1             ;data in line
+datout	=$2             ; data out
+clkin	=$4             ;clock in
+clkout	=$8             ;clock out
+atna	=$10            ;atna ack
+atn	=$80            ; atn in
 ;
 ;
-.END
+led0	=8 ; act led
+led1	=0 ; no led
+ledprt=$1c00  ; on pb of $1c00
+ledout=$1c02 ; ddrb  of $1c00 for output-led
+;
+;
+.end

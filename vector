@@ -1,28 +1,28 @@
-.PAG VECTOR
-ECHKSM	.BYT 0          ;$E-$F CHECKSUM
-NMI	JMP (VNMI)
+.pag vector
+echksm	.byt 0          ;$e-$f checksum
+nmi	jmp (vnmi)
 ;
-PATCH	;PATCH AREA
-PEA7A	STA LEDPRT      ;PATCH FOR POWER-ON ERRORS
-	STA LEDOUT      ;TURN DDRB TO OUTPUT
-	JMP REA7D       ;RETURN TO LED BLINK CODE
+patch	;patch area
+pea7a	sta ledprt      ;patch for power-on errors
+	sta ledout      ;turn ddrb to output
+	jmp rea7d       ;return to led blink code
 ;
-;DEFAULT TABLE FOR USER COMMAND
+;default table for user command
 ;
-	*= $FFE6
-	.WORD FORMAT
-	.WORD TRNOFF
-UBLOCK	.WORD UBLKRD
-	.WORD UBLKWT
-.SKIP
-	.WORD $0500     ;LINKS TO BUFFER #2
-	.WORD $0503
-	.WORD $0506
-	.WORD $0509
-	.WORD $050C
-	.WORD $050F
-	*= $FFFA
-	.WORD NMI
-	.WORD DSKINT
-	.WORD SYSIRQ
-.END
+	*= $ffe6
+	.word format
+	.word trnoff
+ublock	.word ublkrd
+	.word ublkwt
+.skip
+	.word $0500     ;links to buffer #2
+	.word $0503
+	.word $0506
+	.word $0509
+	.word $050c
+	.word $050f
+	*= $fffa
+	.word nmi
+	.word dskint
+	.word sysirq
+.end

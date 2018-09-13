@@ -1,42 +1,42 @@
 ;*********************************
-;* SSTST: TEST SSNUM & SSIND FOR *
-;*        RESIDENCE & RANGE.     *
-;*   VARS:  SSNUM,SSIND,DIRBUF   *
+;* sstst: test ssnum & ssind for *
+;*        residence & range.     *
+;*   vars:  ssnum,ssind,dirbuf   *
 ;*                               *
-;*   FLAGS: .N RNG  .V RES  ER   *
-;*           0  OK   0 YES  ER0  *
-;*           0 MAYBE 1 NO   ER1  *
-;*           1 NO    0 YES  ER2  *
-;*           1 NO    1 NO   ER3  *
+;*   flags: .n rng  .v res  er   *
+;*           0  ok   0 yes  er0  *
+;*           0 maybe 1 no   er1  *
+;*           1 no    0 yes  er2  *
+;*           1 no    1 no   er3  *
 ;*********************************
 ;
-SSTEST
-	JSR SSSET       ;SET POINTER & SS #
-	CMP SSNUM
-	BNE ST20        ;NOT THIS SS
+sstest
+	jsr ssset       ;set pointer & ss #
+	cmp ssnum
+	bne st20        ;not this ss
 ;
-	LDY SSIND
-	LDA (DIRBUF)Y
-	BEQ ST10
-	BIT ER0         ;OK, RESIDENT
-	RTS
-ST10
-	BIT ER2         ;OUT OF RANGE, RES
-	RTS
-ST20
-	LDA SSNUM
-	CMP #NSSL
-	BCS ST30
-	ASL A
-	TAY
-	LDA #4
-	STA DIRBUF
-	LDA (DIRBUF)Y
-	BNE ST40
-ST30
-	BIT ER3         ;WAY OUT OF RANGE
-	RTS
-ST40
-	BIT ER1         ;NOT RES, RANGE???
-	RTS
-.END
+	ldy ssind
+	lda (dirbuf)y
+	beq st10
+	bit er0         ;ok, resident
+	rts
+st10
+	bit er2         ;out of range, res
+	rts
+st20
+	lda ssnum
+	cmp #nssl
+	bcs st30
+	asl a
+	tay
+	lda #4
+	sta dirbuf
+	lda (dirbuf)y
+	bne st40
+st30
+	bit er3         ;way out of range
+	rts
+st40
+	bit er1         ;not res, range???
+	rts
+.end

@@ -1,66 +1,66 @@
-.PAGE 'EQUATE'
+.page 'equate'
 ;******************************
-;*  EQUATES
+;*  equates
 ;******************************
 ;
-ROM	=$C000
+rom	=$c000
 ;
-LRF	=$80
-GETFLG	=$40
-OVRFLO	=$20
-NSSL	=6
-SSIOFF	=4+NSSL+NSSL
-NSSP	=120
-LOTRK	=4
-HITRK	=LOTRK+1
-MXCHNS	=8
-ID	=$1000
-MAXSA	=18
-VERERR	=7
-CR	=$0D            ; CARRIAGE RETURN
-BFCNT	=12
-BAMJOB= BFCNT
-BAM0	=$4100
-BAM1	=$4200
-CBPTR	=BAMJOB+BAMJOB+4
-ERRCHN	=MXCHNS-1
-ERRSA	=16
-CMDCHN	=MXCHNS-2
-LXINT	=$3F
-CMDSA	=15
-APMODE	=2
-MDMODE	=3
-RDMODE	=0
-WTMODE	=1
-RELTYP	=4
-DIRTYP	=7
-SEQTYP	=1
-PRGTYP	=2
-USRTYP	=3
-TYPMSK	=7
-IRSA	=17
-IWSA	=18
-ID8050	=$7
-ID2040	=$F
-ID2030	=$64
-DOSVER	=2 ;DOS VERSION
-FM8050	=$43            ;8050 FORMAT VERSION
-FM2040	=$41            ;2040 FORMAT VERSION
-FM2030	=$42            ;2030 FORMAT VERSION
-.SKIP
-;CONTROLLER JOB TYPES
-READ	=$80
-WRITE	=$90
-WVERFY	=$A0
-SEEK	=$B0
-SECSEK	=SEEK+8
-BUMP	=$C0
-JUMPC	=$D0
-EXEC	=$E0
-.SKIP
-MXFILS	=5 ; MAX # FILENAMES IN STRING
-CMDIND	=30             ; CMD BUFFER INDEX (*2)
-DIRLEN	=24             ;DIRECTORY LENGTH USED
-NBSIZ	=27             ;NAMBUF TEXT SIZE
-CMDLEN	=58
-.SKIP
+lrf	=$80
+getflg	=$40
+ovrflo	=$20
+nssl	=6
+ssioff	=4+nssl+nssl
+nssp	=120
+lotrk	=4
+hitrk	=lotrk+1
+mxchns	=8
+id	=$1000
+maxsa	=18
+vererr	=7
+cr	=$0d            ; carriage return
+bfcnt	=12
+bamjob= bfcnt
+bam0	=$4100
+bam1	=$4200
+cbptr	=bamjob+bamjob+4
+errchn	=mxchns-1
+errsa	=16
+cmdchn	=mxchns-2
+lxint	=$3f
+cmdsa	=15
+apmode	=2
+mdmode	=3
+rdmode	=0
+wtmode	=1
+reltyp	=4
+dirtyp	=7
+seqtyp	=1
+prgtyp	=2
+usrtyp	=3
+typmsk	=7
+irsa	=17
+iwsa	=18
+id8050	=$7
+id2040	=$f
+id2030	=$64
+dosver	=2 ;dos version
+fm8050	=$43            ;8050 format version
+fm2040	=$41            ;2040 format version
+fm2030	=$42            ;2030 format version
+.skip
+;controller job types
+read	=$80
+write	=$90
+wverfy	=$a0
+seek	=$b0
+secsek	=seek+8
+bump	=$c0
+jumpc	=$d0
+exec	=$e0
+.skip
+mxfils	=5 ; max # filenames in string
+cmdind	=30             ; cmd buffer index (*2)
+dirlen	=24             ;directory length used
+nbsiz	=27             ;nambuf text size
+cmdlen	=58
+.skip

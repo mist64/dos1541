@@ -1,121 +1,121 @@
-.PAGE 'LIST DIRECTORY'
-; START THE DIRECTORY LOADING FUNCTION
-; GET THE BUFFER AND GET IT STARTED
+.page 'list directory'
+; start the directory loading function
+; get the buffer and get it started
 ;
-STDIR	LDA #0
-	STA SA
-	LDA #1          ;ALLOCATE CHANL AND 1 BUFEFER
-	JSR GETRCH
-.SKIP
-	LDA #0
-	JSR SETPNT
-.SKIP
-	LDX LINDX
-	LDA #0
-	STA LSTCHR,X
-	JSR GETACT
-	TAX
-	LDA DRVNUM
-	STA LSTJOB,X
-	LDA #1          ; PUT SAL IN BUFFER
-	JSR PUTBYT
-	LDA #4          ;PUT SAH IN BUFFER
-	JSR PUTBYT
-	LDA #1          ;INSERT FHONEY LINKS (0101)
-	JSR PUTBYT
-	JSR PUTBYT
-	LDA NBTEMP
-	JSR PUTBYT      ;PUT IN DRVNUM
-	LDA #0
-	JSR PUTBYT
-	JSR MOVBUF      ;GET DISK NAME
-	JSR GETACT
-	ASL A
-	TAX
-	DEC BUFTAB,X
-	DEC BUFTAB,X
-	LDA #0          ;END OF THIS LINE
-	JSR PUTBYT
-DIR1	LDA #1          ;INSERT FHONEY LINKS ($0101)
-	JSR PUTBYT
-	JSR PUTBYT
-	JSR GETNAM      ;GET #BUFRS AND FILE NAME
-	BCC DIR3        ;TEST IF LAST ENTRY
-	LDA NBTEMP
-	JSR PUTBYT
-	LDA NBTEMP+1
-	JSR PUTBYT
-	JSR MOVBUF
-	LDA #0          ;END OF ENTRY
-	JSR PUTBYT
-	BNE DIR1
-DIR10	JSR GETACT
-	ASL A
-	TAX
-	LDA #0
-	STA BUFTAB,X
-	LDA #RDYTLK
-	LDY LINDX
-	STA DIRLST
-	STA CHNRDY,Y    ; DIRECTORY LIST BUFFER FULL
-	LDA DATA
-	RTS
-;
-;
-DIR3	LDA NBTEMP      ; THIS IS END OF LOAD
-	JSR PUTBYT 
-	LDA NBTEMP+1
-	JSR PUTBYT
-	JSR MOVBUF
-	JSR GETACT
-	ASL A
-	TAX
-	DEC BUFTAB,X
-	DEC BUFTAB,X
-	LDA #0          ; END OF LISTING (000)
-	JSR PUTBYT
-	JSR PUTBYT
-	JSR PUTBYT
-	JSR GETACT
-	ASL A
-	TAY
-	LDA BUFTAB,Y
-	LDX LINDX
-	STA LSTCHR,X
-	DEC LSTCHR,X
-	JMP DIR10
+stdir	lda #0
+	sta sa
+	lda #1          ;allocate chanl and 1 bufefer
+	jsr getrch
+.skip
+	lda #0
+	jsr setpnt
+.skip
+	ldx lindx
+	lda #0
+	sta lstchr,x
+	jsr getact
+	tax
+	lda drvnum
+	sta lstjob,x
+	lda #1          ; put sal in buffer
+	jsr putbyt
+	lda #4          ;put sah in buffer
+	jsr putbyt
+	lda #1          ;insert fhoney links (0101)
+	jsr putbyt
+	jsr putbyt
+	lda nbtemp
+	jsr putbyt      ;put in drvnum
+	lda #0
+	jsr putbyt
+	jsr movbuf      ;get disk name
+	jsr getact
+	asl a
+	tax
+	dec buftab,x
+	dec buftab,x
+	lda #0          ;end of this line
+	jsr putbyt
+dir1	lda #1          ;insert fhoney links ($0101)
+	jsr putbyt
+	jsr putbyt
+	jsr getnam      ;get #bufrs and file name
+	bcc dir3        ;test if last entry
+	lda nbtemp
+	jsr putbyt
+	lda nbtemp+1
+	jsr putbyt
+	jsr movbuf
+	lda #0          ;end of entry
+	jsr putbyt
+	bne dir1
+dir10	jsr getact
+	asl a
+	tax
+	lda #0
+	sta buftab,x
+	lda #rdytlk
+	ldy lindx
+	sta dirlst
+	sta chnrdy,y    ; directory list buffer full
+	lda data
+	rts
 ;
 ;
+dir3	lda nbtemp      ; this is end of load
+	jsr putbyt 
+	lda nbtemp+1
+	jsr putbyt
+	jsr movbuf
+	jsr getact
+	asl a
+	tax
+	dec buftab,x
+	dec buftab,x
+	lda #0          ; end of listing (000)
+	jsr putbyt
+	jsr putbyt
+	jsr putbyt
+	jsr getact
+	asl a
+	tay
+	lda buftab,y
+	ldx lindx
+	sta lstchr,x
+	dec lstchr,x
+	jmp dir10
 ;
 ;
-; TRANSFER FILE NAME TO LISTING BUFFER
-;
-MOVBUF	LDY #0
-MOVB1	LDA NAMBUF,Y
-	JSR PUTBYT
-	INY
-	CPY #27
-	BNE MOVB1
-	RTS
 ;
 ;
-; GET CHAR FOR DIRECTORY LOADING
+; transfer file name to listing buffer
 ;
-GETDIR	JSR GETBYT
-	BEQ GETD3
-	RTS
-GETD3	STA DATA
-	LDY LINDX
-	LDA LSTCHR,Y
-	BEQ GD1
-	LDA #EOIOUT
-	STA CHNRDY,Y
-	LDA DATA
-	RTS
-GD1
-	PHA
-	JSR DIR1
-	PLA
-	RTS
+movbuf	ldy #0
+movb1	lda nambuf,y
+	jsr putbyt
+	iny
+	cpy #27
+	bne movb1
+	rts
 ;
-.END
+;
+; get char for directory loading
+;
+getdir	jsr getbyt
+	beq getd3
+	rts
+getd3	sta data
+	ldy lindx
+	lda lstchr,y
+	beq gd1
+	lda #eoiout
+	sta chnrdy,y
+	lda data
+	rts
+gd1
+	pha
+	jsr dir1
+	pla
+	rts
+;
+.end

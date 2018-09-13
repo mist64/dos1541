@@ -1,54 +1,54 @@
-.PAGE 'LEDS'
+.page 'leds'
 ;
-;TURN ON ACTIVITY LED SPECIFIED
-; BY DRVNUM
+;turn on activity led specified
+; by drvnum
 ;
-SETLDS	SEI
-	LDA #$FF-LED1-LED0
-	AND LEDPRT
-	PHA
-.SKIP
-	LDA DRVNUM
-	BEQ LEDS0
-	PLA
-	ORA #LED1
-	BNE LEDS1
-LEDS0
-	PLA
-	ORA #LED0
-LEDS1
-	STA LEDPRT
-	CLI
-	RTS
+setlds	sei
+	lda #$ff-led1-led0
+	and ledprt
+	pha
+.skip
+	lda drvnum
+	beq leds0
+	pla
+	ora #led1
+	bne leds1
+leds0
+	pla
+	ora #led0
+leds1
+	sta ledprt
+	cli
+	rts
 ;
-LEDSON	SEI
-	LDA #LED1+LED0
-	ORA LEDPRT
-	STA LEDPRT
-	CLI
-	RTS
+ledson	sei
+	lda #led1+led0
+	ora ledprt
+	sta ledprt
+	cli
+	rts
 ;
-ERROFF
-	LDA #0
-	STA ERWORD
-	STA ERLED
-	RTS
+erroff
+	lda #0
+	sta erword
+	sta erled
+	rts
 ;
-ERRON	SEI
-	TXA
-	PHA             ;SAVE .X
-	LDA #80
-	STA ERWORD
-	LDX #0
-;LDA DRVNUM ;FOR 2 DRIVES
-;AND #1
-;TAX
-	LDA LEDMSK,X
-	STA ERLED
-	ORA LEDPRT      ;SET LED ON
-	STA LEDPRT
-	PLA
-	TAX	;RESTORE .X
-	CLI
-	RTS
-.END
+erron	sei
+	txa
+	pha             ;save .x
+	lda #80
+	sta erword
+	ldx #0
+;lda drvnum ;for 2 drives
+;and #1
+;tax
+	lda ledmsk,x
+	sta erled
+	ora ledprt      ;set led on
+	sta ledprt
+	pla
+	tax	;restore .x
+	cli
+	rts
+.end

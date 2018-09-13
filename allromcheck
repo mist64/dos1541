@@ -1,65 +1,65 @@
-IP=0 ;ZPAGE POINTER
-	*=$F800
-START	SEI
-	LDY #0
-	LDA #$20
-LOOP
-	STA $8000,Y     ;CLEAR SCREEN
-	STA $8100,Y
-	STA $8200,Y
-	STA $8300,Y
-	INY
-	BNE LOOP
-CALC
-	LDA #$B0        ;SET FOR $A SLOT
-	STA IP+1
-	LDA #0
-	STA IP          ;ZERO LO INDIRECT
-	TAY
-	LDX #16         ;16 PAGES IN 4K ROM
-	CLC
-RT10	DEC IP+1        ;DO IT BACKWARDS
-RT20	ADC (IP),Y      ;TOTAL CHECKSUM IN A
-	INY
-	BNE RT20
-	DEX
-	BNE RT10
-	ADC #0          ;ADD IN LAST CARRY
-	PHA
-	AND #$F
-	TAX
-	LDA HEX,X
-	STA $8029       ;POKE LOW NYBBLE
-	PLA
-	LSR A
-	LSR A
-	LSR A
-	LSR A
-	TAX
-	LDA HEX,X
-	STA $8028       ;POKE HIGH NYBBLE
-	JSR WAIT
-	LDA $8028
-	EOR #$40
-	STA $8028
-	LDA $8029
-	EOR #$40
-	STA $8029
-	JSR WAIT
-	JMP CALC
+ip=0 ;zpage pointer
+	*=$f800
+start	sei
+	ldy #0
+	lda #$20
+loop
+	sta $8000,y     ;clear screen
+	sta $8100,y
+	sta $8200,y
+	sta $8300,y
+	iny
+	bne loop
+calc
+	lda #$b0        ;set for $a slot
+	sta ip+1
+	lda #0
+	sta ip          ;zero lo indirect
+	tay
+	ldx #16         ;16 pages in 4k rom
+	clc
+rt10	dec ip+1        ;do it backwards
+rt20	adc (ip),y      ;total checksum in a
+	iny
+	bne rt20
+	dex
+	bne rt10
+	adc #0          ;add in last carry
+	pha
+	and #$f
+	tax
+	lda hex,x
+	sta $8029       ;poke low nybble
+	pla
+	lsr a
+	lsr a
+	lsr a
+	lsr a
+	tax
+	lda hex,x
+	sta $8028       ;poke high nybble
+	jsr wait
+	lda $8028
+	eor #$40
+	sta $8028
+	lda $8029
+	eor #$40
+	sta $8029
+	jsr wait
+	jmp calc
 ;
-WAIT
-	LDY #0
-W2
-	LDX #0
-W3
-	DEX
-	BNE W3
-	DEY
-	BNE W2
-	RTS
-HEX	.BYTE '0123456789'
-	.BYTE 1,2,3,4,5,6 ;SCREEN ALPHA
-	*=$FFFC
-	.WORD START
-.END
+wait
+	ldy #0
+w2
+	ldx #0
+w3
+	dex
+	bne w3
+	dey
+	bne w2
+	rts
+hex	.byte '0123456789'
+	.byte 1,2,3,4,5,6 ;screen alpha
+	*=$fffc
+	.word start
+.end

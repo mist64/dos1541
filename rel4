@@ -1,85 +1,85 @@
-.PAGE 'REL4'
+.page 'rel4'
 ;*
 ;*
 ;**********************************
 ;*
 ;*
-;*  SETLST
+;*  setlst
 ;*
 ;*
 ;**********************************
 ;*
 ;*
-SETLST	LDX LINDX
-	LDA NR,X
-	STA R1
-	DEC R1
-	CMP #2
-	BNE SETL01
-	LDA #$FF
-	STA R1
-SETL01
-	LDA RS,X
-	STA R2
+setlst	ldx lindx
+	lda nr,x
+	sta r1
+	dec r1
+	cmp #2
+	bne setl01
+	lda #$ff
+	sta r1
+setl01
+	lda rs,x
+	sta r2
 ;
-	JSR GETPNT
-	LDX LINDX
-	CMP R1
-	BCC SETL10
-	BEQ SETL10
+	jsr getpnt
+	ldx lindx
+	cmp r1
+	bcc setl10
+	beq setl10
 ;
-	JSR DBLBUF
-	JSR FNDLST
-	BCC SETL05
+	jsr dblbuf
+	jsr fndlst
+	bcc setl05
 ;
-	LDX LINDX
-	STA LSTCHR,X
-	JMP DBLBUF
+	ldx lindx
+	sta lstchr,x
+	jmp dblbuf
 ;
-SETL05	JSR DBLBUF
-	LDA #$FF
-	STA R1
+setl05	jsr dblbuf
+	lda #$ff
+	sta r1
 ;
-SETL10	JSR FNDLST
-	BCS SETL40
+setl10	jsr fndlst
+	bcs setl40
 ;
-	JSR GETPNT
+	jsr getpnt
 ;
-SETL40	LDX LINDX
-	STA LSTCHR,X
-	RTS
+setl40	ldx lindx
+	sta lstchr,x
+	rts
 ;*
 ;*
 ;*
 ;*********************************
 ;*
 ;*
-;*  FNDLST
+;*  fndlst
 ;*
 ;*
 ;*********************************
 ;*
 ;*
-FNDLST
-	JSR SET00
-	LDY R1          ;OFFSET TO START AT
+fndlst
+	jsr set00
+	ldy r1          ;offset to start at
 ;
-FNDL10	LDA (DIRBUF),Y
-	BNE FNDL20
+fndl10	lda (dirbuf),y
+	bne fndl20
 ;
-	DEY
-	CPY #2
-	BCC FNDL30
+	dey
+	cpy #2
+	bcc fndl30
 ;
-	DEC R2          ;LIMIT COUNTER
-	BNE FNDL10
+	dec r2          ;limit counter
+	bne fndl10
 ;
-FNDL30	DEC R2
-	CLC             ; NOT FOUND HERE
-	RTS
+fndl30	dec r2
+	clc             ; not found here
+	rts
 ;
-FNDL20	TYA             ;FOUND THE END CHAR
-	SEC
-	RTS
+fndl20	tya             ;found the end char
+	sec
+	rts
 ;
-.END
+.end

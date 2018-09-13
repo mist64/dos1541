@@ -1,341 +1,341 @@
-.PAGE 'JOBS'
+.page 'jobs'
 ;
-; USE LASTJOB FOR DRIVE #
-; CMD IS USED FOR JOB COMMAND
+; use lastjob for drive #
+; cmd is used for job command
 ;
-SETLJB
-	LDA LSTJOB,X
-	AND #1
-	ORA CMD
+setljb
+	lda lstjob,x
+	and #1
+	ora cmd
 ;
-; SET JOB UP AND CHECK T&S
-;  .A=COMMAND FOR JOBS
-;  .X=JOB NUMBER
+; set job up and check t&s
+;  .a=command for jobs
+;  .x=job number
 ;
-SETJOB
-	PHA
-	STX JOBNUM
-	TXA
-	ASL A
-	ASL A
-	ASL A
-	TAX
-	LDA HDRS+3,X
-	STA CMD         ;SAVE SECTOR
-	LDA HDRS+2,X
-	BEQ TSERR
+setjob
+	pha
+	stx jobnum
+	txa
+	asl a
+	asl a
+	asl a
+	tax
+	lda hdrs+3,x
+	sta cmd         ;save sector
+	lda hdrs+2,x
+	beq tserr
 ;
-	CMP MAXTRK
-	BCS TSERR       ;TRACK TOO LARGE
+	cmp maxtrk
+	bcs tserr       ;track too large
 ;
-	TAX
-	PLA             ;CHECK FOR WRITE
-	PHA
-	AND #$F0
-	CMP #WRITE
-	BNE SJB1        ;NOT WRITE,SKIP CHECK
-	PLA
-	PHA
-	LSR A
-	BCS SJB2        ;DRIVE 1
+	tax
+	pla             ;check for write
+	pha
+	and #$f0
+	cmp #write
+	bne sjb1        ;not write,skip check
+	pla
+	pha
+	lsr a
+	bcs sjb2        ;drive 1
 ;
-	LDA BAM0+2      ;GET VERSION #
-	BCC SJB3
-SJB2
-	LDA BAM1+2      ;GET DRIVE 1 VER#
-SJB3
-	BEQ SJB4        ;NO # IS OK, TOO
-	CMP VERNUM
-	BNE VNERR       ;NOT SAME VERNUM #
+	lda bam0+2      ;get version #
+	bcc sjb3
+sjb2
+	lda bam1+2      ;get drive 1 ver#
+sjb3
+	beq sjb4        ;no # is ok, too
+	cmp vernum
+	bne vnerr       ;not same vernum #
 ;
-SJB4
-	TXA             ;RESTORE TRACK #
-	JSR MAXSEC
-	CMP CMD
-	BEQ TSERR
-	BCS SJB1        ;SECTOR IS OK!
-;
-;
-; ILLEGAL TRACK AND SECTOR
-;
-TSERR
-	JSR HED2TS
-TSER1
-	LDA #BADTS
-	JMP CMDER2
+sjb4
+	txa             ;restore track #
+	jsr maxsec
+	cmp cmd
+	beq tserr
+	bcs sjb1        ;sector is ok!
 ;
 ;
-HED2TS
-	LDA JOBNUM
-	ASL A
-	ASL A
-	ASL A
-	TAX
-	LDA HDRS+2,X
-	STA TRACK
-	LDA HDRS+3,X
-	STA SECTOR
-	RTS
+; illegal track and sector
+;
+tserr
+	jsr hed2ts
+tser1
+	lda #badts
+	jmp cmder2
 ;
 ;
-TSCHK
-	LDA TRACK
-	BEQ TSER1
-	CMP MAXTRK
-	BCS TSER1
-;
-	JSR MAXSEC
-	CMP SECTOR
-	BEQ TSER1
-	BCC TSER1
-	RTS
-;
-VNERR
-	JSR HED2TS
-	LDA #CBMV2      ;WRITE TO WRONG VERSION
-	JMP CMDER2
-;
-SJB1
-	LDX JOBNUM
-	PLA
-	STA CMD
-	STA JOBS,X
-	STA LSTJOB,X
-	RTS
+hed2ts
+	lda jobnum
+	asl a
+	asl a
+	asl a
+	tax
+	lda hdrs+2,x
+	sta track
+	lda hdrs+3,x
+	sta sector
+	rts
 ;
 ;
-; DO JOB IN .A, SET UP ERROR COUNT
-; AND LSTJOB. RETURN WHEN JOB DONE OK
-; JMP TO ERROR IF ERROR RETURNS
+tschk
+	lda track
+	beq tser1
+	cmp maxtrk
+	bcs tser1
 ;
-DOREAD
-	LDA #READ
-	BNE DOJOB       ;BRA
-DOWRIT
-	LDA #WRITE
-DOJOB
-	ORA DRVNUM
-	LDX JOBNUM
+	jsr maxsec
+	cmp sector
+	beq tser1
+	bcc tser1
+	rts
 ;
-DOIT	STA CMD
-DOIT2	LDA CMD
-	JSR SETJOB
-;      JMP WATJOB
+vnerr
+	jsr hed2ts
+	lda #cbmv2      ;write to wrong version
+	jmp cmder2
 ;
-; WAIT UNTIL JOB(.X) IS DONE
-; RETURN WHEN DONE
-;
-WATJOB	JSR TSTJOB
-	BCS WATJOB
-	PHA             ;CLR JOBRTN FLAG
-	LDA #0
-	STA JOBRTN
-	PLA
-	RTS
+sjb1
+	ldx jobnum
+	pla
+	sta cmd
+	sta jobs,x
+	sta lstjob,x
+	rts
 ;
 ;
-;TEST IF JOB(.X) IS DONE YET
-;IF NOT DONE RETURN
-;IF OK THEN RETURN ELSE REDO IT
+; do job in .a, set up error count
+; and lstjob. return when job done ok
+; jmp to error if error returns
 ;
-TSTJOB	LDA JOBS,X
-	BMI NOTYET
-	CMP #2
-	BCC OK
+doread
+	lda #read
+	bne dojob       ;bra
+dowrit
+	lda #write
+dojob
+	ora drvnum
+	ldx jobnum
 ;
-	CMP #8          ;CHECK FOR WP SWITCH ON
-	BEQ TJ10
+doit	sta cmd
+doit2	lda cmd
+	jsr setjob
+;      jmp watjob
 ;
-	CMP #11         ;CHECK FOR ID MISMATCH
-	BNE RECOV
-TJ10
-	JMP QUIT2
+; wait until job(.x) is done
+; return when done
 ;
-OK	CLC             ;C=0 FINISHED OK OR QUIT
-	RTS
-;
-NOTYET	SEC             ;C=1 NOT YET
-	RTS
-;
-;
-RECOV
-	TYA             ;SAVE .Y
-	PHA
-	LDA DRVNUM      ;SAVE DRIVE #
-	PHA
-	JSR DOREC
-	CMP #2
-	BCS REC01
-	JMP REC95
-REC01
-	LDA LSTJOB,X
-	PHA             ;SAVE ORIGINAL JOB FOR LATER
-	AND #1
-	STA DRVNUM      ;SET ACTIVE DRIVE #
-;
-	PLA             ;ORIGINAL JOB
-	AND #$F0        ;MASK JOB CODE
-	PHA             ;SAVE IT
-	CMP #WRITE
-	BNE REC0        ;NOT A WRITE
-;
-	LDA DRVNUM
-	ORA #SECSEK     ;REPLACE W/ SECTOR SEEK...
-	STA LSTJOB,X    ;... DURING RECOVERY
-REC0
-	BIT REVCNT
-	BVS REC5        ;NO TRACK OFFSET
-;
-	LDA #0
-	STA EPTR        ;CLR OFFSET TABLE PTR
-	STA TOFF        ;CLR TOTAL OFFSET
-REC1
-	LDY EPTR
-	LDA TOFF
-	SEC
-	SBC OFFSET,Y
-	STA TOFF        ;KEEP TRACK OF ALL OFFSETS
-	LDA OFFSET,Y
-	JSR HEDOFF
-;
-	INC EPTR        ;BUMP TABLE PTR
-	JSR DOREC       ;DO THE RECOVERY
-	CMP #2          ;ERROR CODE < 2?
-	BCC REC3        ;JOB WORKED
-;
-	LDY EPTR
-	LDA OFFSET,Y 
-	BNE REC1        ;NULL INDICATES END
-REC3
-	LDA TOFF
-	JSR HEDOFF
-;
-	LDA JOBS,X
-	CMP #2
-	BCC REC9        ;NO ERROR
-REC5
-	BIT REVCNT      ;CHECK BUMP-ON FLAG
-	BPL REC7        ;NO BUMP
-;
-QUIT
-	PLA
-	CMP #WRITE      ;CHECK ORIGINAL JOB
-	BNE QUIT2
-;
-	ORA DRVNUM
-	STA LSTJOB,X    ;MUST RESTORE ORIGINAL
-QUIT2
-	LDA JOBS,X      ;.A= ERROR #
-	JSR ERROR
-REC7	;DO THE BUMP
-	LDA #BUMP
-	ORA DRVNUM
-	STA JOBS,X
-REC8
-	LDA JOBS,X
-	BMI REC8        ;WAIT
-;
-	JSR DOREC       ;TRY ONE LAST SET
-	CMP #2
-	BCS QUIT        ;IT CLEARLY AIN'T GONNA WORK
-REC9
-	PLA             ;CHECK ORIGINAL JOB FOR WRITE
-	CMP #WRITE
-	BNE REC95       ;ORIGINAL JOB WORKED
-;
-	ORA DRVNUM
-	STA LSTJOB,X    ;SET WRITE JOB BACK
-	JSR DOREC       ;TRY LAST SET OF WRITES
-	CMP #2          ;CHECK ERROR CODE
-	BCS QUIT2       ;ERROR
-REC95
-	PLA
-	STA DRVNUM      ;RESTORE DRIVE #
-	PLA
-	TAY             ;RESTORE .Y
-	LDA JOBS,X
-	CLC             ;OK!
-	RTS
-;
-HEDOFF	;.A=OFFSET
-	CMP #0
-	BEQ HOF3        ;NO OFFSET
-	BMI HOF2        ;STEPS ARE INWARD
-HOF1
-	LDY #1          ;STEP OUT 1 TRACK
-	JSR MOVHED
-	SEC
-	SBC #1
-	BNE HOF1        ;NOT FINISHED
-	BEQ HOF3
-HOF2
-	LDY #$FF        ;STEP IN 1 TRACK
-	JSR MOVHED
-	CLC
-	ADC #1
-	BNE HOF2        ; NOT FINISHED
-HOF3
-	RTS
-;
-MOVHED
-	PHA             ;SAVE .A
-	TYA             ;PUT PHASE IN .A
-	LDY DRVNUM
-	STA PHASE,Y
-MH10
-	CMP PHASE,Y
-	BEQ MH10        ;WAIT FOR CONTROLLER
-;TO CHANGE IT
-	LDA #0
-	STA PHASE,Y     ;CLEAR IT OUT
-	PLA             ;RESTORE
-	RTS
+watjob	jsr tstjob
+	bcs watjob
+	pha             ;clr jobrtn flag
+	lda #0
+	sta jobrtn
+	pla
+	rts
 ;
 ;
-DOREC	;DO LAST JOB RECOVERY
-	LDA REVCNT      ;RE-TRY JOB REVCNT...
-	AND #$3F        ;...# OF TIMES
-	TAY
-DOREC1
-	LDA ERRPRT
-	EOR #ERRLED
-	STA ERRPRT
-	LDA LSTJOB,X    ;SET LAST JOB
-	STA JOBS,X
-DOREC2
-	LDA JOBS,X      ;WAIT
-	BMI DOREC2
-	CMP #2
-	BCC DOREC3      ;IT WORKED
+;test if job(.x) is done yet
+;if not done return
+;if ok then return else redo it
 ;
-	DEY
-	BNE DOREC1      ;KEEP TRYING
-DOREC3
-	PHA
-	JSR ERROFF
-	PLA
-	RTS             ;FINISHED
+tstjob	lda jobs,x
+	bmi notyet
+	cmp #2
+	bcc ok
 ;
-; SET HEADER OF ACTIVE BUFFER OF THE 
-; CURRENT LINDX TO TRACK,SECTOR,ID
+	cmp #8          ;check for wp switch on
+	beq tj10
 ;
-SETHDR	JSR GETACT
-SETH
-	ASL A
-	ASL A
-	ASL A
-	TAY
-	LDA TRACK
-	STA HDRS+2,Y    ;SET TRACK
-	LDA SECTOR
-	STA HDRS+3,Y    ;SET SECTOR
-	LDA DRVNUM      ;GET PROPER ID(DRVNUM)
-	ASL A
-	TAX
-	LDA DSKID,X
-	STA HDRS,Y
-	LDA DSKID+1,X
-	STA HDRS+1,Y
-	RTS 
+	cmp #11         ;check for id mismatch
+	bne recov
+tj10
+	jmp quit2
 ;
-.END
+ok	clc             ;c=0 finished ok or quit
+	rts
+;
+notyet	sec             ;c=1 not yet
+	rts
+;
+;
+recov
+	tya             ;save .y
+	pha
+	lda drvnum      ;save drive #
+	pha
+	jsr dorec
+	cmp #2
+	bcs rec01
+	jmp rec95
+rec01
+	lda lstjob,x
+	pha             ;save original job for later
+	and #1
+	sta drvnum      ;set active drive #
+;
+	pla             ;original job
+	and #$f0        ;mask job code
+	pha             ;save it
+	cmp #write
+	bne rec0        ;not a write
+;
+	lda drvnum
+	ora #secsek     ;replace w/ sector seek...
+	sta lstjob,x    ;... during recovery
+rec0
+	bit revcnt
+	bvs rec5        ;no track offset
+;
+	lda #0
+	sta eptr        ;clr offset table ptr
+	sta toff        ;clr total offset
+rec1
+	ldy eptr
+	lda toff
+	sec
+	sbc offset,y
+	sta toff        ;keep track of all offsets
+	lda offset,y
+	jsr hedoff
+;
+	inc eptr        ;bump table ptr
+	jsr dorec       ;do the recovery
+	cmp #2          ;error code < 2?
+	bcc rec3        ;job worked
+;
+	ldy eptr
+	lda offset,y 
+	bne rec1        ;null indicates end
+rec3
+	lda toff
+	jsr hedoff
+;
+	lda jobs,x
+	cmp #2
+	bcc rec9        ;no error
+rec5
+	bit revcnt      ;check bump-on flag
+	bpl rec7        ;no bump
+;
+quit
+	pla
+	cmp #write      ;check original job
+	bne quit2
+;
+	ora drvnum
+	sta lstjob,x    ;must restore original
+quit2
+	lda jobs,x      ;.a= error #
+	jsr error
+rec7	;do the bump
+	lda #bump
+	ora drvnum
+	sta jobs,x
+rec8
+	lda jobs,x
+	bmi rec8        ;wait
+;
+	jsr dorec       ;try one last set
+	cmp #2
+	bcs quit        ;it clearly ain't gonna work
+rec9
+	pla             ;check original job for write
+	cmp #write
+	bne rec95       ;original job worked
+;
+	ora drvnum
+	sta lstjob,x    ;set write job back
+	jsr dorec       ;try last set of writes
+	cmp #2          ;check error code
+	bcs quit2       ;error
+rec95
+	pla
+	sta drvnum      ;restore drive #
+	pla
+	tay             ;restore .y
+	lda jobs,x
+	clc             ;ok!
+	rts
+;
+hedoff	;.a=offset
+	cmp #0
+	beq hof3        ;no offset
+	bmi hof2        ;steps are inward
+hof1
+	ldy #1          ;step out 1 track
+	jsr movhed
+	sec
+	sbc #1
+	bne hof1        ;not finished
+	beq hof3
+hof2
+	ldy #$ff        ;step in 1 track
+	jsr movhed
+	clc
+	adc #1
+	bne hof2        ; not finished
+hof3
+	rts
+;
+movhed
+	pha             ;save .a
+	tya             ;put phase in .a
+	ldy drvnum
+	sta phase,y
+mh10
+	cmp phase,y
+	beq mh10        ;wait for controller
+;to change it
+	lda #0
+	sta phase,y     ;clear it out
+	pla             ;restore
+	rts
+;
+;
+dorec	;do last job recovery
+	lda revcnt      ;re-try job revcnt...
+	and #$3f        ;...# of times
+	tay
+dorec1
+	lda errprt
+	eor #errled
+	sta errprt
+	lda lstjob,x    ;set last job
+	sta jobs,x
+dorec2
+	lda jobs,x      ;wait
+	bmi dorec2
+	cmp #2
+	bcc dorec3      ;it worked
+;
+	dey
+	bne dorec1      ;keep trying
+dorec3
+	pha
+	jsr erroff
+	pla
+	rts             ;finished
+;
+; set header of active buffer of the 
+; current lindx to track,sector,id
+;
+sethdr	jsr getact
+seth
+	asl a
+	asl a
+	asl a
+	tay
+	lda track
+	sta hdrs+2,y    ;set track
+	lda sector
+	sta hdrs+3,y    ;set sector
+	lda drvnum      ;get proper id(drvnum)
+	asl a
+	tax
+	lda dskid,x
+	sta hdrs,y
+	lda dskid+1,x
+	sta hdrs+1,y
+	rts 
+;
+.end

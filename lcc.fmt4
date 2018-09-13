@@ -1,172 +1,172 @@
-.PAGE 'LCC.FMT4'
+.page 'lcc.fmt4'
 ;
 ;
 ;
-SYNCLR	LDA PCR2        ; WRITE ENTIRE TRACK WITH SYNC
-	AND #$FF-$E0
-	ORA #$C0
-	STA PCR2
+synclr	lda pcr2        ; write entire track with sync
+	and #$ff-$e0
+	ora #$c0
+	sta pcr2
 ;
-	LDA #$FF        ; OUTPUT MODE DDR
-	STA DDRA2
+	lda #$ff        ; output mode ddr
+	sta ddra2
 ;
-	STA DATA2       ; SYNC CHAR
+	sta data2       ; sync char
 ;
-	LDX #$28        ; $28*256 BYTES
-	LDY #0
+	ldx #$28        ; $28*256 bytes
+	ldy #0
 ;
-SYC10	BVC *
-	CLV
+syc10	bvc *
+	clv
 ;
-	DEY
-	BNE SYC10
+	dey
+	bne syc10
 ;
-	DEX
-	BNE SYC10
+	dex
+	bne syc10
 ;
-	RTS             ; LEAVE WRITE ON
-;
-;
-;
-WRTNUM	LDX NUM         ; WRITE OUT NUM BYTES
-	LDY NUM+1
-;
-WRTN10	BVC *
-	CLV
-;
-	DEX
-	BNE WRTN10
-;
-	DEY
-	BPL WRTN10
-;
-	RTS
+	rts             ; leave write on
 ;
 ;
 ;
-FMTERR	DEC CNT         ; TEST FOR RETRY
-	BEQ FMTE10
+wrtnum	ldx num         ; write out num bytes
+	ldy num+1
 ;
-	JMP END
+wrtn10	bvc *
+	clv
 ;
-FMTE10
+	dex
+	bne wrtn10
 ;
-	LDY #$FF
-	STY FTNUM       ; CLEAR FORMAT
+	dey
+	bpl wrtn10
 ;
-	INY
-	STY GCRFLG
-;
-	JMP ERRR
-;
-;
-;
-MOVUP	LDA BUFF0,Y     ;  MOVE UP 69 BYTES
-	STA BUFF0+69,Y  ; MOVE FROM TOP DOWN
-	DEY
-	BNE MOVUP
-;
-	LDA BUFF0       ; DO LAST BYTE
-	STA BUFF0+69
-	RTS
+	rts
 ;
 ;
 ;
+fmterr	dec cnt         ; test for retry
+	beq fmte10
 ;
-MOVOVR	LDY #68         ; MOVE OVRBUF INTO (BUFFER)
+	jmp end
 ;
-MOVO10	LDA OVRBUF+256-TOPWRT,Y
-	STA (BUFPNT),Y
+fmte10
 ;
-	DEY
-	BPL MOVO10
+	ldy #$ff
+	sty ftnum       ; clear format
 ;
-	RTS
+	iny
+	sty gcrflg
 ;
-;
-;
-KILL	LDA PCR2        ; DISABLE WRITE
-	ORA #$E0
-	STA PCR2
-	LDA #$00        ; MAKE PORT INPUT NOW
-	STA DDRA2
-;
-	RTS
+	jmp errr
 ;
 ;
 ;
-CLEAR	LDA PCR2        ; ENABLE WRITE
-	AND #$FF-$E0
-	ORA #$C0
-	STA PCR2
+movup	lda buff0,y     ;  move up 69 bytes
+	sta buff0+69,y  ; move from top down
+	dey
+	bne movup
 ;
-	LDA #$FF        ; MAKE PORT AN OUTPUT
-	STA DDRA2
+	lda buff0       ; do last byte
+	sta buff0+69
+	rts
 ;
-	LDA #$55        ; WRITE A 1F PATTERN
-	STA DATA2
 ;
-	LDX #$28        ; $28*256 CHARS
-	LDY #00
-CLER10	BVC *
-	CLV
-	DEY
-	BNE CLER10
 ;
-	DEX
-	BNE CLER10
 ;
-	RTS
+movovr	ldy #68         ; move ovrbuf into (buffer)
+;
+movo10	lda ovrbuf+256-topwrt,y
+	sta (bufpnt),y
+;
+	dey
+	bpl movo10
+;
+	rts
+;
+;
+;
+kill	lda pcr2        ; disable write
+	ora #$e0
+	sta pcr2
+	lda #$00        ; make port input now
+	sta ddra2
+;
+	rts
+;
+;
+;
+clear	lda pcr2        ; enable write
+	and #$ff-$e0
+	ora #$c0
+	sta pcr2
+;
+	lda #$ff        ; make port an output
+	sta ddra2
+;
+	lda #$55        ; write a 1f pattern
+	sta data2
+;
+	ldx #$28        ; $28*256 chars
+	ldy #00
+cler10	bvc *
+	clv
+	dey
+	bne cler10
+;
+	dex
+	bne cler10
+;
+	rts
 ;
 ;*****************************
 ;*
 ;*
-;*     FBTOG
-;*     FORMAT BINARY TO GCR CONVERSION
+;*     fbtog
+;*     format binary to gcr conversion
 ;*
-;*     CONVERTS BUFFER TO GCR WITH OUT HBID
+;*     converts buffer to gcr with out hbid
 ;*
 ;***************************
 ;
-FBTOG	LDA #0          ; POINT AT BUFFER
-	STA BUFPNT
-	STA SAVPNT
-	STA BYTCNT
+fbtog	lda #0          ; point at buffer
+	sta bufpnt
+	sta savpnt
+	sta bytcnt
 ;
-	LDA #256-TOPWRT ; PUT GCR IN OVRFLOW BUFFER
-	STA GCRPNT
+	lda #256-topwrt ; put gcr in ovrflow buffer
+	sta gcrpnt
 ;
-	LDA BUFPNT+1    ; SAVE BUFFER POINTER
-	STA SAVPNT+1
+	lda bufpnt+1    ; save buffer pointer
+	sta savpnt+1
 ;
-	LDA #>OVRBUF
-	STA BUFPNT+1    ; STORE IN OVERBUF
+	lda #>ovrbuf
+	sta bufpnt+1    ; store in overbuf
 ;
-FBG10	LDY BYTCNT      ; GET POINTER
+fbg10	ldy bytcnt      ; get pointer
 ;
-	LDA (SAVPNT),Y
-	STA BTAB
-	INY
+	lda (savpnt),y
+	sta btab
+	iny
 ;
-	LDA (SAVPNT),Y
-	STA BTAB+1
-	INY
+	lda (savpnt),y
+	sta btab+1
+	iny
 ;
-	LDA (SAVPNT),Y
-	STA BTAB+2
-	INY
+	lda (savpnt),y
+	sta btab+2
+	iny
 ;
-	LDA (SAVPNT),Y
-	STA BTAB+3
-	INY
-	BEQ FBG15       ; TEST IF DONE
+	lda (savpnt),y
+	sta btab+3
+	iny
+	beq fbg15       ; test if done
 ;
-	STY BYTCNT      ; SAVE POINTER
+	sty bytcnt      ; save pointer
 ;
-	JSR PUT4BG      ; CONVERT AND STORE
+	jsr put4bg      ; convert and store
 ;
-	JMP FBG10
+	jmp fbg10
 ;
-FBG15	JMP PUT4BG      ; DONE, RETURN
+fbg15	jmp put4bg      ; done, return
 ;
-.END
+.end

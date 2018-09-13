@@ -1,105 +1,105 @@
-.PAGE 'LCC.FMT3'
+.page 'lcc.fmt3'
 ;
 ;
 ;
-;*   FORMAT DONE, NOW VERIFY IT
+;*   format done, now verify it
 ;
 ;
 ;
-	LDA #200        ; LOOK AT 200 SYNCS
-	STA TRYS
+	lda #200        ; look at 200 syncs
+	sta trys
 ;
-COMP	LDA #0          ; POINTER INTO HEADERS
-	STA BUFPNT
+comp	lda #0          ; pointer into headers
+	sta bufpnt
 ;
-	LDA #>BUFF0     ;
-	STA BUFPNT+1
+	lda #>buff0     ;
+	sta bufpnt+1
 ;
-	LDA SECTR       ; SECTOR COUNTER
-	STA SECT
+	lda sectr       ; sector counter
+	sta sect
 ;
-CMPR10	JSR SYNC        ; FIND SYNC
+cmpr10	jsr sync        ; find sync
 ;
-	LDX #10
-	LDY #0
+	ldx #10
+	ldy #0
 ;
-CMPR15	BVC *           ; GET HEADER BYTE
-	CLV
+cmpr15	bvc *           ; get header byte
+	clv
 ;
-	LDA DATA2
-	CMP (BUFPNT),Y  ; COMPARE GCR
+	lda data2
+	cmp (bufpnt),y  ; compare gcr
 ;
-	BNE CMPR20      ;ERROR
+	bne cmpr20      ;error
 ;
-	INY
-	DEX
-	BNE CMPR15      ; TEST ALL BYTES
+	iny
+	dex
+	bne cmpr15      ; test all bytes
 ;
-	CLC             ; UPDATE HEADR POINTER
-	LDA BUFPNT
-	ADC #10
-	STA BUFPNT
+	clc             ; update headr pointer
+	lda bufpnt
+	adc #10
+	sta bufpnt
 ;
-	JMP TSTDAT      ; NOW TEST DATA
+	jmp tstdat      ; now test data
 ;
-CMPR20	DEC TRYS        ; TEST IF TOO MANY ERRORS
-	BNE COMP
+cmpr20	dec trys        ; test if too many errors
+	bne comp
 ;
-	LDA #NOTFND     ; TOO MANY ERROR
-	JMP FMTERR
+	lda #notfnd     ; too many error
+	jmp fmterr
 ;
-TSTDAT	JSR SYNC        ; FIND DATA SYNC
+tstdat	jsr sync        ; find data sync
 ;
-	LDY #256-TOPWRT ;
+	ldy #256-topwrt ;
 ;
-TST05	BVC *
-	CLV
+tst05	bvc *
+	clv
 ;
-	LDA DATA2       ; COMPARE GCR
-	CMP OVRBUF,Y
+	lda data2       ; compare gcr
+	cmp ovrbuf,y
 ;
-	BNE CMPR20      ; ERROR
+	bne cmpr20      ; error
 ;
-	INY
-	BNE TST05       ; DO ALL OVRBUF
+	iny
+	bne tst05       ; do all ovrbuf
 ;
-	LDX #255-3      ; NOW DO BUFFER, DONT TEST OFF BYTES
+	ldx #255-3      ; now do buffer, dont test off bytes
 ;
-TST10	BVC *
-	CLV
+tst10	bvc *
+	clv
 ;
-	LDA DATA2
-	CMP BUFF2,Y
-	BNE CMPR20
+	lda data2
+	cmp buff2,y
+	bne cmpr20
 ;
-	INY
-	DEX
-	BNE TST10
-;
-;
-	DEC SECT        ; MORE SECTORS TO TEST?
-	BNE CMPR10      ; YES
+	iny
+	dex
+	bne tst10
 ;
 ;
-;  ALL SECTORS DONE OK
-;
-	INC FTNUM       ; GOTO NEXT TRACK
-	LDA FTNUM
-	CMP #36         ; #TRACKS MAX
-	BCS FMTEND
-;
-	JMP END         ; MORE TO DO
+	dec sect        ; more sectors to test?
+	bne cmpr10      ; yes
 ;
 ;
-FMTEND	LDA #$FF        ; CLEAR FTNUM
-	STA FTNUM
+;  all sectors done ok
 ;
-	LDA #$0         ; CLEAR GCR BUFFER FLAG
-	STA GCRFLG
+	inc ftnum       ; goto next track
+	lda ftnum
+	cmp #36         ; #tracks max
+	bcs fmtend
 ;
-	LDA #1          ; RETURN OK CODE
-	JMP ERRR
+	jmp end         ; more to do
+;
+;
+fmtend	lda #$ff        ; clear ftnum
+	sta ftnum
+;
+	lda #$0         ; clear gcr buffer flag
+	sta gcrflg
+;
+	lda #1          ; return ok code
+	jmp errr
 ;
 ;
 ;
-.END
+.end

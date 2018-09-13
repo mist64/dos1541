@@ -1,305 +1,305 @@
-.PAGE 'LCC.WRT'
+.page 'lcc.wrt'
 ;
 ;
 ;
-;    * WRITE JOB
+;    * write job
 ;
-;    WRITE OUT DATA BUFFER
+;    write out data buffer
 ;
 ;
-WRIGHT	CMP #$10        ; TEST IF WRITE
-	BEQ WRT05
+wright	cmp #$10        ; test if write
+	beq wrt05
 ;
-	JMP VRFY
+	jmp vrfy
 ;
-WRT05	JSR CHKBLK      ; GET BLOCK CHECKSUM
-	STA CHKSUM
+wrt05	jsr chkblk      ; get block checksum
+	sta chksum
 ;
-	LDA DSKCNT      ; TEST FOR WRITE PROTECT
-	AND #$10
-	BNE WRT10       ; NOT  PROTECTED
+	lda dskcnt      ; test for write protect
+	and #$10
+	bne wrt10       ; not  protected
 ;
-	LDA #8          ; WRITE PROTECT ERROR
-	JMP ERRR
+	lda #8          ; write protect error
+	jmp errr
 ;
-WRT10	JSR BINGCR      ; CONVERT BUFFER TO WRITE IMAGE
+wrt10	jsr bingcr      ; convert buffer to write image
 ;
-	JSR SRCH        ; FIND HEADER
+	jsr srch        ; find header
 ;
-	LDX #GAP1-2     ; WAIT OUT HEADER GAP
+	ldx #gap1-2     ; wait out header gap
 ;
-WRT20	BVC *
-	CLV
+wrt20	bvc *
+	clv
 ;
-	DEX             ; TEST IF DONE YET
-	BNE WRT20
+	dex             ; test if done yet
+	bne wrt20
 ;
-	LDA #$FF        ; MAKE OUTPUT $FF
-	STA DDRA2
+	lda #$ff        ; make output $ff
+	sta ddra2
 ;
-	LDA PCR2        ; SET WRITE MODE
-	AND #$FF-$E0
-	ORA #$C0
-	STA PCR2
+	lda pcr2        ; set write mode
+	and #$ff-$e0
+	ora #$c0
+	sta pcr2
 ;
-	LDA #$FF        ; WRITE 5 GCR SYNC
-	LDX #NUMSYN     ;
-	STA DATA2
-	CLV
+	lda #$ff        ; write 5 gcr sync
+	ldx #numsyn     ;
+	sta data2
+	clv
 ;
-WRTSNC	BVC *
+wrtsnc	bvc *
 ;
-	CLV
-	DEX
-	BNE WRTSNC
+	clv
+	dex
+	bne wrtsnc
 ;
-	LDY #256-TOPWRT ; WRITE OUT OVERFLOW BUFFER
+	ldy #256-topwrt ; write out overflow buffer
 ;
-WRT30	LDA OVRBUF,Y    ; GET A CHAR
-	BVC *           ; WAIT UNTIL READY
-	CLV
+wrt30	lda ovrbuf,y    ; get a char
+	bvc *           ; wait until ready
+	clv
 ;
-	STA DATA2       ; STUFF IT
-	INY
-	BNE WRT30       ; DO NEXT CHAR
+	sta data2       ; stuff it
+	iny
+	bne wrt30       ; do next char
 ;
-         ; WRITE REST OF BUFFER
+         ; write rest of buffer
 ;
-WRT40	LDA (BUFPNT),Y  ; NOW DO BUFFER
-	BVC *           ; WAIT UNTIL READY
-	CLV
+wrt40	lda (bufpnt),y  ; now do buffer
+	bvc *           ; wait until ready
+	clv
 ;
-	STA DATA2       ; STUFF IT AGAIN
-	INY
-    ; TEST IF DONE
-	BNE WRT40       ; DO THE WHOLE THING
+	sta data2       ; stuff it again
+	iny
+    ; test if done
+	bne wrt40       ; do the whole thing
 ;
-	BVC *           ; WAIT FOR LAST CHAR TO WRITE OUT
+	bvc *           ; wait for last char to write out
 ;
 ;
-	LDA PCR2        ; GOTO READ MODE
-	ORA #$E0
-	STA PCR2
+	lda pcr2        ; goto read mode
+	ora #$e0
+	sta pcr2
 ;
-	LDA #0          ; MAKE DATA2 INPUT $00
-	STA DDRA2
+	lda #0          ; make data2 input $00
+	sta ddra2
 ;
-	JSR WTOBIN      ; CONVERT WRITE IMAGE TO BINARY
+	jsr wtobin      ; convert write image to binary
 ;
-	LDY JOBN        ; MAKE JOB A VERIFY
-	LDA JOBS,Y
-	EOR #$30
-	STA JOBS,Y
+	ldy jobn        ; make job a verify
+	lda jobs,y
+	eor #$30
+	sta jobs,y
 ;
-	JMP SEAK        ; SCAN JOB QUE
+	jmp seak        ; scan job que
 ;
 ;
-CHKBLK	LDA #0          ; GET EOR CHECKSUM
-	TAY
+chkblk	lda #0          ; get eor checksum
+	tay
 ;
-CHKB10	EOR (BUFPNT),Y
-	INY
-	BNE CHKB10
+chkb10	eor (bufpnt),y
+	iny
+	bne chkb10
 ;
-	RTS             ; RETURN CHECKSUM IN .A
+	rts             ; return checksum in .a
 ;
 ;
 ;
 ;
-;    * WTOBIN
+;    * wtobin
 ;
-;    CONVERT WRITE IMAGE BACK TO
-;    BINARY DATA
+;    convert write image back to
+;    binary data
 ;
 ;
-WTOBIN	LDA #0          ; INIT POINTER
-	STA SAVPNT
-	STA BUFPNT      ; LSB
-	STA NXTPNT
+wtobin	lda #0          ; init pointer
+	sta savpnt
+	sta bufpnt      ; lsb
+	sta nxtpnt
 ;
-	LDA BUFPNT+1    ;GOTO BUFFER NEXT
-	STA NXTBF
+	lda bufpnt+1    ;goto buffer next
+	sta nxtbf
 ;
-	LDA #>OVRBUF    ; USE OVERFLOW FIRST
-	STA BUFPNT+1
-	STA SAVPNT+1
+	lda #>ovrbuf    ; use overflow first
+	sta bufpnt+1
+	sta savpnt+1
 ;
-	LDA #256-TOPWRT
-	STA GCRPNT      ; GET HERE FIRST
-	STA BYTCNT      ; STORE HERE
+	lda #256-topwrt
+	sta gcrpnt      ; get here first
+	sta bytcnt      ; store here
 ;
-	JSR GET4GB      ; GET FIRST FOUR- ID AND 3 DATA
+	jsr get4gb      ; get first four- id and 3 data
 ;
-	LDA BTAB        ; SAVE BID
-	STA BID
+	lda btab        ; save bid
+	sta bid
 ;
-	LDY BYTCNT
+	ldy bytcnt
 ;
-	LDA BTAB+1
-	STA (SAVPNT),Y
-	INY
+	lda btab+1
+	sta (savpnt),y
+	iny
 ;
-	LDA BTAB+2
-	STA (SAVPNT),Y
-	INY
+	lda btab+2
+	sta (savpnt),y
+	iny
 ;
-	LDA BTAB+3
-	STA (SAVPNT),Y
-	INY
+	lda btab+3
+	sta (savpnt),y
+	iny
 ;
-	STY BYTCNT
+	sty bytcnt
 ;
-WTOB14	JSR GET4GB      ;DO REST OF OVERFLOW BUFFER
+wtob14	jsr get4gb      ;do rest of overflow buffer
 ;
-	LDY BYTCNT
+	ldy bytcnt
 ;
-	LDA BTAB
-	STA (SAVPNT),Y
-	INY
+	lda btab
+	sta (savpnt),y
+	iny
 ;
-	LDA BTAB+1
-	STA (SAVPNT),Y
-	INY
-	BEQ WTOB50
+	lda btab+1
+	sta (savpnt),y
+	iny
+	beq wtob50
 ;
-	LDA BTAB+2
-	STA (SAVPNT),Y
-	INY
+	lda btab+2
+	sta (savpnt),y
+	iny
 ;
-	LDA BTAB+3
-	STA (SAVPNT),Y
-	INY
+	lda btab+3
+	sta (savpnt),y
+	iny
 ;
-	STY BYTCNT
-	BNE WTOB14      ; JMP
+	sty bytcnt
+	bne wtob14      ; jmp
 ;
-WTOB50
+wtob50
 ;
-	LDA BTAB+2
-	STA (BUFPNT),Y
-	INY
+	lda btab+2
+	sta (bufpnt),y
+	iny
 ;
-	LDA BTAB+3
-	STA (BUFPNT),Y
-	INY
+	lda btab+3
+	sta (bufpnt),y
+	iny
 ;
-	STY BYTCNT
+	sty bytcnt
 ;
-WTOB53	JSR GET4GB
+wtob53	jsr get4gb
 ;
-	LDY BYTCNT
+	ldy bytcnt
 ;
-	LDA BTAB
-	STA (BUFPNT),Y
-	INY
+	lda btab
+	sta (bufpnt),y
+	iny
 ;
-	LDA BTAB+1
-	STA (BUFPNT),Y
-	INY
+	lda btab+1
+	sta (bufpnt),y
+	iny
 ;
-	LDA BTAB+2
-	STA (BUFPNT),Y
-	INY
+	lda btab+2
+	sta (bufpnt),y
+	iny
 ;
-	LDA BTAB+3
-	STA (BUFPNT),Y
-	INY
+	lda btab+3
+	sta (bufpnt),y
+	iny
 ;
-	STY BYTCNT
-	CPY #187
-	BCC WTOB53
+	sty bytcnt
+	cpy #187
+	bcc wtob53
 ;
-WTOB52	LDA #69         ; MOVE BUFFER UP
-	STA SAVPNT
+wtob52	lda #69         ; move buffer up
+	sta savpnt
 ;
-	LDA BUFPNT+1
-	STA SAVPNT+1
+	lda bufpnt+1
+	sta savpnt+1
 ;
-	LDY #256-TOPWRT-1
+	ldy #256-topwrt-1
 ;
-WTOB55	LDA (BUFPNT),Y
-	STA (SAVPNT),Y
+wtob55	lda (bufpnt),y
+	sta (savpnt),y
 ;
-	DEY
-	BNE WTOB55
+	dey
+	bne wtob55
 ;
-	LDA (BUFPNT),Y
-	STA (SAVPNT),Y
+	lda (bufpnt),y
+	sta (savpnt),y
 ;
-	LDX #256-TOPWRT ; MOVE OVERFLOW OVER TO BUFFER
+	ldx #256-topwrt ; move overflow over to buffer
 ;
-WTOB57	LDA OVRBUF,X
-	STA (BUFPNT),Y
+wtob57	lda ovrbuf,x
+	sta (bufpnt),y
 ;
-	INY
-	INX
-	BNE WTOB57
+	iny
+	inx
+	bne wtob57
 ;
-	STX GCRFLG      ; CLEAR BUFFER GCR FLAG
+	stx gcrflg      ; clear buffer gcr flag
 ;
 ;
-	RTS
+	rts
 ;
 ;
 ;
 ;
 ;
-;    * VERIFY DATA BLOCK
+;    * verify data block
 ;
-;   CONVERT TO GCR VERIFY IMAGE
+;   convert to gcr verify image
 ;
-;   TEST AGAINST DATA BLOCK
+;   test against data block
 ;
-;   CONVERT BACK TO BINARY
+;   convert back to binary
 ;
 ;
-VRFY	CMP #$20        ; TEST IF VERIFY
-	BEQ VRF10
+vrfy	cmp #$20        ; test if verify
+	beq vrf10
 ;
-	JMP SECTSK
+	jmp sectsk
 ;
-VRF10
+vrf10
 ;
-	JSR CHKBLK      ; GET BLOCK CHECKSUM
-	STA CHKSUM
+	jsr chkblk      ; get block checksum
+	sta chksum
 ;
-	JSR BINGCR      ; CONVERT TO VERIFY IMAGE
+	jsr bingcr      ; convert to verify image
 ;
-	JSR DSTRT
+	jsr dstrt
 ;
-	LDY #256-TOPWRT
-VRF15	LDA OVRBUF,Y    ; GET CHAR
-	BVC *
-	CLV
+	ldy #256-topwrt
+vrf15	lda ovrbuf,y    ; get char
+	bvc *
+	clv
 ;
-	EOR DATA2       ; TEST IF SAME
-	BNE VRF20       ;VERIFY ERROR
+	eor data2       ; test if same
+	bne vrf20       ;verify error
 ;
-	INY
-	BNE VRF15       ; NEXT BYTE
+	iny
+	bne vrf15       ; next byte
 ;
 ;
-VRF30	LDA (BUFPNT),Y  ; NOW DO BUFFER
+vrf30	lda (bufpnt),y  ; now do buffer
 ;
-	BVC *
-	CLV             ; WAIT FOR CHAR
+	bvc *
+	clv             ; wait for char
 ;
-	EOR DATA2       ; TEST IF SAME
-	BNE VRF20       ; ERROR
+	eor data2       ; test if same
+	bne vrf20       ; error
 ;
-	INY
-	CPY #$FD        ; DONT TEST OFF BYTES
-	BNE VRF30
+	iny
+	cpy #$fd        ; dont test off bytes
+	bne vrf30
 ;
 ;
-	JMP DONE        ; VERIFY OK
+	jmp done        ; verify ok
 ;
-VRF20	LDA #7          ; VERIFY ERROR
-	JMP ERRR
+vrf20	lda #7          ; verify error
+	jmp errr
 ;
 ;
-SECTSK	JSR SRCH        ; SECTOR SEEK
-	JMP DONE
+sectsk	jsr srch        ; sector seek
+	jmp done
 ;
 ;
-.END
+.end

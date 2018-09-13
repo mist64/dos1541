@@ -1,210 +1,210 @@
-.PAGE 'LCC.END'
+.page 'lcc.end'
 ;
 ;
 ;
-;   MOTOR AND STEPPER CONTROL
+;   motor and stepper control
 ;
 ;
-;   IRQ INTO CONTROLLER EVERY 10 MS
-END
-	LDA T1HL2
-	STA T1HC2
+;   irq into controller every 10 ms
+end
+	lda t1hl2
+	sta t1hc2
 ;
-	LDA DSKCNT
+	lda dskcnt
 ;
-END001
-	AND #$10        ; TEST WRITE PROCTECT
-	CMP LWPT
-	STA LWPT        ; CHANGE ?
-	BEQ END002      ; NO
+end001
+	and #$10        ; test write proctect
+	cmp lwpt
+	sta lwpt        ; change ?
+	beq end002      ; no
 ;
-	LDA #1          ; YES, SET FLAG
-	STA WPSW
+	lda #1          ; yes, set flag
+	sta wpsw
 ;
-END002	LDA PHASE       ; TEST FOR PHASE OFFSET
-	BEQ END40
+end002	lda phase       ; test for phase offset
+	beq end40
 ;
-	CMP #2
-	BNE END003
+	cmp #2
+	bne end003
 ;
-	LDA #0
-	STA PHASE
-	BEQ END40
+	lda #0
+	sta phase
+	beq end40
 ;
-END003	STA STEPS
-	LDA #2
-	STA PHASE
-	JMP DOSTEP
+end003	sta steps
+	lda #2
+	sta phase
+	jmp dostep
 ;
-END40	LDX CDRIVE      ; WORK ON ACTIVE DRIVE ONLY
-	BMI END33X      ; NO ACTIVE DRIVE
+end40	ldx cdrive      ; work on active drive only
+	bmi end33x      ; no active drive
 ;
-	LDA DRVST       ; TEST IF MOTOR ON
-	TAY
-	CMP #$20        ; TEST IF ANYTHING TO DO
-	BNE END10       ; SOMETHING HERE
+	lda drvst       ; test if motor on
+	tay
+	cmp #$20        ; test if anything to do
+	bne end10       ; something here
 ;
-END33X	JMP END33       ; MOTOR JUST RUNNING
+end33x	jmp end33       ; motor just running
 ;
-END10	DEC ACLTIM      ; DEC TIMER
-	BNE END30
+end10	dec acltim      ; dec timer
+	bne end30
 ;
-	TYA             ; TEST IF ACEL
-	BPL END20
-;
-;
-	AND #$7F        ; OVER, CLEAR ACEL BIT
-	STA DRVST
-;
-END20	AND #$10        ; TEST IF TIME OUT STATE
-	BEQ END30
-;
-	LDA DSKCNT
-	AND #$FF-$04    ; TURNOFF MOTOR
-	STA DSKCNT
+	tya             ; test if acel
+	bpl end20
 ;
 ;
-	LDA #$FF        ; NO ACTIVE DRIVE NOW
-	STA CDRIVE
+	and #$7f        ; over, clear acel bit
+	sta drvst
 ;
-	LDA #0          ; DRIVE INACTIVE
-	STA DRVST       ; CLEAR ON BIT AND TIMOUT
-	BEQ END33X
+end20	and #$10        ; test if time out state
+	beq end30
 ;
-END30	TYA             ; TEST IF STEP NEEDED
-	AND #$40
-	BNE END30X      ; STEPPING
-;
-	JMP END33
+	lda dskcnt
+	and #$ff-$04    ; turnoff motor
+	sta dskcnt
 ;
 ;
-END30X	JMP (NXTST)     ;GOTO PROPER STEPPER STATE
+	lda #$ff        ; no active drive now
+	sta cdrive
 ;
-INACT	LDA STEPS       ; GET ABS(STEPS)
-	BPL INAC10
+	lda #0          ; drive inactive
+	sta drvst       ; clear on bit and timout
+	beq end33x
 ;
-	EOR #$FF
-	CLC
-	ADC #1
+end30	tya             ; test if step needed
+	and #$40
+	bne end30x      ; stepping
 ;
-INAC10	CMP MINSTP      ; TEST IF WE CAN ACCEL
-	BCS INAC20      ; TOO SMALL
-;
-	LDA #<SHORT     ;SHORT STEP MODE
-	STA NXTST
-	LDA #>SHORT
-	STA NXTST+1
-	BNE DOSTEP
-;
-INAC20	; CALC THE # OF RUN STEPS
-	SBC AS
-	SBC AS
-	STA RSTEPS
-;
-	LDA AS
-	STA ACLSTP      ; SET  # OF ACCEL STEPS
-	LDA #<SSACL
-	STA NXTST
-	LDA #>SSACL
-	STA NXTST+1
-;
-DOSTEP	LDA STEPS
-	BPL STPIN
-;
-STPOUT	INC STEPS
-	LDX DSKCNT
-	DEX
-	JMP STP
-;
-SHORT	LDA STEPS
-	BNE DOSTEP
-;
-	LDA #<SETLE
-	STA NXTST
-	LDA #>SETLE
-	STA NXTST+1
-	LDA #5          ; SETTLE TIME
-	STA ACLSTP
-	JMP END33
-;
-SETLE	DEC ACLSTP
-	BNE END33
-;
-	LDA DRVST
-	AND #$FF-$40
-	STA DRVST
-;
-	LDA #<INACT
-	STA NXTST
-	LDA #>INACT
-	STA NXTST+1
-	JMP END33
-;
-STPIN	DEC STEPS
-	LDX DSKCNT
-	INX
-;
-STP	TXA
-	AND #3
-	STA TMP
-	LDA DSKCNT
-	AND #$FF-$03    ; MASK OUT OLD
-	ORA TMP
-	STA DSKCNT
-	JMP END33
-;
-SSACL	                ; SUB ACEL FACTOR
-	SEC
-	LDA T1HL2
-	SBC AF
-	STA T1HC2
-;
-	DEC ACLSTP
-	BNE SSA10
-;
-	LDA AS
-	STA ACLSTP
-;
-	LDA #<SSRUN
-	STA NXTST
-	LDA #>SSRUN
-	STA NXTST+1
-;
-SSA10	JMP DOSTEP
-;
-SSRUN	DEC RSTEPS
-	BNE SSA10
-;
-	LDA #<SSDEC
-	STA NXTST
-	LDA #>SSDEC
-	STA NXTST+1
-	BNE SSA10
-;
-SSDEC	                ; DECEL
-	LDA T1HL2
-	CLC
-	ADC AF
-	STA T1HC2
-;
-	DEC ACLSTP
-	BNE SSA10
-;
-	LDA #<SETLE     ; GOTO SETTLE MODE
-	STA NXTST
-	LDA #>SETLE
-	STA NXTST+1
-;
-	LDA #5
-	STA ACLSTP      ; SETTLE TIMER
+	jmp end33
 ;
 ;
-END33	LDA PCR2        ; DISABLE S.O. TO 6502
-	AND #$FF-$02
-	STA PCR2
+end30x	jmp (nxtst)     ;goto proper stepper state
 ;
-	RTS
+inact	lda steps       ; get abs(steps)
+	bpl inac10
+;
+	eor #$ff
+	clc
+	adc #1
+;
+inac10	cmp minstp      ; test if we can accel
+	bcs inac20      ; too small
+;
+	lda #<short     ;short step mode
+	sta nxtst
+	lda #>short
+	sta nxtst+1
+	bne dostep
+;
+inac20	; calc the # of run steps
+	sbc as
+	sbc as
+	sta rsteps
+;
+	lda as
+	sta aclstp      ; set  # of accel steps
+	lda #<ssacl
+	sta nxtst
+	lda #>ssacl
+	sta nxtst+1
+;
+dostep	lda steps
+	bpl stpin
+;
+stpout	inc steps
+	ldx dskcnt
+	dex
+	jmp stp
+;
+short	lda steps
+	bne dostep
+;
+	lda #<setle
+	sta nxtst
+	lda #>setle
+	sta nxtst+1
+	lda #5          ; settle time
+	sta aclstp
+	jmp end33
+;
+setle	dec aclstp
+	bne end33
+;
+	lda drvst
+	and #$ff-$40
+	sta drvst
+;
+	lda #<inact
+	sta nxtst
+	lda #>inact
+	sta nxtst+1
+	jmp end33
+;
+stpin	dec steps
+	ldx dskcnt
+	inx
+;
+stp	txa
+	and #3
+	sta tmp
+	lda dskcnt
+	and #$ff-$03    ; mask out old
+	ora tmp
+	sta dskcnt
+	jmp end33
+;
+ssacl	                ; sub acel factor
+	sec
+	lda t1hl2
+	sbc af
+	sta t1hc2
+;
+	dec aclstp
+	bne ssa10
+;
+	lda as
+	sta aclstp
+;
+	lda #<ssrun
+	sta nxtst
+	lda #>ssrun
+	sta nxtst+1
+;
+ssa10	jmp dostep
+;
+ssrun	dec rsteps
+	bne ssa10
+;
+	lda #<ssdec
+	sta nxtst
+	lda #>ssdec
+	sta nxtst+1
+	bne ssa10
+;
+ssdec	                ; decel
+	lda t1hl2
+	clc
+	adc af
+	sta t1hc2
+;
+	dec aclstp
+	bne ssa10
+;
+	lda #<setle     ; goto settle mode
+	sta nxtst
+	lda #>setle
+	sta nxtst+1
+;
+	lda #5
+	sta aclstp      ; settle timer
+;
+;
+end33	lda pcr2        ; disable s.o. to 6502
+	and #$ff-$02
+	sta pcr2
+;
+	rts
 ;
 ;
 ;
-.END
+.end

@@ -1,256 +1,256 @@
-.PAGE 'LCC.BINGCR - FAST'
-;   FAST BINARY TO GCR
+.page 'lcc.bingcr - fast'
+;   fast binary to gcr
 ;
 ;
-PUT4BG	LDA #0          ; CLEAR TABLE
-	STA GTAB+1
-	STA GTAB+4
+put4bg	lda #0          ; clear table
+	sta gtab+1
+	sta gtab+4
 ;
-	LDY GCRPNT
+	ldy gcrpnt
 ;
-	LDA BTAB
-	AND #$F0
-	LSR A
-	LSR A
-	LSR A
-	LSR A
-	TAX
-	LDA BGTAB,X
+	lda btab
+	and #$f0
+	lsr a
+	lsr a
+	lsr a
+	lsr a
+	tax
+	lda bgtab,x
 ;
-	ASL A
-	ASL A
-	ASL A
-	STA GTAB
+	asl a
+	asl a
+	asl a
+	sta gtab
 ;
-	LDA BTAB
-	AND #$0F
-	TAX
-	LDA BGTAB,X
+	lda btab
+	and #$0f
+	tax
+	lda bgtab,x
 ;
-	ROR A
-	ROR GTAB+1
-	ROR A
-	ROR GTAB+1
+	ror a
+	ror gtab+1
+	ror a
+	ror gtab+1
 ;
-	AND #$07
-	ORA GTAB
-	STA (BUFPNT),Y
+	and #$07
+	ora gtab
+	sta (bufpnt),y
 ;
-	INY
+	iny
 ;
-	LDA BTAB+1
-	AND #$F0
-	LSR A
-	LSR A
-	LSR A
-	LSR A
-	TAX
-	LDA BGTAB,X
+	lda btab+1
+	and #$f0
+	lsr a
+	lsr a
+	lsr a
+	lsr a
+	tax
+	lda bgtab,x
 ;
-	ASL A
-	ORA GTAB+1
-	STA GTAB+1
-;
-;
-	LDA BTAB+1
-	AND #$0F
-	TAX
-	LDA BGTAB,X
-;
-	ROL A
-	ROL A
-	ROL A
-	ROL A
-	STA GTAB+2
-;
-	ROL A
-	AND #1
-	ORA GTAB+1
-	STA (BUFPNT),Y
-;
-	INY
-;
-	LDA BTAB+2
-	AND #$F0
-	LSR A
-	LSR A
-	LSR A
-	LSR A
-	TAX
-	LDA BGTAB,X
-;
-	CLC
-	ROR A
-	ORA GTAB+2
-	STA (BUFPNT),Y
-	INY
-;
-	ROR A
-	AND #$80
-	STA GTAB+3
-;
-	LDA BTAB+2
-	AND #$0F
-	TAX
-	LDA BGTAB,X
-	ASL A
-	ASL A
-	AND #$7C
-	ORA GTAB+3
-	STA GTAB+3
-;
-	LDA BTAB+3
-	AND #$F0
-	LSR A
-	LSR A
-	LSR A
-	LSR A
-	TAX
-	LDA BGTAB,X
-;
-	ROR A
-	ROR GTAB+4
-	ROR A
-	ROR GTAB+4
-	ROR A
-	ROR GTAB+4
-;
-	AND #$03
-	ORA GTAB+3
-	STA (BUFPNT),Y
-	INY
-	BNE BING35
-;
-	LDA SAVPNT+1
-	STA BUFPNT+1
+	asl a
+	ora gtab+1
+	sta gtab+1
 ;
 ;
-BING35	LDA BTAB+3
-	AND #$0F
-	TAX
-	LDA BGTAB,X
-	ORA GTAB+4
-	STA (BUFPNT),Y
-	INY
-	STY GCRPNT
-	RTS
+	lda btab+1
+	and #$0f
+	tax
+	lda bgtab,x
+;
+	rol a
+	rol a
+	rol a
+	rol a
+	sta gtab+2
+;
+	rol a
+	and #1
+	ora gtab+1
+	sta (bufpnt),y
+;
+	iny
+;
+	lda btab+2
+	and #$f0
+	lsr a
+	lsr a
+	lsr a
+	lsr a
+	tax
+	lda bgtab,x
+;
+	clc
+	ror a
+	ora gtab+2
+	sta (bufpnt),y
+	iny
+;
+	ror a
+	and #$80
+	sta gtab+3
+;
+	lda btab+2
+	and #$0f
+	tax
+	lda bgtab,x
+	asl a
+	asl a
+	and #$7c
+	ora gtab+3
+	sta gtab+3
+;
+	lda btab+3
+	and #$f0
+	lsr a
+	lsr a
+	lsr a
+	lsr a
+	tax
+	lda bgtab,x
+;
+	ror a
+	ror gtab+4
+	ror a
+	ror gtab+4
+	ror a
+	ror gtab+4
+;
+	and #$03
+	ora gtab+3
+	sta (bufpnt),y
+	iny
+	bne bing35
+;
+	lda savpnt+1
+	sta bufpnt+1
+;
+;
+bing35	lda btab+3
+	and #$0f
+	tax
+	lda bgtab,x
+	ora gtab+4
+	sta (bufpnt),y
+	iny
+	sty gcrpnt
+	rts
 ;
 ;
 ;
-BGTAB	.BYTE $0A
-	.BYTE $0B
-	.BYTE $12
-	.BYTE $13
-	.BYTE $0E
-	.BYTE $0F
-	.BYTE $16
-	.BYTE $17
-	.BYTE $09
-	.BYTE $19
-	.BYTE $1A
-	.BYTE $1B
-	.BYTE $0D
-	.BYTE $1D
-	.BYTE $1E
-	.BYTE $15
+bgtab	.byte $0a
+	.byte $0b
+	.byte $12
+	.byte $13
+	.byte $0e
+	.byte $0f
+	.byte $16
+	.byte $17
+	.byte $09
+	.byte $19
+	.byte $1a
+	.byte $1b
+	.byte $0d
+	.byte $1d
+	.byte $1e
+	.byte $15
 ;
 ;
 ;
 ;******************************
 ;*
 ;*
-;*       BINARY TO GCR CONVERSION
+;*       binary to gcr conversion
 ;*
 ;*
-;*   DOES INPLACE CONVERSION OF
-;*   BUFFER TO GCR USING OVERFLOW
-;*   BLOCK
+;*   does inplace conversion of
+;*   buffer to gcr using overflow
+;*   block
 ;*
 ;*
-;*   CREATES WRITE IMAGE
+;*   creates write image
 ;*
-;*     1 BLOCK ID CHAR
-;*   256 DATA BYTES
-;*     1 CHECK SUM
-;*     2 OFF BYTES
+;*     1 block id char
+;*   256 data bytes
+;*     1 check sum
+;*     2 off bytes
 ;*   ---
-;*   260 BINARY BYTES
+;*   260 binary bytes
 ;*
-;*  260 BINARY BYTES >> 325 GCR
+;*  260 binary bytes >> 325 gcr
 ;*
-;*  325 = 256 + 69 OVERFLOW
+;*  325 = 256 + 69 overflow
 ;*
 ;*
 ;********************************
 ;*
-BINGCR	LDA #0          ; INIT POINTERS
-	STA BUFPNT
-	STA SAVPNT
-	STA BYTCNT
+bingcr	lda #0          ; init pointers
+	sta bufpnt
+	sta savpnt
+	sta bytcnt
 ;
-	LDA #256-TOPWRT
-	STA GCRPNT      ; START SAVING GCR HERE
+	lda #256-topwrt
+	sta gcrpnt      ; start saving gcr here
 ;
-	STA GCRFLG      ; BUFFER CONVERTED FLAG
+	sta gcrflg      ; buffer converted flag
 ;
-	LDA BUFPNT+1    ; SAVE BUFFER POINTER
-	STA SAVPNT+1
+	lda bufpnt+1    ; save buffer pointer
+	sta savpnt+1
 ;
-	LDA #>OVRBUF    ; POINT AT OVERFLOW
-	STA BUFPNT+1
+	lda #>ovrbuf    ; point at overflow
+	sta bufpnt+1
 ;
-	LDA DBID        ; STORE DATA BLOCK ID
-	STA BTAB        ; AND NEXT 3 DATA BYTES
+	lda dbid        ; store data block id
+	sta btab        ; and next 3 data bytes
 ;
-	LDY BYTCNT
+	ldy bytcnt
 ;
-	LDA (SAVPNT),Y
-	STA BTAB+1
-	INY
+	lda (savpnt),y
+	sta btab+1
+	iny
 ;
-	LDA (SAVPNT),Y
-	STA BTAB+2
-	INY
+	lda (savpnt),y
+	sta btab+2
+	iny
 ;
-	LDA (SAVPNT),Y
-	STA BTAB+3
-	INY
+	lda (savpnt),y
+	sta btab+3
+	iny
 ;
-BING07	STY BYTCNT      ; NEXT BYTE TO GET
+bing07	sty bytcnt      ; next byte to get
 ;
-	JSR PUT4BG      ; CONVERT AND STORE
+	jsr put4bg      ; convert and store
 ;
-	LDY BYTCNT
+	ldy bytcnt
 ;
-	LDA (SAVPNT),Y
-	STA BTAB
-	INY
-	BEQ BING20
+	lda (savpnt),y
+	sta btab
+	iny
+	beq bing20
 ;
-	LDA (SAVPNT),Y
-	STA BTAB+1
-	INY
+	lda (savpnt),y
+	sta btab+1
+	iny
 ;
-	LDA (SAVPNT),Y
-	STA BTAB+2
-	INY
+	lda (savpnt),y
+	sta btab+2
+	iny
 ;
-	LDA (SAVPNT),Y
-	STA BTAB+3
-	INY
+	lda (savpnt),y
+	sta btab+3
+	iny
 ;
-	BNE BING07      ; JMP
-;
-;
-BING20	LDA CHKSUM      ; STORE CHKSUM
-	STA BTAB+1
-;
-	LDA #0          ; STORE 0 OFF BYTE
-	STA BTAB+2
-	STA BTAB+3
-;
-	JMP PUT4BG      ; CONVERT AND STORE AND RETURN
+	bne bing07      ; jmp
 ;
 ;
+bing20	lda chksum      ; store chksum
+	sta btab+1
 ;
-.END
+	lda #0          ; store 0 off byte
+	sta btab+2
+	sta btab+3
+;
+	jmp put4bg      ; convert and store and return
+;
+;
+;
+.end

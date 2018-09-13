@@ -1,341 +1,341 @@
-.PAGE 'TST3'
+.page 'tst3'
 ;
 ;
-; .A=#BUFFERS NEEDED
-; SETS UP BUFFER # AND ALLOCATES LINDX
-GETWCH
-	SEC             ;SET .C=1 INDICATE WRITE
-	BCS GETR2
-GETRCH
-	CLC             ;SET .C=0 INDICATE READ
-GETR2
-	PHP             ;SAVE R/W FLAG (.C)
-	STA TEMP        ;SAVE #BUFS NEEDED
-	JSR FRECHN      ;FREE ANY CHANNELS
-	JSR FNDLNX      ; GET NEXT LINDX OPEN
-	STA LINDX
-	LDX SA
-	PLP
-	BCC GETR55
-GETR52	ORA #$80
-GETR55	STA LINTAB,X    ;SAVE LINDX IN LINTAB
-GETBF
-	AND #$3F
-	TAY             ;NOW GET THE BUFFERS
-	LDA #$FF
-	STA BUF0,Y
-	STA BUF1,Y
-	STA SS,Y
-GETR3	DEC TEMP
-	BMI GETR4
-	JSR GETBUF
-	BPL GETR5
-GBERR	JSR RELBUF      ; ERROR ,REL BUFS
-	LDA #NOCHNL
-	JMP CMDERR
-GETR5	STA BUF0,Y
-	DEC TEMP
-	BMI GETR4
-	JSR GETBUF
-	BMI GBERR
-	STA BUF1,Y
-GETR4	RTS
+; .a=#buffers needed
+; sets up buffer # and allocates lindx
+getwch
+	sec             ;set .c=1 indicate write
+	bcs getr2
+getrch
+	clc             ;set .c=0 indicate read
+getr2
+	php             ;save r/w flag (.c)
+	sta temp        ;save #bufs needed
+	jsr frechn      ;free any channels
+	jsr fndlnx      ; get next lindx open
+	sta lindx
+	ldx sa
+	plp
+	bcc getr55
+getr52	ora #$80
+getr55	sta lintab,x    ;save lindx in lintab
+getbf
+	and #$3f
+	tay             ;now get the buffers
+	lda #$ff
+	sta buf0,y
+	sta buf1,y
+	sta ss,y
+getr3	dec temp
+	bmi getr4
+	jsr getbuf
+	bpl getr5
+gberr	jsr relbuf      ; error ,rel bufs
+	lda #nochnl
+	jmp cmderr
+getr5	sta buf0,y
+	dec temp
+	bmi getr4
+	jsr getbuf
+	bmi gberr
+	sta buf1,y
+getr4	rts
 ;
-; FREE CHANL ASSOCIATED WITH SA
-; FREE READ AND WRITE CHANLS
-; DONT FREE CHANL 15
-FRECHN	LDA SA
-	CMP #$F
-	BNE FRECO
-	RTS
-.SKIP
-FRECO
-FRERD
-FREWRT	LDX SA
-	LDA LINTAB,X
-	CMP #$FF
-	BEQ FRE25
-	AND	#$3F
-	STA LINDX
-	LDA #$FF
-	STA LINTAB,X
-	LDX LINDX
-	LDA #0
-	STA CHNRDY,X
-	JSR RELBUF
+; free chanl associated with sa
+; free read and write chanls
+; dont free chanl 15
+frechn	lda sa
+	cmp #$f
+	bne freco
+	rts
+.skip
+freco
+frerd
+frewrt	ldx sa
+	lda lintab,x
+	cmp #$ff
+	beq fre25
+	and	#$3f
+	sta lindx
+	lda #$ff
+	sta lintab,x
+	ldx lindx
+	lda #0
+	sta chnrdy,x
+	jsr relbuf
 ;
-; RELEASE THE LINDX
+; release the lindx
 ;
-RELINX	LDX LINDX
-	LDA #1
-REL15	DEX
-	BMI REL10
-	ASL A
-	BNE REL15
-REL10	ORA LINUSE      ;1=FREE 0=USED
-	STA LINUSE
-FRE25	RTS
-; GIVEN SA , FREE ITS READ CHANL
+relinx	ldx lindx
+	lda #1
+rel15	dex
+	bmi rel10
+	asl a
+	bne rel15
+rel10	ora linuse      ;1=free 0=used
+	sta linuse
+fre25	rts
+; given sa , free its read chanl
 ;
 ; 
-; RELEASE BUFFERS (LINDX)
+; release buffers (lindx)
 ;
-RELBUF	LDX LINDX
-	LDA BUF0,X
-	CMP #$FF
-	BEQ REL1
-	PHA
-	LDA #$FF
-	STA BUF0,X
-	PLA
-	JSR FREBUF
-REL1	LDX LINDX
-	LDA BUF1,X
-	CMP #$FF
-	BEQ REL2
-	PHA
-	LDA #$FF
-	STA BUF1,X
-	PLA
-	JSR FREBUF
-REL2	LDX LINDX
-	LDA SS,X
-	CMP #$FF
-	BEQ REL3
-	PHA
-	LDA #$FF
-	STA SS,X
-	PLA
-	JSR FREBUF
-REL3	RTS
+relbuf	ldx lindx
+	lda buf0,x
+	cmp #$ff
+	beq rel1
+	pha
+	lda #$ff
+	sta buf0,x
+	pla
+	jsr frebuf
+rel1	ldx lindx
+	lda buf1,x
+	cmp #$ff
+	beq rel2
+	pha
+	lda #$ff
+	sta buf1,x
+	pla
+	jsr frebuf
+rel2	ldx lindx
+	lda ss,x
+	cmp #$ff
+	beq rel3
+	pha
+	lda #$ff
+	sta ss,x
+	pla
+	jsr frebuf
+rel3	rts
 ;
-; GET A FREE BUFFER #
+; get a free buffer #
 ;
-;  REGS DESTROYED: .A  .X
-;  OUT:  .A,.X= BUF # OR $FF  IF FAILED
-;        .N= 1 IF FAILED
+;  regs destroyed: .a  .x
+;  out:  .a,.x= buf # or $ff  if failed
+;        .n= 1 if failed
 ;
-;     IF SUCCESSFUL INIT JOBS & LSTJOB
+;     if successful init jobs & lstjob
 ;
-GETBUF
-	TYA             ;SAVE .Y
-	PHA
-	LDY #1
-	JSR FNDBUF
-	BPL GBF1        ;FOUND ONE
+getbuf
+	tya             ;save .y
+	pha
+	ldy #1
+	jsr fndbuf
+	bpl gbf1        ;found one
 ;
-	DEY
-	JSR FNDBUF
-	BPL GBF1        ;FOUND ONE
+	dey
+	jsr fndbuf
+	bpl gbf1        ;found one
 ;
-	JSR STLBUF      ;STEAL ONE
-	TAX             ;TEST IT
-	BMI GBF2        ;DIDN'T FIND ONE
-GBF1
-	LDA JOBS,X
-	BMI GBF1        ;WAIT FOR JOB FREE
-	LDA DRVNUM
-	STA JOBS,X      ;CLEAR JOB QUEUE
-	STA LSTJOB,X
-	TXA
-	ASL A
-	TAY
-	LDA #2
-	STA BUFTAB,Y
-GBF2
-	PLA
-	TAY             ;RESTORE .Y
-	TXA             ;EXIT WITH BUF # IN .A & CC SET
-	RTS
-;
-;
-; FIND A FREE BUF # & SET BIT IN BUFUSE
-;  ALL REGS USED
-;  IN:  .Y= INDEX INTO BUFUSE
-; OUT:  .X= BUF # OR $FF  IF FAILED
-;       .N= 1 IF FAILED
-;
-FNDBUF
-	LDX #7
-FB1
-	LDA BUFUSE,Y    ;SEARCH BUFUSE
-	AND BMASK,X
-	BEQ FB2         ;FOUND A FREE ONE
-;
-	DEX
-	BPL FB1         ;UNTIL ALL BITS ARE TESTED
-;
-	RTS
-FB2	;SET IT USED
-	LDA BUFUSE,Y
-	EOR BMASK,X     ;SET BIT
-	STA BUFUSE,Y
-	TXA
-	DEY
-	BMI FB3         ;IF .Y THEN...
-	CLC             ;...ADD 8 MORE
-	ADC #8
-FB3
-	TAX             ;LEAVE IN .X
-FRI20
-	RTS
-;
-FREIAC	;FREE INACTIVE BUFFER
-	LDX LINDX
-	LDA BUF0,X
-	BMI FRI10
-;
-	TXA
-	CLC
-	ADC #MXCHNS+1
-	TAX
-	LDA BUF0,X
-	BPL FRI20
-FRI10
-	CMP #$FF
-	BEQ FRI20
-;
-	PHA
-	LDA #$FF
-	STA BUF0,X
-	PLA
-;  JMP FREBUF
+	jsr stlbuf      ;steal one
+	tax             ;test it
+	bmi gbf2        ;didn't find one
+gbf1
+	lda jobs,x
+	bmi gbf1        ;wait for job free
+	lda drvnum
+	sta jobs,x      ;clear job queue
+	sta lstjob,x
+	txa
+	asl a
+	tay
+	lda #2
+	sta buftab,y
+gbf2
+	pla
+	tay             ;restore .y
+	txa             ;exit with buf # in .a & cc set
+	rts
 ;
 ;
+; find a free buf # & set bit in bufuse
+;  all regs used
+;  in:  .y= index into bufuse
+; out:  .x= buf # or $ff  if failed
+;       .n= 1 if failed
 ;
-FREBUF	AND #$F
-	TAY
-	INY
-	LDX #16
-FREB1	ROR BUFUSE+1
-	ROR BUFUSE
-	DEY
-	BNE FREB2
-	CLC
-FREB2	DEX
-	BPL FREB1
-	RTS
+fndbuf
+	ldx #7
+fb1
+	lda bufuse,y    ;search bufuse
+	and bmask,x
+	beq fb2         ;found a free one
+;
+	dex
+	bpl fb1         ;until all bits are tested
+;
+	rts
+fb2	;set it used
+	lda bufuse,y
+	eor bmask,x     ;set bit
+	sta bufuse,y
+	txa
+	dey
+	bmi fb3         ;if .y then...
+	clc             ;...add 8 more
+	adc #8
+fb3
+	tax             ;leave in .x
+fri20
+	rts
+;
+freiac	;free inactive buffer
+	ldx lindx
+	lda buf0,x
+	bmi fri10
+;
+	txa
+	clc
+	adc #mxchns+1
+	tax
+	lda buf0,x
+	bpl fri20
+fri10
+	cmp #$ff
+	beq fri20
+;
+	pha
+	lda #$ff
+	sta buf0,x
+	pla
+;  jmp frebuf
 ;
 ;
-CLRCHN	LDA #14
-	STA SA
-CLRC1	JSR FRECHN 
-	DEC SA
-	BNE CLRC1
-	RTS
 ;
-CLDCHN	LDA #14
-	STA SA
-CLSD	LDX SA
-	LDA LINTAB,X
-	CMP #$FF
-	BEQ CLD2
-	AND #$3F
-	STA LINDX
-	JSR GETACT
-	TAX
-	LDA LSTJOB,X
-	AND #1
-	CMP DRVNUM
-	BNE CLD2
-	JSR FRECHN
-CLD2	DEC SA
-	BPL CLSD
-	RTS
+frebuf	and #$f
+	tay
+	iny
+	ldx #16
+freb1	ror bufuse+1
+	ror bufuse
+	dey
+	bne freb2
+	clc
+freb2	dex
+	bpl freb1
+	rts
+;
+;
+clrchn	lda #14
+	sta sa
+clrc1	jsr frechn 
+	dec sa
+	bne clrc1
+	rts
+;
+cldchn	lda #14
+	sta sa
+clsd	ldx sa
+	lda lintab,x
+	cmp #$ff
+	beq cld2
+	and #$3f
+	sta lindx
+	jsr getact
+	tax
+	lda lstjob,x
+	and #1
+	cmp drvnum
+	bne cld2
+	jsr frechn
+cld2	dec sa
+	bpl clsd
+	rts
 ;
 ;********************************
-;***********  S T L B U F  ******
+;***********  s t l b u f  ******
 ;********************************
 ;
-; STEAL A BUFFER
+; steal a buffer
 ;
-; THIS RTN SEARCHES THE CHANNELS
-; IN ORDER OF LEAST RECENTLY USED
-; AND STEALS THE FIRST INACTIVE
-; BUFFER IT FINDS.
+; this rtn searches the channels
+; in order of least recently used
+; and steals the first inactive
+; buffer it finds.
 ;
-;    INPUT PARAMTERS:
-;        LRUTBL - LEAST RECENTYL
-;                 USED TABLE
+;    input paramters:
+;        lrutbl - least recentyl
+;                 used table
 ;
-;    OUTPUT PARAMTERS:
-;        A <== BUFFER #
+;    output paramters:
+;        a <== buffer #
 ;
-;    REGISTER USAGE:
-;        X - CHANNEL INDEX
-;        Y - LRUTBL INDEX
+;    register usage:
+;        x - channel index
+;        y - lrutbl index
 ;
 ;*******************************
 ;
-STLBUF
-	LDA T0
-	PHA             ;SAVE T0
-	LDY #0
-STL05
-	LDX LRUTBL,Y
-	LDA BUF0,X
-	BPL STL10       ;ACTIVE
+stlbuf
+	lda t0
+	pha             ;save t0
+	ldy #0
+stl05
+	ldx lrutbl,y
+	lda buf0,x
+	bpl stl10       ;active
 ;
-	CMP #$FF
-	BNE STL30       ;IT'S INACTIVE
-STL10
-	TXA
-	CLC
-	ADC #MXCHNS+1
-	TAX
-	LDA BUF0,X
-	BPL STL20
-	CMP #$FF
-	BNE STL30
-STL20
-	INY
-	CPY #MXCHNS-1
-	BCC STL05
-	LDX #$FF        ;SET FAILURE
-	BNE STL60       ;BRA
-STL30	;STEAL THE BUFFER IF NO ERROR
-	STX T0
-	AND #$3F
-	TAX
-STL40
-	LDA JOBS,X
-	BMI STL40       ;WAIT TILL DONE
-	CMP #2          ;ERRORS?
-	BCC STL50       ;OK
-	LDX T0
-	CPX #MXCHNS+1
-	BCC STL10       ;CHECK OPPOSITE SLOT
-	BCS STL20       ;CHECK ANOTHER CHANNEL
+	cmp #$ff
+	bne stl30       ;it's inactive
+stl10
+	txa
+	clc
+	adc #mxchns+1
+	tax
+	lda buf0,x
+	bpl stl20
+	cmp #$ff
+	bne stl30
+stl20
+	iny
+	cpy #mxchns-1
+	bcc stl05
+	ldx #$ff        ;set failure
+	bne stl60       ;bra
+stl30	;steal the buffer if no error
+	stx t0
+	and #$3f
+	tax
+stl40
+	lda jobs,x
+	bmi stl40       ;wait till done
+	cmp #2          ;errors?
+	bcc stl50       ;ok
+	ldx t0
+	cpx #mxchns+1
+	bcc stl10       ;check opposite slot
+	bcs stl20       ;check another channel
 ;
-; FOUND ONE, SO LETS STEAL IT
+; found one, so lets steal it
 ;
-STL50
-	LDY T0
-	LDA #$FF
-	STA BUF0,Y      ;CLEAR SLOT
-STL60
-	PLA
-	STA T0
-	TXA             ;BUF # IN .A & SET CC'S
-	RTS
+stl50
+	ldy t0
+	lda #$ff
+	sta buf0,y      ;clear slot
+stl60
+	pla
+	sta t0
+	txa             ;buf # in .a & set cc's
+	rts
 ;
 ;
 ;
-; FIND A FREE LINDX TO USE
-; MARK AS USED IN LINUSE
+; find a free lindx to use
+; mark as used in linuse
 ;
-FNDLNX	LDY #0
-	LDA #1
-FND10	BIT LINUSE      ;1=FREE 0=USED
-	BNE FND30
-	INY
-	ASL A
-	BNE FND10
-	LDA #NOCHNL     ;NO FREE LINDX AVAILABLE
-	JMP CMDERR
-FND30	EOR #$FF        ;TOGGLE BIT MASK
-	AND LINUSE      ;MARK BIT USED
-	STA LINUSE
-	TYA             ;RETURN LINDX IN .A
-	RTS
-.END
+fndlnx	ldy #0
+	lda #1
+fnd10	bit linuse      ;1=free 0=used
+	bne fnd30
+	iny
+	asl a
+	bne fnd10
+	lda #nochnl     ;no free lindx available
+	jmp cmderr
+fnd30	eor #$ff        ;toggle bit mask
+	and linuse      ;mark bit used
+	sta linuse
+	tya             ;return lindx in .a
+	rts
+.end

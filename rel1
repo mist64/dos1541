@@ -1,130 +1,130 @@
-.PAGE 'REL1'
+.page 'rel1'
 ;***********************************
 ;*
-;*     ROUTINE: NXTREC
+;*     routine: nxtrec
 ;*
 ;*
 ;*
 ;*
 ;*
 ;***********************************
-NXTREC
-	LDA #OVRFLO
-	JSR CLRFLG
+nxtrec
+	lda #ovrflo
+	jsr clrflg
 ;
-	LDA #LRF
-	JSR TSTFLG
-	BNE NXTR40
+	lda #lrf
+	jsr tstflg
+	bne nxtr40
 ;
-	LDX LINDX
-	INC RECL,X      ; GOTO NEXT RECORD #
-	BNE NXTR15
-	INC RECH,X
+	ldx lindx
+	inc recl,x      ; goto next record #
+	bne nxtr15
+	inc rech,x
 ;
-NXTR15
-	LDX LINDX
-	LDA NR,X
-	BEQ NXTR45      ;THERE IS A NR
+nxtr15
+	ldx lindx
+	lda nr,x
+	beq nxtr45      ;there is a nr
 ;
-	JSR GETPNT      ; GET POINTER
-	LDX LINDX       ;TEST IF SAME BUFFER
-	CMP NR,X
-	BCC NXTR20      ; YES, BT<NR
+	jsr getpnt      ; get pointer
+	ldx lindx       ;test if same buffer
+	cmp nr,x
+	bcc nxtr20      ; yes, bt<nr
 ;
-	JSR NRBUF       ; NO,NEXT BUFFER
+	jsr nrbuf       ; no,next buffer
 ;
-NXTR20	LDX LINDX
-	LDA NR,X
-	JSR SETPNT      ;ADVANCE TO NEXT REC
-	LDA (BUFTAB,X)  ;READ 1ST DAT BYTE
+nxtr20	ldx lindx
+	lda nr,x
+	jsr setpnt      ;advance to next rec
+	lda (buftab,x)  ;read 1st dat byte
 ;
-	STA DATA        ;SAVE FOR READ CHANNEL
-	LDA #OVRFLO
-	JSR CLRFLG      ; CLEAR
-; THE OVERFLOW FLAG
-	JSR ADDNR       ;ADVANCE NR
-NXOUT
-	PHA
-	BCC NXTR30      ;NO BLOCK BOUNDARY
+	sta data        ;save for read channel
+	lda #ovrflo
+	jsr clrflg      ; clear
+; the overflow flag
+	jsr addnr       ;advance nr
+nxout
+	pha
+	bcc nxtr30      ;no block boundary
 ;
-	LDA #0
-	JSR DRDBYT      ;CHECK TRACK LINK
-	BNE NXTR30      ;NOT LAST BLOCK
+	lda #0
+	jsr drdbyt      ;check track link
+	bne nxtr30      ;not last block
 ;
-	PLA
-	CMP #2
-	BEQ NXTR50
-NXTR45
-	LDA #LRF
-	JSR SETFLG
-NXTR40
-	JSR GETPRE
-	LDA BUFTAB,X
-	STA LSTCHR,Y
-	LDA #CR
-	STA DATA
-	RTS
+	pla
+	cmp #2
+	beq nxtr50
+nxtr45
+	lda #lrf
+	jsr setflg
+nxtr40
+	jsr getpre
+	lda buftab,x
+	sta lstchr,y
+	lda #cr
+	sta data
+	rts
 ;
-NXTR50
-	JSR NXTR35
-	LDX LINDX
-	LDA #0
-	STA NR,X
-	RTS
-NXTR30
-	PLA
-NXTR35
-	LDX LINDX
+nxtr50
+	jsr nxtr35
+	ldx lindx
+	lda #0
+	sta nr,x
+	rts
+nxtr30
+	pla
+nxtr35
+	ldx lindx
 ;*
-	STA NR,X
-	JMP SETLST
+	sta nr,x
+	jmp setlst
 ;*
 ;*
 ;**********************************
 ;*
 ;*
-;*  NRBUF
+;*  nrbuf
 ;*
 ;*
 ;********************************
 ;*
 ;*
-NRBUF	;READ TRK,SEC LINK
-	JSR SETDRN
-	JSR RDLNK
+nrbuf	;read trk,sec link
+	jsr setdrn
+	jsr rdlnk
 ;
 ;
-	JSR GAFLGS      ; TEST IF DIRTY
-	BVC NRBU50      ;CLEAN, DONT WRITE OUT
+	jsr gaflgs      ; test if dirty
+	bvc nrbu50      ;clean, dont write out
 ;
-	JSR WRTOUT      ;DIRTY, WRITE OUT
-	JSR DBLBUF      ;TOGGLE ACTIVE BUFFER
+	jsr wrtout      ;dirty, write out
+	jsr dblbuf      ;toggle active buffer
 ;
-	LDA #2
-	JSR SETPNT
-	JSR TSTWRT      ;TEST IF LSTJOB IS WRT
-	BNE NRBU20      ;NOT A WRITE,BUFFER OK
+	lda #2
+	jsr setpnt
+	jsr tstwrt      ;test if lstjob is wrt
+	bne nrbu20      ;not a write,buffer ok
 ;
-	JSR RDAB        ;READ IN NEEDED BUFFER
-	JMP WATJOB      ;WAIT AROUND TILL DONE
+	jsr rdab        ;read in needed buffer
+	jmp watjob      ;wait around till done
 ;
-NRBU50	JSR DBLBUF      ;TOGGLE ACT BUF
-	JSR TSTWRT      ;WAS LSTJOB A WRT?
-	BNE NRBU70      ;NOT A WRITE
+nrbu50	jsr dblbuf      ;toggle act buf
+	jsr tstwrt      ;was lstjob a wrt?
+	bne nrbu70      ;not a write
 ;
-	JSR RDAB        ;READ IN NEEDED BUFFER
-	JSR WATJOB      ;WAIT TILL DONE
+	jsr rdab        ;read in needed buffer
+	jsr watjob      ;wait till done
 ;
-NRBU70	;READ TRK,SEC LINK
-	JSR RDLNK       ; TO DO A READ AHEAD
+nrbu70	;read trk,sec link
+	jsr rdlnk       ; to do a read ahead
 ;
-	LDA TRACK       ;TEST IF LAST BUFFER
-	BEQ NRBU20      ;YES,NO DBL BUFF TODO
+	lda track       ;test if last buffer
+	beq nrbu20      ;yes,no dbl buff todo
 ;
-	JSR DBLBUF      ;START READ JOB ON THE
-	JSR RDAB        ;INACTIVE BUFFER
-	JSR DBLBUF
+	jsr dblbuf      ;start read job on the
+	jsr rdab        ;inactive buffer
+	jsr dblbuf
 ;
-NRBU20	RTS
+nrbu20	rts
 ;
-.END
+.end

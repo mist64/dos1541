@@ -1,113 +1,113 @@
-.PAGE 'IDLE...SF'
-.SKIP3
-; IDLE LOOP, WAITING FOR SOMETHING TO DO
-IDLE
-	CLI
-;  RELEASE ALL BUS LINES
-	LDA PB          ;CLOCK AND DATA HIGH
-; DATA HIGH,ATNA HI
-	AND #$E5        ; CLOCK HIGH
-	STA PB
+.page 'idle...sf'
+.skip3
+; idle loop, waiting for something to do
+idle
+	cli
+;  release all bus lines
+	lda pb          ;clock and data high
+; data high,atna hi
+	and #$e5        ; clock high
+	sta pb
 ;
-	LDA CMDWAT      ; TEST FOR PENDING COMMAND
-	BEQ IDL1        ; NO COMMAND WAITING
-	LDA #0
-	STA CMDWAT
-	STA NMIFLG      ;CLEAR DEBOUNCE
-	JSR PARSXQ      ; PARSE AND XEQ COMMAND
-IDL1	CLI             ;TEST FOR DRIVE RUNNING OR OPENFILE
-	LDA ATNPND
-	BEQ IDL01
+	lda cmdwat      ; test for pending command
+	beq idl1        ; no command waiting
+	lda #0
+	sta cmdwat
+	sta nmiflg      ;clear debounce
+	jsr parsxq      ; parse and xeq command
+idl1	cli             ;test for drive running or openfile
+	lda atnpnd
+	beq idl01
 ;
-	JMP ATNSRV      ;SERVICE ATN IRQ
-IDL01
-	CLI
-	LDA #14
-	STA TEMP+3
-	LDA #0          ;IF FILE OPEN, TURN ON ACT LED
-	STA TEMP
-	STA TEMP+1
-IDL2	LDX TEMP+3      ;LOOK THRU LINTAB
-	LDA LINTAB,X    ;FOR ACTIVE FILE
-	CMP #$FF
-	BEQ IDL3
-	AND #$3F
-	STA LINDX
-	JSR GETACT
-	TAX
-	LDA LSTJOB,X    ;DETERMINE WHICH DRV IT IS ON
-	AND #1
-	TAX
-	INC TEMP,X
-IDL3	DEC TEMP+3      ;SET FLAG INDICATING DRV
-	BPL IDL2        ;HAS FILE OPEN
-	LDY #BFCNT-1    ;LOOK THRU JOB QUE FOR
-IDL4	LDA JOBS,Y      ; FOR JOBS STILL RUNNING
-	BPL IDL5
-	AND #1
-	TAX
-	INC TEMP,X      ;SET FLAG INDICATING DRIVE
-IDL5	DEY             ;IS ACTIVE
-	BPL IDL4
-	SEI             ; DONT ALLOW IRQ WHEN READING LEDPRT **********************
-	LDA LEDPRT
-	AND #$FF-LED0
-	PHA
-	LDA DRVNUM
-	STA R0
-	LDA #0
-	STA DRVNUM
-	LDA TEMP
-	BEQ IDL7
-	LDA WPSW
-	BEQ IDL6
-	JSR CLDCHN
-IDL6
-	PLA             ;TURN ON LED IF DRIVE FLAG
-	ORA #LED0       ; IF NOT 0
-	PHA
-IDL7
-	INC DRVNUM
-	LDA TEMP+1
-	BEQ IDL9
-	LDA WPSW+1
-	BEQ IDL8
-	JSR CLDCHN
-IDL8
-	PLA
-	ORA #LED1
-	PHA
-IDL9
-	LDA R0
-	STA DRVNUM
-	PLA
-	LDX ERWORD
-	BEQ IDL12       ;NO ERROR FLASHING
+	jmp atnsrv      ;service atn irq
+idl01
+	cli
+	lda #14
+	sta temp+3
+	lda #0          ;if file open, turn on act led
+	sta temp
+	sta temp+1
+idl2	ldx temp+3      ;look thru lintab
+	lda lintab,x    ;for active file
+	cmp #$ff
+	beq idl3
+	and #$3f
+	sta lindx
+	jsr getact
+	tax
+	lda lstjob,x    ;determine which drv it is on
+	and #1
+	tax
+	inc temp,x
+idl3	dec temp+3      ;set flag indicating drv
+	bpl idl2        ;has file open
+	ldy #bfcnt-1    ;look thru job que for
+idl4	lda jobs,y      ; for jobs still running
+	bpl idl5
+	and #1
+	tax
+	inc temp,x      ;set flag indicating drive
+idl5	dey             ;is active
+	bpl idl4
+	sei             ; dont allow irq when reading ledprt **********************
+	lda ledprt
+	and #$ff-led0
+	pha
+	lda drvnum
+	sta r0
+	lda #0
+	sta drvnum
+	lda temp
+	beq idl7
+	lda wpsw
+	beq idl6
+	jsr cldchn
+idl6
+	pla             ;turn on led if drive flag
+	ora #led0       ; if not 0
+	pha
+idl7
+	inc drvnum
+	lda temp+1
+	beq idl9
+	lda wpsw+1
+	beq idl8
+	jsr cldchn
+idl8
+	pla
+	ora #led1
+	pha
+idl9
+	lda r0
+	sta drvnum
+	pla
+	ldx erword
+	beq idl12       ;no error flashing
 ;
-	LDA LEDPRT      ;USE CURRENT LEDS
-	CPX #$80
-	BNE IDL10       ;NOT IST TIME
+	lda ledprt      ;use current leds
+	cpx #$80
+	bne idl10       ;not ist time
 ;
-;PHA
-;BEEP HERE**************
-;PLA
-	JMP	IDL11
+;pha
+;beep here**************
+;pla
+	jmp	idl11
 ;
-IDL10
-	LDX TIMER1
-	BMI IDL12       ;STILL TIMING
+idl10
+	ldx timer1
+	bmi idl12       ;still timing
 ;
-	LDX #$A0        ;COUNT 8 MSEC
-	STX TIMER1
-IDL11
-	DEC ERWORD      ;COUNT UNITS OF 8 MSEC
-	BNE IDL12       ;KEEP COUNTING
+	ldx #$a0        ;count 8 msec
+	stx timer1
+idl11
+	dec erword      ;count units of 8 msec
+	bne idl12       ;keep counting
 ;
-	EOR ERLED       ;TOGGLE LED
-	LDX #16         ;COUNT 16 UNITS
-	STX ERWORD
-IDL12
-	STA LEDPRT      ;SET LEDS
-	JMP IDL1        ;BACK TO TOP OF LOP
+	eor erled       ;toggle led
+	ldx #16         ;count 16 units
+	stx erword
+idl12
+	sta ledprt      ;set leds
+	jmp idl1        ;back to top of lop
 ;
-.END
+.end

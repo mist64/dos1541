@@ -1,74 +1,74 @@
-.PAGE 'DISK COPY'
+.page 'disk copy'
 ;
-; DSKCPY CHECK FOR TYPE
-; AND PARSES SPECIAL CASE
+; dskcpy check for type
+; and parses special case
 ;
-DSKCPY
-	LDA #$E0        ;KILL BAM BUFFER
-	STA BUFUSE
-	JSR CLNBAM      ;CLR TBAM
-	JSR BAM2X       ;GET BAM LINDX IN .X
-	LDA #$FF
-	STA BUF0,X      ;MARK BAM OUT-OF-MEMORY
-	LDA #$0F
-	STA LINUSE      ;FREE ALL LINDXS
-	JSR PRSCLN      ;FIND ":"
-	BNE DX0000
-	JMP DUPLCT      ;BAD COMMAND ERROR, CX=X NOT ALLOWED
+dskcpy
+	lda #$e0        ;kill bam buffer
+	sta bufuse
+	jsr clnbam      ;clr tbam
+	jsr bam2x       ;get bam lindx in .x
+	lda #$ff
+	sta buf0,x      ;mark bam out-of-memory
+	lda #$0f
+	sta linuse      ;free all lindxs
+	jsr prscln      ;find ":"
+	bne dx0000
+	jmp duplct      ;bad command error, cx=x not allowed
 ;
-;JSR PRSEQ
+;jsr prseq
 ;
-;LDA #'* ;CPY ALL
-;LDX #39 ;PUT AT BUFFER END
-;STX FILTBL+1
-;STA CMDBUF,X ;PLACE *
-;INX
-;STX CMDSIZ
-;LDX #1 ;SET UP CNT'S
-;STX F1CNT
-;INX
-;STX F2CNT
-;JMP MOVLP2 ;ENTER ROUTINE
+;lda #'* ;cpy all
+;ldx #39 ;put at buffer end
+;stx filtbl+1
+;sta cmdbuf,x ;place *
+;inx
+;stx cmdsiz
+;ldx #1 ;set up cnt's
+;stx f1cnt
+;inx
+;stx f2cnt
+;jmp movlp2 ;enter routine
 ;
-DX0000	JSR TC30        ;NORMAL PARSE
-DX0005	JSR ALLDRS      ;PUT DRV'S IN FILTBL
-	LDA IMAGE       ;GET PARSE IMAGE
-	AND #%01010101  ;VAL FOR PATT COPY
-	BNE DX0020      ;MUST BE CONCAT OR NORMAL
-	LDX FILTBL      ;CHK FOR *
-	LDA CMDBUF,X
-	CMP #'*
-	BNE DX0020
-;LDX #1 ;SET CNT'S
-;  NO PATTERN MATCHING ALLOWED
-;STX F1CNT
-;INX
-;STX F2CNT
-;JMP CPYDTD ;GO COPY
-DX0010	LDA #BADSYN     ;SYNTAX ERROR
-	JMP CMDERR
-DX0020	LDA IMAGE       ;CHK FOR NORMAL
-	AND #%11011001
-	BNE DX0010
-	JMP COPY
-.END
-PRSEQ
-	LDA #'=         ;SPECIAL CASE
-	JSR PARSE
-	BNE X0020
-X0015	LDA #BADSYN
-	JMP CMDERR
-X0020	LDA CMDBUF,Y
-	JSR TST0V1
-	BMI X0015
-	STA FILDRV+1    ;SRC DRV
-	DEY
-	DEY
-	LDA CMDBUF,Y
-	JSR TST0V1
-	BMI X0015
-	CMP FILDRV+1    ;CANNOT BE EQUAL
-	BEQ X0015
-	STA FILDRV      ;DEST DRV
-	RTS
-.END
+dx0000	jsr tc30        ;normal parse
+dx0005	jsr alldrs      ;put drv's in filtbl
+	lda image       ;get parse image
+	and #%01010101  ;val for patt copy
+	bne dx0020      ;must be concat or normal
+	ldx filtbl      ;chk for *
+	lda cmdbuf,x
+	cmp #'*
+	bne dx0020
+;ldx #1 ;set cnt's
+;  no pattern matching allowed
+;stx f1cnt
+;inx
+;stx f2cnt
+;jmp cpydtd ;go copy
+dx0010	lda #badsyn     ;syntax error
+	jmp cmderr
+dx0020	lda image       ;chk for normal
+	and #%11011001
+	bne dx0010
+	jmp copy
+.end
+prseq
+	lda #'=         ;special case
+	jsr parse
+	bne x0020
+x0015	lda #badsyn
+	jmp cmderr
+x0020	lda cmdbuf,y
+	jsr tst0v1
+	bmi x0015
+	sta fildrv+1    ;src drv
+	dey
+	dey
+	lda cmdbuf,y
+	jsr tst0v1
+	bmi x0015
+	cmp fildrv+1    ;cannot be equal
+	beq x0015
+	sta fildrv      ;dest drv
+	rts
+.end

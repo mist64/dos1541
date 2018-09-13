@@ -1,92 +1,92 @@
-.PAGE 'TSTFLG'
+.page 'tstflg'
 ;*
 ;*
 ;**********************************
 ;*
-;* SCFLG
-;* SETFLG
-;* CLRFLG
-;* TSTFLG
+;* scflg
+;* setflg
+;* clrflg
+;* tstflg
 ;*
 ;*********************************
 ;*
 ;*
-SCFLG	BCC CLRFLG
+scflg	bcc clrflg
 ;
-SETFLG	LDX LINDX
-	ORA FILTYP,X
-	BNE CLRF10
+setflg	ldx lindx
+	ora filtyp,x
+	bne clrf10
 ;
-CLRFLG	LDX LINDX
-	EOR #$FF
-	AND FILTYP,X
-CLRF10	STA FILTYP,X
-	RTS
+clrflg	ldx lindx
+	eor #$ff
+	and filtyp,x
+clrf10	sta filtyp,x
+	rts
 ;
 ;
-TSTFLG	LDX LINDX
-	AND FILTYP,X
-	RTS
+tstflg	ldx lindx
+	and filtyp,x
+	rts
 ;
 ;*
 ;*
 ;******************************
 ;*
 ;*
-;*  TSTWRT
+;*  tstwrt
 ;*
 ;******************************
 ;*
 ;*
-TSTWRT	JSR GETACT
-	TAX
-	LDA LSTJOB,X
-	AND #$F0
-	CMP #$90
-	RTS
+tstwrt	jsr getact
+	tax
+	lda lstjob,x
+	and #$f0
+	cmp #$90
+	rts
 ;*
 ;*
-.PAGE 'TEST CHANNEL'
+.page 'test channel'
 ;
-; TEST FOR ACTIVE FILES FROM
-; LINDX TABLE
+; test for active files from
+; lindx table
 ;
-; C=1 FILE NOT ACTIVE X=18,Y=?,A=?
-; C=0 FILE ACTIVE X=ENTFND,Y=LINDX,A=?
-;
-;
-TSTCHN	LDX #0          ;START SEARCH AT TOP
-TSTC20	STX TEMP+2      ;SAVE TO LOOK ON
-	LDA LINTAB,X    ;GET LINDX
-	CMP #$FF
-	BNE TSTC40      ;IF PLUS TEST IT
-TSTC30	LDX TEMP+2      ;NOT ACTIVE
-	INX
-	CPX #MAXSA-2    ;SEARCHED ALL
-	BCC TSTC20      ;NO
-TSTRTS	RTS             ;YES
+; c=1 file not active x=18,y=?,a=?
+; c=0 file active x=entfnd,y=lindx,a=?
 ;
 ;
-TSTC40	STX TEMP+2      ;SAVE X
-	AND #$3F
-	TAY             ;USE LINDX AS INDEX
-	LDA FILTYP,Y    ;RIGHT DRIVE # ?
-	AND #1
-	STA TEMP+1
-	LDX ENTFND      ;INDEX ENTRY FOUND
-	LDA FILDRV,X
-	AND #1
-	CMP TEMP+1      ;SAME DRIVE # ?
-	BNE TSTC30      ;NO
-	LDA DSEC,Y      ;YES - SAME DIR. ENTRY ?
-	CMP ENTSEC,X
-	BNE TSTC30      ;NO
-	LDA DIND,Y
-	CMP ENTIND,X
-	BNE TSTC30      ;NO
-	CLC             ;SET FLAG
-	RTS
+tstchn	ldx #0          ;start search at top
+tstc20	stx temp+2      ;save to look on
+	lda lintab,x    ;get lindx
+	cmp #$ff
+	bne tstc40      ;if plus test it
+tstc30	ldx temp+2      ;not active
+	inx
+	cpx #maxsa-2    ;searched all
+	bcc tstc20      ;no
+tstrts	rts             ;yes
+;
+;
+tstc40	stx temp+2      ;save x
+	and #$3f
+	tay             ;use lindx as index
+	lda filtyp,y    ;right drive # ?
+	and #1
+	sta temp+1
+	ldx entfnd      ;index entry found
+	lda fildrv,x
+	and #1
+	cmp temp+1      ;same drive # ?
+	bne tstc30      ;no
+	lda dsec,y      ;yes - same dir. entry ?
+	cmp entsec,x
+	bne tstc30      ;no
+	lda dind,y
+	cmp entind,x
+	bne tstc30      ;no
+	clc             ;set flag
+	rts
 ;
 ;
 ;
-.END
+.end

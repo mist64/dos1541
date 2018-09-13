@@ -1,92 +1,92 @@
-.PAGE 'GETACT'
+.page 'getact'
 ;*********************************
-;* GETACT: GET ACTIVE BUFFER #   *
-;*   VARS: BUF0,BUF1,LINDX       *
-;*   REGS: OUT: .A= ACT BUFFER # *
-;*              .X= LINDX        *
-;*   FLAGS:     .N=1: NO ACT-BUF *
-;*********************************
-;
-GETACT
-	LDX LINDX
-	LDA BUF0,X
-	BPL GA1
-	LDA BUF1,X
-GA1
-	AND #$BF        ; STRIP DIRTY BIT
-	RTS
-;
-;*********************************
-;* GAFLG: GET ACTIVE BUFFER #;   *
-;*        SET LBUSED & FLAGS.    *
-;*   REGS: OUT: .A= ACT BUFFER # *
-;*              .X= LINDX        *
-;*   FLAGS:     .N=1: NO ACT-BUF *
-;*              .V=1: DIRTY BUF  *
+;* getact: get active buffer #   *
+;*   vars: buf0,buf1,lindx       *
+;*   regs: out: .a= act buffer # *
+;*              .x= lindx        *
+;*   flags:     .n=1: no act-buf *
 ;*********************************
 ;
-GAFLGS
-	LDX LINDX
-GA2	STX LBUSED      ;SAVE BUF #
-	LDA BUF0,X
-	BPL GA3
+getact
+	ldx lindx
+	lda buf0,x
+	bpl ga1
+	lda buf1,x
+ga1
+	and #$bf        ; strip dirty bit
+	rts
 ;
-	TXA
-	CLC
-	ADC #MXCHNS+1
-	STA LBUSED
-	LDA BUF1,X
-GA3
-	STA T1
-	AND #$1F
-	BIT T1
-	RTS
+;*********************************
+;* gaflg: get active buffer #;   *
+;*        set lbused & flags.    *
+;*   regs: out: .a= act buffer # *
+;*              .x= lindx        *
+;*   flags:     .n=1: no act-buf *
+;*              .v=1: dirty buf  *
+;*********************************
+;
+gaflgs
+	ldx lindx
+ga2	stx lbused      ;save buf #
+	lda buf0,x
+	bpl ga3
+;
+	txa
+	clc
+	adc #mxchns+1
+	sta lbused
+	lda buf1,x
+ga3
+	sta t1
+	and #$1f
+	bit t1
+	rts
 ;
 ;******************************
 ;******************************
 ;
-; GET CHANNELS INACTIVE
-; BUFFER NUMBER.
+; get channels inactive
+; buffer number.
 ;
-;    INPUT PARAMETERS:
-;        LINDX - CHANNEL #
+;    input parameters:
+;        lindx - channel #
 ;
-;    OUTPUT PARAMETERS:
-;        A <== INACTIVE BUFFER #
-;           OR
-;        A <== $FF IF NO
-;            INACTIVE BUFFER.
+;    output parameters:
+;        a <== inactive buffer #
+;           or
+;        a <== $ff if no
+;            inactive buffer.
 ;
 ;******************************
 ;
-GETINA	LDX LINDX
-	LDA BUF0,X
-	BMI GI10
-	LDA BUF1,X
-GI10	CMP #$FF
-	RTS
+getina	ldx lindx
+	lda buf0,x
+	bmi gi10
+	lda buf1,x
+gi10	cmp #$ff
+	rts
 ;
 ;*****************************
-;**********  P U T I N A  ****
+;**********  p u t i n a  ****
 ;*****************************
 ;
-; PUT INACTIVE BUFFER
+; put inactive buffer
 ;
-;    INPUT PARAMTERS:
-;        A = BUFFER #
+;    input paramters:
+;        a = buffer #
 ;
-;    OUTPUT PARAMTERS:
-;        NONE
+;    output paramters:
+;        none
 ;
 ;*****************************
 ;
-PUTINA	LDX LINDX
-	ORA #$80
-	LDY BUF0,X
-	BPL PI1
-	STA BUF0,X
-	RTS
-PI1	STA BUF1,X
-	RTS
+putina	ldx lindx
+	ora #$80
+	ldy buf0,x
+	bpl pi1
+	sta buf0,x
+	rts
+pi1	sta buf1,x
+	rts
 ;
-.END
+.end

@@ -1,48 +1,48 @@
-.PAGE 'AUTOIT'
-;RSR TEST SUBROUTINES
+.page 'autoit'
+;rsr test subroutines
 ;
-; THIS AUTO INIT SUBROUTINE WILL
-; CHECK IF DRVNUM DRIVE IS INITED
+; this auto init subroutine will
+; check if drvnum drive is inited
 ;
-; IF CATALOG CALLS THIS ROUTINE
-; BEFORE ANY HEADER INFO IS TRANSFERED
-; THIS ROUTINE WORKS.
+; if catalog calls this routine
+; before any header info is transfered
+; this routine works.
 ;
-; THIS ROUTINE WILL END IN ERROR
-; IF ANY ERROR BUT DISK ID OCCURS
+; this routine will end in error
+; if any error but disk id occurs
 ;
-AUTOIT	LDX #$FF        ;FLAG FOR ERROR RTN
-	STX JOBRTN
-	JSR INITSU      ;.A=DRVNUM< >=ERROR
-	CMP #03         ;CHK MISSING DISK
-	BEQ CATID3
-CATID5	CMP #2          ;CHK FOR OKAY
-	BCC CATID4
-CATID2	JMP ERROR       ;MUST BE AN ERROR
-CATID3	LDY DRVCNT      ;CHK FOR SINGLE
-	BEQ CATID2
-	LDA #0          ;ONLY ONE GOOD DRIVE?
-	STA DRVCNT
-	LDA DRVNUM      ;FLIP TO CHK OTHER DRV
-	EOR #1
-	STA DRVNUM
-	JMP AUTOIT
+autoit	ldx #$ff        ;flag for error rtn
+	stx jobrtn
+	jsr initsu      ;.a=drvnum< >=error
+	cmp #03         ;chk missing disk
+	beq catid3
+catid5	cmp #2          ;chk for okay
+	bcc catid4
+catid2	jmp error       ;must be an error
+catid3	ldy drvcnt      ;chk for single
+	beq catid2
+	lda #0          ;only one good drive?
+	sta drvcnt
+	lda drvnum      ;flip to chk other drv
+	eor #1
+	sta drvnum
+	jmp autoit
 ;
-CATID4	TXA             ;X PRESERVED
-	ASL A           ;MULT *8
-	ASL A
-	ASL A
-	TAY
-	LDA DRVNUM
-	ASL A
-	TAX
-	LDA HDRS,Y      ;CHK DISK ID
-	CMP DSKID,X     ;AGAINST OLD ID
-	BNE CATID1
-	LDA HDRS+1,Y
-	CMP DSKID+1,X
-	BNE CATID1
-	RTS             ;SAME ID
-CATID1	JMP INITDR      ;DIFF SO INIT
+catid4	txa             ;x preserved
+	asl a           ;mult *8
+	asl a
+	asl a
+	tay
+	lda drvnum
+	asl a
+	tax
+	lda hdrs,y      ;chk disk id
+	cmp dskid,x     ;against old id
+	bne catid1
+	lda hdrs+1,y
+	cmp dskid+1,x
+	bne catid1
+	rts             ;same id
+catid1	jmp initdr      ;diff so init
 ;
-.END
+.end

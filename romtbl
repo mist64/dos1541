@@ -1,86 +1,86 @@
-.PAGE 'ROMTBL'
-DIRTRK	.BYT 39         ;DIRECTORY TRACK #
-BAMSIZ	.BYT 5          ;# BYTES/TRACK IN BAM
-MAPOFF	.BYT 6          ;OFFSET OF BAM IN SECTOR
-DSKNAM	.BYT 6          ;OFFSET OF DISK NAME IN BAM SECTOR
-BAMTRK	.BYT 38,38,39   ;BAM LINK TABLE
-BAMSEC	.BYT 0,3,1      ;BAM LINK TABLE
+.page 'romtbl'
+dirtrk	.byt 39         ;directory track #
+bamsiz	.byt 5          ;# bytes/track in bam
+mapoff	.byt 6          ;offset of bam in sector
+dsknam	.byt 6          ;offset of disk name in bam sector
+bamtrk	.byt 38,38,39   ;bam link table
+bamsec	.byt 0,3,1      ;bam link table
 ;
 ;
-;   COMMAND SEARCH TABLE
-CMDTBL	.BYT 'VIDMBUPC&RSN'
-; VALIDATE-DIR INIT-DRIVE DUPLICATE
-; MEMORY-OP BLOCK-OP USER
-; POSITION DSKCPY UTLODR RENAME SCRATCH NEW
-NCMDS	=*-CMDTBL
-;  JUMP TABLE LOW
-CJUMPL	.BYT <VERDIR,<INTDRV,<DUPLCT
-	.BYT <MEM,<BLOCK,<USER
-	.BYT <RECORD
-	.BYT <DSKCPY
-	.BYT <UTLODR,<RENAME,<SCRTCH,<NEW
-	*=CJUMPL+NCMDS
-;  JUMP TABLE HIGH
-CJUMPH	.BYT >VERDIR,>INTDRV,>DUPLCT
-	.BYT >MEM,>BLOCK,>USER
-	.BYT >RECORD
-	.BYT >DSKCPY
-	.BYT >UTLODR,>RENAME,>SCRTCH,>NEW
-	*=CJUMPH+NCMDS
-VAL=0 ;VALIDATE (VERIFY) CMD #
-.SKIP
-; STRUCTURE IMAGES FOR CMDS
-PCMD	=8
-	.BYT %01010001  ; DSKCPY
-STRUCT	=*-PCMD         ; CMDS NOT PARSED
-	.BYT 0          ; UTLODR
-	.BYT %11011101  ; RENAME
-	.BYT %00011100  ; SCRATCH
-	.BYT %10011110  ; NEW
-LDCMD	=*-STRUCT       ; LOAD CMD IMAGE
-	.BYT %00011100  ; LOAD
+;   command search table
+cmdtbl	.byt 'vidmbupc&rsn'
+; validate-dir init-drive duplicate
+; memory-op block-op user
+; position dskcpy utlodr rename scratch new
+ncmds	=*-cmdtbl
+;  jump table low
+cjumpl	.byt <verdir,<intdrv,<duplct
+	.byt <mem,<block,<user
+	.byt <record
+	.byt <dskcpy
+	.byt <utlodr,<rename,<scrtch,<new
+	*=cjumpl+ncmds
+;  jump table high
+cjumph	.byt >verdir,>intdrv,>duplct
+	.byt >mem,>block,>user
+	.byt >record
+	.byt >dskcpy
+	.byt >utlodr,>rename,>scrtch,>new
+	*=cjumph+ncmds
+val=0 ;validate (verify) cmd #
+.skip
+; structure images for cmds
+pcmd	=8
+	.byt %01010001  ; dskcpy
+struct	=*-pcmd         ; cmds not parsed
+	.byt 0          ; utlodr
+	.byt %11011101  ; rename
+	.byt %00011100  ; scratch
+	.byt %10011110  ; new
+ldcmd	=*-struct       ; load cmd image
+	.byt %00011100  ; load
 ;            --- ---
-;            PGDRPGDR
-;            FS1 FS2
-.SKIP
-;   BIT REPS:  NOT PATTERN
-;              NOT GREATER THAN ONE FILE 
-;              NOT DEFAULT DRIVE(S) 
-;              REQUIRED FILENAME
-.SKIP
-MODLST	.BYT 'RWAM'     ; MODE TABLE
-NMODES	=*-MODLST
-;FILE TYPE TABLE
-TPLST	.BYT 'DSPUL'
-TYPLST	.BYT 'DSPUR'    ;DEL, SEQ, PROG, USER, RELATIVE
-NTYPES	=*-TYPLST
-TP1LST	.BYT 'EERSE'
-TP2LST	.BYT 'LQGRL'
+;            pgdrpgdr
+;            fs1 fs2
+.skip
+;   bit reps:  not pattern
+;              not greater than one file 
+;              not default drive(s) 
+;              required filename
+.skip
+modlst	.byt 'rwam'     ; mode table
+nmodes	=*-modlst
+;file type table
+tplst	.byt 'dspul'
+typlst	.byt 'dspur'    ;del, seq, prog, user, relative
+ntypes	=*-typlst
+tp1lst	.byt 'eerse'
+tp2lst	.byt 'lqgrl'
 ;
-; ERROR FLAG VARS FOR BIT
+; error flag vars for bit
 ;
-ER00	.BYT 0
-ER0	.BYT $3F
-ER1	.BYT $7F
-ER2	.BYT $BF
-ER3	.BYT $FF
+er00	.byt 0
+er0	.byt $3f
+er1	.byt $7f
+er2	.byt $bf
+er3	.byt $ff
 ;
-IPBM	.BYTE $41,$42
-DRIVER
-;NUMSEC (TAB1): (4) SECTORS/TRACK
-	.BYTE 23,25,27,29
-;GAP1: HEADER GAP, GAP2: TAIL GAP (FORMAT), VERNUM: FORMAT TYPE
-	.BYTE 20, 11, FM8050
-;ACTJOB, PHASE(2), STPTRK, NZONES
-	.BYTE 0, 0,0, 4, 4
-;SYNDLY, WPSW(2), LWPT(2), PBI, CFLG2, NSIDES
-	.BYTE 3, 1,1, 0,0, 7, 0, 1
-;UNUSED(3)
-	.BYTE 0,0,0
-;TRKNUM (TAB3): ZONE BOUNDARIES TRACK NUMBERS
-	.BYTE 78,65,54,40, 0,0,0,0
-;OFFSET: FOR RECOVERY
-	.BYTE 1,$FF,$FF,1,2,$FE,$FE,2,0
-CTBSIZ	=*-DRIVER
-.SKIP
-.END
+ipbm	.byte $41,$42
+driver
+;numsec (tab1): (4) sectors/track
+	.byte 23,25,27,29
+;gap1: header gap, gap2: tail gap (format), vernum: format type
+	.byte 20, 11, fm8050
+;actjob, phase(2), stptrk, nzones
+	.byte 0, 0,0, 4, 4
+;syndly, wpsw(2), lwpt(2), pbi, cflg2, nsides
+	.byte 3, 1,1, 0,0, 7, 0, 1
+;unused(3)
+	.byte 0,0,0
+;trknum (tab3): zone boundaries track numbers
+	.byte 78,65,54,40, 0,0,0,0
+;offset: for recovery
+	.byte 1,$ff,$ff,1,2,$fe,$fe,2,0
+ctbsiz	=*-driver
+.skip
+.end

@@ -1,53 +1,53 @@
 ;**********************************************
 ;*                                            *
-;*   COMMODORE BUSINESS MACHINES SOFTWARE     *
+;*   commodore business machines software     *
 ;*                                            *
 ;**********************************************
 ;
 ;**********************************************
 ;*                                            *
-;*   DISK OPERATING SYSTEM AND                *
-;*   CONTROLLER ROUTINES                      *
-;*   FOR THE FOLLOWING CBM MODELS:            *
-;*     VS170 SERIAL DISK                      *
-;*     WITH SINGLE SA390 DRIVE                *
-;*     RELEASED AS:                           *
-;*       901636-01 $C000-$DFFF                *
-;*       904637-01 $E000-$FFFF                *
-;*   COPYRIGHT (C) 1981 BY                    *
-;*   COMMODORE BUSINESS MACHINES (CBM)        *
+;*   disk operating system and                *
+;*   controller routines                      *
+;*   for the following cbm models:            *
+;*     vs170 serial disk                      *
+;*     with single sa390 drive                *
+;*     released as:                           *
+;*       901636-01 $c000-$dfff                *
+;*       904637-01 $e000-$ffff                *
+;*   copyright (c) 1981 by                    *
+;*   commodore business machines (cbm)        *
 ;*                                            *
 ;**********************************************
-.SKIP 3
-; ****LISTING DATE --10:00 06 MAY    1981 ****
-.SKIP 3
+.skip 3
+; ****listing date --10:00 06 may    1981 ****
+.skip 3
 ;**********************************************
-;*   THIS SOFTWARE IS FURNISHED FOR USE IN    *
-;*  THE SINGLE DRIVE FLOPPY DISK UNIT ONLY.   *
+;*   this software is furnished for use in    *
+;*  the single drive floppy disk unit only.   *
 ;*                                            *
-;*   COPIES THEREOF MAY NOT BE PROVIDED OR    *
-;*  MADE AVAILABLE FOR USE ON ANY OTHER       *
-;*  SYSTEM.                                   *
+;*   copies thereof may not be provided or    *
+;*  made available for use on any other       *
+;*  system.                                   *
 ;*                                            *
-;*   THE INFORMATION IN THIS DOCUMENT IS      *
-;*  SUBJECT TO CHANGE WITHOUT NOTICE.         *
+;*   the information in this document is      *
+;*  subject to change without notice.         *
 ;*                                            *
-;*   NO RESPONSIBILITY IS ASSUMED FOR         *
-;*  RELIABILITY OF THIS SOFTWARE. RSR         *
+;*   no responsibility is assumed for         *
+;*  reliability of this software. rsr         *
 ;*                                            *
 ;**********************************************
-.PAG 'COMMON'
-; COMMON AREA DEFINES
-.SKIP
+.pag 'common'
+; common area defines
+.skip
 	*=0
-JOBS	*=*+6           ; JOB QUE
-HDRS	*=*+12          ; JOB HEADERS
-DSKID	*=*+4           ;MASTER COPY OF DISK ID
-HEADER	*=*+5           ;IMAGE OF LAST HEADER
-ACTJOB	*=*+1           ;CONTROLLER'S ACTIVE JOB
-WPSW	*=*+2           ;WRITE PROTECT CHANGE FLAG
-LWPT	*=*+2           ;LAST STATE OF WP SWITCH
+jobs	*=*+6           ; job que
+hdrs	*=*+12          ; job headers
+dskid	*=*+4           ;master copy of disk id
+header	*=*+5           ;image of last header
+actjob	*=*+1           ;controller's active job
+wpsw	*=*+2           ;write protect change flag
+lwpt	*=*+2           ;last state of wp switch
 ;
 ;
-.END
-; RSR
+.end
+; rsr

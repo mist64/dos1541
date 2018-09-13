@@ -1,73 +1,73 @@
-.SKI 3
+.ski 3
 ;**************************************;
 ;*                                    *;
-;*         8050 DUAL FLOPPY           *;
-;*       FILE CONTOLLER  (6502)       *;
-;*       DISK OPERATING SYSTEM        *;
-;*            VERSION  2.5            *;
-;*       RELEASED  APRIL 05, 1980     *;
-;*   MOS 6364 ROMS #901XXXX           *;
-;*                    -XX,-XX,-XX     *;
+;*         8050 dual floppy           *;
+;*       file contoller  (6502)       *;
+;*       disk operating system        *;
+;*            version  2.5            *;
+;*       released  april 05, 1980     *;
+;*   mos 6364 roms #901xxxx           *;
+;*                    -xx,-xx,-xx     *;
 ;*                                    *;
-;*  COPYRIGHT 1980                    *;
-;*        COMMODORE BUSINESS MACHINES *;
+;*  copyright 1980                    *;
+;*        commodore business machines *;
 ;*                                    *;
 ;*                                    *;
 ;**************************************;
-.PAGE
-;  1. DOS
-;  2. EQUATE
-;  3. I/ODEF
-;  4. RAMVAR
-;  5. ROM
-;  6. PARSEX
-;  7. SETDRV
-;  8. AUTOIT
-;  9. LOOKUP
-; 10. TRNSFR
-; 11. SCRTCH
-; 12. DUPLCT
-; 13. COPYSETUP
-; 14. COPYALL
-; 15. RENAME
-; 16. MEMRW
-; 17. BLOCK
-; 18. FNDREL
-; 19. TST2
-; 20. TST3
-; 21. TST4
-; 22. JOBS
-; 23. ADDFIL
-; 24. EROM
-; 25. OPEN
-; 26. CLOSE
-; 27. OPCHNL
-; 28. TSTFLG
-; 29. TSUTIL
-; 30. SSUTIL
-; 31. SSTEST
-; 32. GETACT
-; 33. REL1
-; 34. REL2
-; 35. REL3
-; 36. REL4
-; 37. SSEND
-; 38. RECORD
-; 39. NULBUF
-; 40. ADDREL
-; 41. NEWSS
-; 42. ERPROC
-; 43. DSKINT
-; 44. IDLE
-; 45. IEEE
-; 46. LSTDIR
-; 47. VERDIR
-; 48. NEW
-; 49. MAP
-; 50. FRETS
-; 51. TSTFND
-; 52. ROMTBL
-; 53. VECTOR
-; 54. CHKSUM
-.PAGE ''
-.END
+.page
+;  1. dos
+;  2. equate
+;  3. i/odef
+;  4. ramvar
+;  5. rom
+;  6. parsex
+;  7. setdrv
+;  8. autoit
+;  9. lookup
+; 10. trnsfr
+; 11. scrtch
+; 12. duplct
+; 13. copysetup
+; 14. copyall
+; 15. rename
+; 16. memrw
+; 17. block
+; 18. fndrel
+; 19. tst2
+; 20. tst3
+; 21. tst4
+; 22. jobs
+; 23. addfil
+; 24. erom
+; 25. open
+; 26. close
+; 27. opchnl
+; 28. tstflg
+; 29. tsutil
+; 30. ssutil
+; 31. sstest
+; 32. getact
+; 33. rel1
+; 34. rel2
+; 35. rel3
+; 36. rel4
+; 37. ssend
+; 38. record
+; 39. nulbuf
+; 40. addrel
+; 41. newss
+; 42. erproc
+; 43. dskint
+; 44. idle
+; 45. ieee
+; 46. lstdir
+; 47. verdir
+; 48. new
+; 49. map
+; 50. frets
+; 51. tstfnd
+; 52. romtbl
+; 53. vector
+; 54. chksum
+.page ''
+.end

@@ -1,3 +1,3 @@
-.OPT NOLIST
-.OPT NOSYM
-.FIL SER.LIB
+.opt nolist
+.opt nosym
+.fil ser.lib

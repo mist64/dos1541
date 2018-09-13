@@ -1,222 +1,222 @@
-.PAGE 'LCC.CNTRL'
+.page 'lcc.cntrl'
 ;
 ;
 ;
-;    *CONTRL
+;    *contrl
 ;
-;    MAIN CONTROLLER LOOP
+;    main controller loop
 ;
-;    SCANS JOB QUE FOR JOBS
+;    scans job que for jobs
 ;
-;   FINDS JOB ON CURRENT TRACK
-;   IF IT EXISTS
+;   finds job on current track
+;   if it exists
 ;
-LCC
+lcc
 ;
-	TSX             ; SAVE CURRENT STACK POINTER
-	STX SAVSP
+	tsx             ; save current stack pointer
+	stx savsp
 ;
-	LDA T1LC2       ;RESET IRQ FLAG
+	lda t1lc2       ;reset irq flag
 ;
-	LDA PCR2        ; ENABLE S.O. TO 6502
-	ORA #$0E        ; HI OUTPUT
-	STA PCR2
+	lda pcr2        ; enable s.o. to 6502
+	ora #$0e        ; hi output
+	sta pcr2
 ;
 ;
 ;
-TOP	LDY #NUMJOB-1   ; POINTER INTO JOB QUE
+top	ldy #numjob-1   ; pointer into job que
 ;
-CONT10
-	LDA JOBS,Y      ; FIND A JOB (MSB SET)
-	BPL CONT20      ; NOT ONE HERE
+cont10
+	lda jobs,y      ; find a job (msb set)
+	bpl cont20      ; not one here
 ;
-	CMP #JUMPC      ; TEST IF ITS A JUMP COMMAND
-	BNE CONT30
+	cmp #jumpc      ; test if its a jump command
+	bne cont30
 ;
-	TYA             ; PUT JOB NUM IN .A
-	JMP EX2
+	tya             ; put job num in .a
+	jmp ex2
 ;
 ;
-CONT30
-	AND #1          ; GET DRIVE #
-	BEQ CONT35
+cont30
+	and #1          ; get drive #
+	beq cont35
 ;
-	STY JOBN
-	LDA #$0F        ;BAD DRIVE # ERROR
-	JMP ERRR
+	sty jobn
+	lda #$0f        ;bad drive # error
+	jmp errr
 ;
-CONT35	TAX
-	STA DRIVE
+cont35	tax
+	sta drive
 ;
-	CMP CDRIVE      ; TEST IF CURRENT DRIVE
-	BEQ CONT40
+	cmp cdrive      ; test if current drive
+	beq cont40
 ;
-	JSR TURNON      ; TURN ON DRIVE
-	LDA DRIVE
-	STA CDRIVE
-	JMP END         ; GO CLEAN UP
+	jsr turnon      ; turn on drive
+	lda drive
+	sta cdrive
+	jmp end         ; go clean up
 ;
 ;
-CONT40	LDA DRVST       ; TEST IF MOTOR UP TO SPEED
-	BMI CONT50
+cont40	lda drvst       ; test if motor up to speed
+	bmi cont50
 ;
-	ASL A           ; TEST IF STEPPING
-	BPL QUE         ; NOT STEPPING
+	asl a           ; test if stepping
+	bpl que         ; not stepping
 ;
-CONT50	JMP END
+cont50	jmp end
 ;
-CONT20	DEY
-	BPL CONT10
+cont20	dey
+	bpl cont10
 ;
-	JMP END
+	jmp end
 ;
 ;
 ;
 ;
-QUE	LDA #$20        ; STATUS=RUNNING
-	STA DRVST
+que	lda #$20        ; status=running
+	sta drvst
 ;
-	LDY #NUMJOB-1
-	STY JOBN
+	ldy #numjob-1
+	sty jobn
 ;
-QUE10	JSR SETJB
-	BMI QUE20
+que10	jsr setjb
+	bmi que20
 ;
-QUE05	DEC JOBN
-	BPL QUE10
+que05	dec jobn
+	bpl que10
 ;
 ;
-	LDY NXTJOB
-	JSR SETJB1
+	ldy nxtjob
+	jsr setjb1
 ;
-	LDA NXTRK
-	STA STEPS
-	ASL STEPS       ; STEPS*2
+	lda nxtrk
+	sta steps
+	asl steps       ; steps*2
 ;
-	LDA #$60        ; SET STATUS=STEPPING
-	STA DRVST
+	lda #$60        ; set status=stepping
+	sta drvst
 ;
 ;
 ;
-	LDA (HDRPNT),Y  ; GET DEST TRACK #
-	STA DRVTRK
-FIN	JMP END
+	lda (hdrpnt),y  ; get dest track #
+	sta drvtrk
+fin	jmp end
 ;
 ;
-QUE20	AND #1          ; TEST IF SAME DRIVE
-	CMP DRIVE
-	BNE QUE05
+que20	and #1          ; test if same drive
+	cmp drive
+	bne que05
 ;
-	LDA DRVTRK
-	BEQ GOTU        ; UNINIT. TRACK #
+	lda drvtrk
+	beq gotu        ; uninit. track #
 ;
-	SEC             ; CALC DISTANCE TO TRACK
-	SBC (HDRPNT),Y
-	BEQ GOTU        ; ON TRACK
+	sec             ; calc distance to track
+	sbc (hdrpnt),y
+	beq gotu        ; on track
 ;
-	EOR #$FF        ; 2'S COMP
-	STA NXTRK
-	INC NXTRK
+	eor #$ff        ; 2's comp
+	sta nxtrk
+	inc nxtrk
 ;
-	LDA JOBN        ; SAVE JOB# AND DIST TO TRACK
-	STA NXTJOB
+	lda jobn        ; save job# and dist to track
+	sta nxtjob
 ;
-	JMP QUE05
+	jmp que05
 ;
 ;
 ;
 ;
-GOTU	LDX #4          ; SET TRACK AND SECTR
-	LDA (HDRPNT),Y
-	STA TRACC
+gotu	ldx #4          ; set track and sectr
+	lda (hdrpnt),y
+	sta tracc
 ;
-GOTU10	CMP TRKNUM-1,X
+gotu10	cmp trknum-1,x
 ;
-	DEX
-	BCS GOTU10
+	dex
+	bcs gotu10
 ;
-	LDA NUMSEC,X
-	STA SECTR
+	lda numsec,x
+	sta sectr
 ;
-	TXA             ; SET DENSITY
-	ASL A
-	ASL A
-	ASL A
-	ASL A
-	ASL A
-	STA WORK
+	txa             ; set density
+	asl a
+	asl a
+	asl a
+	asl a
+	asl a
+	sta work
 ;
-	LDA DSKCNT
-	AND #$9F        ; CLEAR DENSITY BITS
-	ORA WORK
-	STA DSKCNT
+	lda dskcnt
+	and #$9f        ; clear density bits
+	ora work
+	sta dskcnt
 ;
-	LDX DRIVE       ; DRIVE NUM IN .X
+	ldx drive       ; drive num in .x
 ;
-	LDA JOB         ; YES, GO DO THE JOB
-	CMP #BUMPC      ; TEST FOR BUMP
-	BEQ BMP
+	lda job         ; yes, go do the job
+	cmp #bumpc      ; test for bump
+	beq bmp
 ;
 ;
-EXE	CMP #EXECD      ; TEST IF EXECUTE
-	BEQ EX
+exe	cmp #execd      ; test if execute
+	beq ex
 ;
-	JMP SEAK        ; DO A SECTOR SEEK
+	jmp seak        ; do a sector seek
 ;
-EX	LDA JOBN        ; JUMP TO BUFFER
-EX2	CLC
-	ADC #>BUFS
-	STA BUFPNT+1
-	LDA #0
-	STA BUFPNT
-EX3	JMP (BUFPNT)
+ex	lda jobn        ; jump to buffer
+ex2	clc
+	adc #>bufs
+	sta bufpnt+1
+	lda #0
+	sta bufpnt
+ex3	jmp (bufpnt)
 ;
 ;
-BMP
-	LDA #$60        ; SET STATUS=STEPPING
-	STA DRVST
+bmp
+	lda #$60        ; set status=stepping
+	sta drvst
 ;
-	LDA DSKCNT
-	AND #$FF-$03    ; SET PHASE A
-	STA DSKCNT
+	lda dskcnt
+	and #$ff-$03    ; set phase a
+	sta dskcnt
 ;
 ;
 ;
-	LDA #256-92     ; STEP BACK 45 TRAKS
-	STA STEPS
+	lda #256-92     ; step back 45 traks
+	sta steps
 ;
-	LDA #1          ; DRVTRK NOW 1
-	STA DRVTRK
+	lda #1          ; drvtrk now 1
+	sta drvtrk
 ;
-	JMP ERRR        ; JOB DONE RETURN 1
+	jmp errr        ; job done return 1
 ;
 ;
 ;
 ;
 ;
-SETJB	LDY JOBN
-SETJB1	LDA JOBS,Y
-	PHA
-	BPL SETJ10      ; NO JOB HERE
+setjb	ldy jobn
+setjb1	lda jobs,y
+	pha
+	bpl setj10      ; no job here
 ;
-	AND #$78
-	STA JOB
-	TYA
-	ASL A
-	ADC #<HDRS
-	STA HDRPNT
-	TYA             ; POINT AT BUFFER
-	CLC
-	ADC #>BUFS
-	STA BUFPNT+1
+	and #$78
+	sta job
+	tya
+	asl a
+	adc #<hdrs
+	sta hdrpnt
+	tya             ; point at buffer
+	clc
+	adc #>bufs
+	sta bufpnt+1
 ;
 ;
-SETJ10	LDY #0
-	STY BUFPNT
+setj10	ldy #0
+	sty bufpnt
 ;
-	PLA
-	RTS
+	pla
+	rts
 ;
 ;
 ;
-.END
+.end

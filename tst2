@@ -1,533 +1,533 @@
-.PAGE 'TST2'
+.page 'tst2'
 ;
 ;*******************************
-;************  L R U I N T  ****
+;************  l r u i n t  ****
 ;*******************************
 ;
-; INITIALIZE THE LRU TABEL
-;
-;*******************************
-;
-LRUINT
-	LDX #0
-LRUILP
-	TXA
-	STA LRUTBL,X
-	INX
-	CPX #CMDCHN
-	BNE LRUILP
-;
-	LDA #BLINDX
-	STA LRUTBL,X
-	RTS
-;
-;*******************************
-;*************  L R U U P D  ***
-;*******************************
-;
-; LEAST RECENTLY USED TABLE UPDATE
-;
-;    INPUT PARAMETERS:
-;        LINDX - CURRENT CHANNEL
-;
-;    OUTPUT PARAMETERS:
-;        LRUTBL - UPDATED
+; initialize the lru tabel
 ;
 ;*******************************
 ;
-LRUUPD	LDY #CMDCHN
-	LDX LINDX
-LRULP1	LDA LRUTBL,Y
-	STX LRUTBL,Y
-	CMP LINDX
-	BEQ LRUEXT
-	DEY
-	BMI LRUINT
-	TAX
-	JMP LRULP1
-LRUEXT	RTS
+lruint
+	ldx #0
+lruilp
+	txa
+	sta lrutbl,x
+	inx
+	cpx #cmdchn
+	bne lruilp
+;
+	lda #blindx
+	sta lrutbl,x
+	rts
 ;
 ;*******************************
-;*************  D B L B U F  ***
+;*************  l r u u p d  ***
 ;*******************************
 ;
-; DOUBLE BUFFER
-; RTN TO SWITCH THE ACTIVE AND
-; INACTIVE BUFFERS
+; least recently used table update
+;
+;    input parameters:
+;        lindx - current channel
+;
+;    output parameters:
+;        lrutbl - updated
 ;
 ;*******************************
 ;
-DBLBUF
-	JSR LRUUPD
-	JSR GETINA
-	BNE DBL15
-	JSR SETDRN
-	JSR GETBUF
-	BMI DBL30       ;NO BUFFERS
-	JSR PUTINA      ;STORE INACTIVE BUFF #
-	LDA TRACK
-	PHA
-	LDA SECTOR
-	PHA
-	LDA #1
-	JSR DRDBYT
-	STA SECTOR
-	LDA #0
-	JSR DRDBYT
-	STA TRACK
+lruupd	ldy #cmdchn
+	ldx lindx
+lrulp1	lda lrutbl,y
+	stx lrutbl,y
+	cmp lindx
+	beq lruext
+	dey
+	bmi lruint
+	tax
+	jmp lrulp1
+lruext	rts
 ;
-	BEQ DBL10
+;*******************************
+;*************  d b l b u f  ***
+;*******************************
 ;
-	JSR TYPFIL
-	BEQ DBL05       ;IT'S REL
+; double buffer
+; rtn to switch the active and
+; inactive buffers
 ;
-	JSR TSTWRT
-	BNE DBL05       ;READ AHEAD
+;*******************************
 ;
-	JSR TGLBUF      ;JUST SWITCH ON WRITE
-	JMP DBL08
+dblbuf
+	jsr lruupd
+	jsr getina
+	bne dbl15
+	jsr setdrn
+	jsr getbuf
+	bmi dbl30       ;no buffers
+	jsr putina      ;store inactive buff #
+	lda track
+	pha
+	lda sector
+	pha
+	lda #1
+	jsr drdbyt
+	sta sector
+	lda #0
+	jsr drdbyt
+	sta track
 ;
-DBL05
-	JSR TGLBUF
-	JSR RDAB
-DBL08
-	PLA
-	STA SECTOR
-	PLA
-	STA TRACK
-	JMP DBL20
-DBL10
-	PLA
-	STA SECTOR
-	PLA
-	STA TRACK
-DBL15	JSR TGLBUF
-DBL20	JSR GETACT
-	TAX
-	JMP WATJOB
+	beq dbl10
 ;
-; THERE ARE NO BUFFERS TO STEAL
+	jsr typfil
+	beq dbl05       ;it's rel
 ;
-DBL30
-	LDA #NOCHNL
-	JMP CMDERR
+	jsr tstwrt
+	bne dbl05       ;read ahead
+;
+	jsr tglbuf      ;just switch on write
+	jmp dbl08
+;
+dbl05
+	jsr tglbuf
+	jsr rdab
+dbl08
+	pla
+	sta sector
+	pla
+	sta track
+	jmp dbl20
+dbl10
+	pla
+	sta sector
+	pla
+	sta track
+dbl15	jsr tglbuf
+dbl20	jsr getact
+	tax
+	jmp watjob
+;
+; there are no buffers to steal
+;
+dbl30
+	lda #nochnl
+	jmp cmderr
 ;
 ;********************************
 ;
-DBSET
-	JSR LRUUPD
-	JSR GETINA
-	BNE DBS10
-	JSR GETBUF
-	BMI DBL30       ;NO BUFFERS
-	JSR PUTINA      ;STORE INACTIVE BUFF #
-DBS10
-	RTS
+dbset
+	jsr lruupd
+	jsr getina
+	bne dbs10
+	jsr getbuf
+	bmi dbl30       ;no buffers
+	jsr putina      ;store inactive buff #
+dbs10
+	rts
 ;********************************
-;************  T G L B U F  *****
-;********************************
-;
-; TOGGEL THE INACTIVE AND ACTIVE
-; BUFFERS.
-;
-;    INPUT PARAMETERS:
-;        LINDX  -  CHANNEL #
-;
+;************  t g l b u f  *****
 ;********************************
 ;
-TGLBUF	LDX LINDX
-	LDA BUF0,X
-	EOR #$80
-	STA BUF0,X
-	LDA BUF1,X
-	EOR #$80
-	STA BUF1,X
-	RTS
+; toggel the inactive and active
+; buffers.
+;
+;    input parameters:
+;        lindx  -  channel #
+;
+;********************************
+;
+tglbuf	ldx lindx
+	lda buf0,x
+	eor #$80
+	sta buf0,x
+	lda buf1,x
+	eor #$80
+	sta buf1,x
+	rts
 ;
 ;
-PIBYTE
-	LDX #IWSA
-	STX SA
-	JSR FNDWCH
-	JSR SETLDS
-	JSR TYPFIL
-	BCC PBYTE
-	LDA #OVRFLO
-	JSR CLRFLG
-PBYTE
-	LDA SA
-	CMP #15
-	BEQ L42
-	BNE L40
+pibyte
+	ldx #iwsa
+	stx sa
+	jsr fndwch
+	jsr setlds
+	jsr typfil
+	bcc pbyte
+	lda #ovrflo
+	jsr clrflg
+pbyte
+	lda sa
+	cmp #15
+	beq l42
+	bne l40
 ;
-; MAIN ROUTINE TO WRITE TO CHANL
+; main routine to write to chanl
 ;
-PUT	LDA ORGSA       ;IS CHANL CMD OR DATA
-	AND #$8F
-	CMP #15         ;<15 
-	BCS L42
-L40	JSR TYPFIL      ;DATA BYTE TO STORE
-	BCS L41         ;BRANCH IF RND
-	LDA DATA        ;SEQ FILE
-	JMP WRTBYT      ;WRITE BYTE TO CHANL
-L41
-	BNE L46
-	JMP WRTREL
-L46	LDA DATA        ;RND FILE WRITE
-	JSR PUTBYT      ;WRITE TO CHANL
-	LDY LINDX       ; PREPARE NXT BYTE
-	JMP RNGET2 
-L42	LDA #CMDCHN     ;WRITE TO CMD CHANL
-	STA LINDX
-	JSR GETPNT      ;TEST IF COMM AND BUFFER FULL
-	CMP #<CMDBUF+CMDLEN+1
-	BEQ L50         ;IT IS FULL (>CMDLEN)
-	LDA DATA        ;NOT FULL YET
-	JSR PUTBYT      ;STORE THE BYTE 
-L50	LDA EOIFLG      ;TST IF LST BYTE OF MSG
-	BEQ L45         ;IT IS
-	RTS             ;NOT YET , RETURN
-L45
-	INC CMDWAT      ;SET CMD WAITING FLAG
-	RTS
+put	lda orgsa       ;is chanl cmd or data
+	and #$8f
+	cmp #15         ;<15 
+	bcs l42
+l40	jsr typfil      ;data byte to store
+	bcs l41         ;branch if rnd
+	lda data        ;seq file
+	jmp wrtbyt      ;write byte to chanl
+l41
+	bne l46
+	jmp wrtrel
+l46	lda data        ;rnd file write
+	jsr putbyt      ;write to chanl
+	ldy lindx       ; prepare nxt byte
+	jmp rnget2 
+l42	lda #cmdchn     ;write to cmd chanl
+	sta lindx
+	jsr getpnt      ;test if comm and buffer full
+	cmp #<cmdbuf+cmdlen+1
+	beq l50         ;it is full (>cmdlen)
+	lda data        ;not full yet
+	jsr putbyt      ;store the byte 
+l50	lda eoiflg      ;tst if lst byte of msg
+	beq l45         ;it is
+	rts             ;not yet , return
+l45
+	inc cmdwat      ;set cmd waiting flag
+	rts
 ;
-; PUT .A INTO ACTIVE BUFFER OF LINDX
+; put .a into active buffer of lindx
 ;
-PUTBYT	PHA             ; SAVE .A
-	JSR GETACT      ;GET ACTIVE BUF#
-	BPL PUTB1       ;BRACH IF THERE IS ONE
-	PLA             ;NO BUFFER ERROR
-	LDA #FILNOP
-	JMP CMDERR      ; JMP TO ERROR ROUTINE
-PUTB1	ASL A           ;SAVE THE BYTE IN BUFFER
-	TAX
-	PLA
-	STA (BUFTAB,X)
-	INC BUFTAB,X    ; INC THE BUFFER POINTER
-	RTS             ;Z=1 IF LAST CHAR SLOT IN BUFFER
+putbyt	pha             ; save .a
+	jsr getact      ;get active buf#
+	bpl putb1       ;brach if there is one
+	pla             ;no buffer error
+	lda #filnop
+	jmp cmderr      ; jmp to error routine
+putb1	asl a           ;save the byte in buffer
+	tax
+	pla
+	sta (buftab,x)
+	inc buftab,x    ; inc the buffer pointer
+	rts             ;z=1 if last char slot in buffer
 ;
-; FIND THE ACTIVE BUFFER # (LINDX)
-;
-;
-;INITIALIZE DRIVES (COMMAND)
-INTDRV	JSR SIMPRS
-	JSR INITDR
-ID20	JMP ENDCMD
-.SKIP
-; INITIALIZE DRIVE (DRVNUM)
-;
-ITRIAL
-	JSR BAM2A
-	TAY             ;BAM LINDX FROM BUF0
-	LDX BUF0,Y
-	CPX #$FF
-	BNE IT30        ;VALID BUFFER #
-;
-	PHA             ;SAVE BAM-LINDX
-	JSR GETBUF      ;GET A BUFFER
-	TAX             ;TEST IT
-	BPL IT20        ;NO ERROR
-;
-	LDA #NOCHNL
-	JSR CMDER3
-IT20
-	PLA
-	TAY             ;RESTORE BAM-LINDX
-	TXA
-	ORA #$80        ;SET INACTIVE
-	STA BUF0,Y
-IT30
-	TXA
-	AND #$F         ;STIP TO BUF #
-	STA JOBNUM
-	LDX #0
-	STX SECTOR
-	LDX DIRTRK
-	STX TRACK
-	JSR SETH        ;SET THE BAM HEADER
-	LDA #SEEK
-	JMP DOJOB       ;DO A SEEK
+; find the active buffer # (lindx)
 ;
 ;
-INITDR
-	JSR CLNBAM
-	JSR CLDCHN
-	JSR ITRIAL
-	LDX DRVNUM
-	LDA #0
-	STA MDIRTY,X
-	TXA
-	ASL A
-	TAX
-	LDA HEADER
-	STA DSKID,X
-	LDA HEADER+1
-	STA DSKID+1,X
-	JSR DOREAD
-	LDA JOBNUM
-	ASL A
-	TAX
-	LDA #2
-	STA BUFTAB,X
-	LDA (BUFTAB,X)
-	LDX DRVNUM
-	STA DSKVER,X    ;SET UP DISK VERSION #
+;initialize drives (command)
+intdrv	jsr simprs
+	jsr initdr
+id20	jmp endcmd
+.skip
+; initialize drive (drvnum)
 ;
-	LDA #0
-	STA WPSW,X      ;CLEAR WP SWITCH
-	STA NODRV,X     ;CLEAR NOT ACTIVE FLAG
-; COUNT THE NUMBER OF FREE BLOCKS HERE
+itrial
+	jsr bam2a
+	tay             ;bam lindx from buf0
+	ldx buf0,y
+	cpx #$ff
+	bne it30        ;valid buffer #
 ;
-NFCALC
-	JSR SETBPT
-	LDY #4
-	LDA #0
-	TAX             ;0 HI BYTE
-NUMF1
-	CLC
-	ADC (BMPNT),Y
-	BCC NUMF2
-	INX
-NUMF2
-	INY
-	INY
-	INY
-	INY
-	CPY #$48        ; DONT COUNT THE DIR
-	BEQ NUMF2
-	CPY #$90
-	BNE NUMF1
-	PHA
-	TXA
-	LDX DRVNUM
-	STA NDBH,X
-	PLA
-	STA NDBL,X
+	pha             ;save bam-lindx
+	jsr getbuf      ;get a buffer
+	tax             ;test it
+	bpl it20        ;no error
 ;
-	RTS
+	lda #nochnl
+	jsr cmder3
+it20
+	pla
+	tay             ;restore bam-lindx
+	txa
+	ora #$80        ;set inactive
+	sta buf0,y
+it30
+	txa
+	and #$f         ;stip to buf #
+	sta jobnum
+	ldx #0
+	stx sector
+	ldx dirtrk
+	stx track
+	jsr seth        ;set the bam header
+	lda #seek
+	jmp dojob       ;do a seek
 ;
 ;
-; START DOUBLE BUFFERING
-; USE TRACK,SECTOR AS STARTING BLOACK
+initdr
+	jsr clnbam
+	jsr cldchn
+	jsr itrial
+	ldx drvnum
+	lda #0
+	sta mdirty,x
+	txa
+	asl a
+	tax
+	lda header
+	sta dskid,x
+	lda header+1
+	sta dskid+1,x
+	jsr doread
+	lda jobnum
+	asl a
+	tax
+	lda #2
+	sta buftab,x
+	lda (buftab,x)
+	ldx drvnum
+	sta dskver,x    ;set up disk version #
+;
+	lda #0
+	sta wpsw,x      ;clear wp switch
+	sta nodrv,x     ;clear not active flag
+; count the number of free blocks here
+;
+nfcalc
+	jsr setbpt
+	ldy #4
+	lda #0
+	tax             ;0 hi byte
+numf1
+	clc
+	adc (bmpnt),y
+	bcc numf2
+	inx
+numf2
+	iny
+	iny
+	iny
+	iny
+	cpy #$48        ; dont count the dir
+	beq numf2
+	cpy #$90
+	bne numf1
+	pha
+	txa
+	ldx drvnum
+	sta ndbh,x
+	pla
+	sta ndbl,x
+;
+	rts
+;
+;
+; start double buffering
+; use track,sector as starting bloack
 ; 
-STRRD
-	JSR SETHDR
-	JSR RDBUF
-	JSR WATJOB
-	JSR GETBYT
-	STA TRACK
-	JSR GETBYT
-	STA SECTOR
-	RTS
+strrd
+	jsr sethdr
+	jsr rdbuf
+	jsr watjob
+	jsr getbyt
+	sta track
+	jsr getbyt
+	sta sector
+	rts
 ;
-STRDBL
-	JSR STRRD
-	LDA TRACK
-	BNE STR1
-	RTS
-STR1
-	JSR DBLBUF
-	JSR SETHDR
-	JSR RDBUF
-	JMP DBLBUF
+strdbl
+	jsr strrd
+	lda track
+	bne str1
+	rts
+str1
+	jsr dblbuf
+	jsr sethdr
+	jsr rdbuf
+	jmp dblbuf
 ;
-; START A READ JOB ON TRACK,SECTOR
+; start a read job on track,sector
 ;
-RDBUF	LDA #READ
-	BNE STRTIT
+rdbuf	lda #read
+	bne strtit
 ;
-; START A WRITE JOB ON TRACK,SECTOR
+; start a write job on track,sector
 ;
-WRTBUF	LDA #WRITE
-STRTIT	STA CMD
-	JSR GETACT
-	TAX
-	JSR SETLJB
-	TXA
-	PHA
-	ASL A
-	TAX
-	LDA #0
-	STA BUFTAB,X
-	JSR TYPFIL
-	CMP #4
-	BCS WRTC1       ;NOT SEQUENTIAL TYPE
+wrtbuf	lda #write
+strtit	sta cmd
+	jsr getact
+	tax
+	jsr setljb
+	txa
+	pha
+	asl a
+	tax
+	lda #0
+	sta buftab,x
+	jsr typfil
+	cmp #4
+	bcs wrtc1       ;not sequential type
 ;
-	INC NBKL,X
-	BNE WRTC1
-	INC NBKH,X
-WRTC1	PLA
-	TAX
-	RTS
+	inc nbkl,x
+	bne wrtc1
+	inc nbkh,x
+wrtc1	pla
+	tax
+	rts
 ;
 ;
 ;****************************
 ;*
-;*   FNDRCH
+;*   fndrch
 ;******************************
 ;*
 ;*
-FNDRCH	LDA SA
-	CMP #MAXSA+1
-	BCC FNDC20
-	AND #$F
-FNDC20
-	CMP #CMDSA
-	BNE FNDC25
-	LDA #ERRSA
-FNDC25
-	TAX
-	SEC
-	LDA LINTAB,X
-	BMI FNDC30
-	AND #$F
-	STA LINDX
-	TAX
-	CLC
-FNDC30	RTS
+fndrch	lda sa
+	cmp #maxsa+1
+	bcc fndc20
+	and #$f
+fndc20
+	cmp #cmdsa
+	bne fndc25
+	lda #errsa
+fndc25
+	tax
+	sec
+	lda lintab,x
+	bmi fndc30
+	and #$f
+	sta lindx
+	tax
+	clc
+fndc30	rts
 ;
 ;
 ;*
 ;*
 ;*****************************
 ;*
-;*   FNDWCH
+;*   fndwch
 ;*
 ;*****************************
 ;*
 ;*
-FNDWCH	LDA SA
-	CMP #MAXSA+1
-	BCC FNDW13
-	AND #$F
-FNDW13	TAX
-	LDA LINTAB,X
-	TAY
-	ASL A
-	BCC FNDW15
-	BMI FNDW20
-FNDW10	TYA
-	AND #$0F
-	STA LINDX
-	TAX
-	CLC
-	RTS
-FNDW15	BMI FNDW10
-FNDW20	SEC
-	RTS
+fndwch	lda sa
+	cmp #maxsa+1
+	bcc fndw13
+	and #$f
+fndw13	tax
+	lda lintab,x
+	tay
+	asl a
+	bcc fndw15
+	bmi fndw20
+fndw10	tya
+	and #$0f
+	sta lindx
+	tax
+	clc
+	rts
+fndw15	bmi fndw10
+fndw20	sec
+	rts
 ;
-TYPFIL	;GET FILE TYPE
-	LDX LINDX
-	LDA FILTYP,X
-	LSR A
-	AND #7
-	CMP #RELTYP
-	RTS
+typfil	;get file type
+	ldx lindx
+	lda filtyp,x
+	lsr a
+	and #7
+	cmp #reltyp
+	rts
 ;
-GETPRE	JSR GETACT
-	ASL A
-	TAX
-	LDY LINDX
-	RTS
-.SKIP
-; READ BYTE FROM ACTIVE BUFFER
-; AND SET FLAG IF LAST DATA BYTE
-; IF LAST THEN Z=1 ELSE Z=0 ;
-GETBYT	JSR GETPRE
-	LDA LSTCHR,Y
-	BEQ GETB1
-	LDA (BUFTAB,X)
-	PHA 
-	LDA BUFTAB,X
-	CMP LSTCHR,Y
-	BNE GETB2
-	LDA #$FF
-	STA BUFTAB,X
-GETB2	PLA
-	INC BUFTAB,X
-	RTS
-GETB1	LDA (BUFTAB,X)
-	INC BUFTAB,X
-	RTS
-;
-;
-; READ A CHAR FROM FILE AND READ NEXT
-; BLOCK OF FILE IF NEEDED.
-; SET CHNRDY=EOI IF END OF FILE
-;
-RDBYT	JSR GETBYT
-	BNE RD3
-	STA DATA
-.SKIP
-RD0	LDA LSTCHR,Y
-	BEQ RD1
-	LDA #EOIOUT
-RD01	STA CHNRDY,Y
-	LDA DATA
-	RTS
-RD1	JSR DBLBUF
-	LDA #0
-	JSR SETPNT
-	JSR GETBYT
-	CMP #0
-	BEQ RD4
-	STA TRACK
-	JSR GETBYT
-	STA SECTOR
-	JSR DBLBUF
-	JSR SETDRN
-	JSR SETHDR
-	JSR RDBUF
-	JSR DBLBUF
-	LDA DATA
-RD3	RTS
-RD4	JSR GETBYT
-	LDY LINDX
-	STA LSTCHR,Y
-	LDA DATA
-	RTS
-.SKIP 2
-.SKIP
-; WRITE A CHAR TO CHANL AND WRITE 
-; BUFFER OUT TO DISK IF ITS FULL
-;
-WRTBYT	JSR PUTBYT
-	BEQ WRT0
-	RTS
-.SKIP
-WRT0	JSR SETDRN
-	JSR NXTTS
-	LDA #0
-	JSR SETPNT
-	LDA TRACK
-	JSR PUTBYT
-	LDA SECTOR
-	JSR PUTBYT
-	JSR WRTBUF
-	JSR DBLBUF
-	JSR SETHDR
-	LDA #2
-	JMP SETPNT
-;
-; INC POINTER OF ACTIVE BUFFER
-; BY .A
+getpre	jsr getact
+	asl a
+	tax
+	ldy lindx
+	rts
+.skip
+; read byte from active buffer
+; and set flag if last data byte
+; if last then z=1 else z=0 ;
+getbyt	jsr getpre
+	lda lstchr,y
+	beq getb1
+	lda (buftab,x)
+	pha 
+	lda buftab,x
+	cmp lstchr,y
+	bne getb2
+	lda #$ff
+	sta buftab,x
+getb2	pla
+	inc buftab,x
+	rts
+getb1	lda (buftab,x)
+	inc buftab,x
+	rts
 ;
 ;
-INCPTR	; SCOTT PATCH 
-INCPNT	STA TEMP
-	JSR GETPNT
-	CLC
-	ADC TEMP
-	STA BUFTAB,X
-	STA DIRBUF
-	RTS
-; SET DRVNUM TO DRIVE INDICATED BY
-; LSTJOB OF ACTIVE BUFFER
+; read a char from file and read next
+; block of file if needed.
+; set chnrdy=eoi if end of file
 ;
-SETDRN	JSR GETACT
-	TAX
-	LDA LSTJOB,X
-	AND #1
-	STA DRVNUM
-	RTS
-.END
+rdbyt	jsr getbyt
+	bne rd3
+	sta data
+.skip
+rd0	lda lstchr,y
+	beq rd1
+	lda #eoiout
+rd01	sta chnrdy,y
+	lda data
+	rts
+rd1	jsr dblbuf
+	lda #0
+	jsr setpnt
+	jsr getbyt
+	cmp #0
+	beq rd4
+	sta track
+	jsr getbyt
+	sta sector
+	jsr dblbuf
+	jsr setdrn
+	jsr sethdr
+	jsr rdbuf
+	jsr dblbuf
+	lda data
+rd3	rts
+rd4	jsr getbyt
+	ldy lindx
+	sta lstchr,y
+	lda data
+	rts
+.skip 2
+.skip
+; write a char to chanl and write 
+; buffer out to disk if its full
+;
+wrtbyt	jsr putbyt
+	beq wrt0
+	rts
+.skip
+wrt0	jsr setdrn
+	jsr nxtts
+	lda #0
+	jsr setpnt
+	lda track
+	jsr putbyt
+	lda sector
+	jsr putbyt
+	jsr wrtbuf
+	jsr dblbuf
+	jsr sethdr
+	lda #2
+	jmp setpnt
+;
+; inc pointer of active buffer
+; by .a
+;
+;
+incptr	; scott patch 
+incpnt	sta temp
+	jsr getpnt
+	clc
+	adc temp
+	sta buftab,x
+	sta dirbuf
+	rts
+; set drvnum to drive indicated by
+; lstjob of active buffer
+;
+setdrn	jsr getact
+	tax
+	lda lstjob,x
+	and #1
+	sta drvnum
+	rts
+.end

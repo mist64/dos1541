@@ -1,133 +1,133 @@
-.PAGE 'SER.ATN'
+.page 'ser.atn'
 ;
 ;
 ;
-ATNIRQ	LDA PA1         ; CLEAR IRQ (CA1)
-	LDA #1
-	STA ATNPND
-	RTS
+atnirq	lda pa1         ; clear irq (ca1)
+	lda #1
+	sta atnpnd
+	rts
 ;
-ATNSRV	SEI
+atnsrv	sei
 ;
-	LDA #0          ; CLEAR PENDING FLAG
-	STA ATNPND
-	STA LSNACT      ; CLEAR ADDRESS FLAGS
-	STA TLKACT
+	lda #0          ; clear pending flag
+	sta atnpnd
+	sta lsnact      ; clear address flags
+	sta tlkact
 ;
-	LDX #TOPWRT     ; RESET STACK
-	TXS
+	ldx #topwrt     ; reset stack
+	txs
 ;
-	LDA #$80        ; SET ATN MODE FLAG FOR ACPT ROUTINE
-	STA EOIFLG      ;RESET EOI FLAG TO NON-EOI STATE
-	STA ATNMOD
+	lda #$80        ; set atn mode flag for acpt routine
+	sta eoiflg      ;reset eoi flag to non-eoi state
+	sta atnmod
 ;
-	JSR CLKHI
-	JSR DATLOW      ; SET DATA LINE LOW AS RESPONSE
+	jsr clkhi
+	jsr datlow      ; set data line low as response
 ;
-	LDA PB          ; SET ATN ACK TO GET HARDWARE CONTROLL OF DATA LINE
-	ORA #ATNA
-	STA PB
+	lda pb          ; set atn ack to get hardware controll of data line
+	ora #atna
+	sta pb
 ;
-ATNS15	LDA PB          ; TEST ATN STILL HERE
-	BPL ATNS20      ; GONE !
-	AND #CLKIN      ; CLOCK STILL LOW
-	BNE ATNS15
-;
-;
-ATN30	JSR ACPTR       ; GET A COMMAND BYTE
-;
-	CMP #UNLSN
-	BNE ATN35
-;
-	LDA #0          ; GENERAL UNLISTEN COMMAND
-	STA LSNACT
-	BEQ ATN122      ; JMP
-;
-ATN35	CMP #UNTLK
-	BNE ATN40
-;
-	LDA #0
-	STA TLKACT      ; UNTALK NOW
-	BEQ ATN122      ; JMP
-;
-ATN40	CMP TLKADR      ; OUR TALK ADDRESS?
-	BNE ATN45       ; NOPE
-;
-	LDA #1          ; YES
-	STA TLKACT      ; SET ACTIVE TALKER FLAG
-	LDA #0
-	STA LSNACT      ; UNLISTEN
-	BEQ ATN95       ;JUMP
-;
-ATN45	CMP LSNADR      ; OUT LISTEN ADDRESS?
-	BNE ATN50       ; NOPE
-;
-	LDA #1          ; YES
-	STA LSNACT
-	LDA #0
-	STA TLKACT
-	BEQ ATN95       ;JUMP
-;
-ATN50	TAX             ; TEST IF SA
-	AND #$60
-	CMP #$60        ; SA = $60 + N
-	BNE ATN120      ;DID NOT GET A VALID COMMAND
+atns15	lda pb          ; test atn still here
+	bpl atns20      ; gone !
+	and #clkin      ; clock still low
+	bne atns15
 ;
 ;
-	TXA             ; A SA FOR ME
-	STA ORGSA
-	AND #$0F        ; STRIP JUNK
-	STA SA
+atn30	jsr acptr       ; get a command byte
 ;
-	LDA ORGSA       ; TEST IF CLOSE
-	AND #$F0
-	CMP #$E0
-	BNE ATN122      ; NO
+	cmp #unlsn
+	bne atn35
 ;
-	CLI
-	JSR CLOSE       ; CLOSE THE FILE
-	SEI
+	lda #0          ; general unlisten command
+	sta lsnact
+	beq atn122      ; jmp
 ;
-; WARNING:::CLOSE DOESN'T RETURN IN TIME FOR ATN122:::
+atn35	cmp #untlk
+	bne atn40
 ;
-ATN95	BIT PB          ; TEST ATN STILL HERE
-	BMI ATN30
+	lda #0
+	sta tlkact      ; untalk now
+	beq atn122      ; jmp
+;
+atn40	cmp tlkadr      ; our talk address?
+	bne atn45       ; nope
+;
+	lda #1          ; yes
+	sta tlkact      ; set active talker flag
+	lda #0
+	sta lsnact      ; unlisten
+	beq atn95       ;jump
+;
+atn45	cmp lsnadr      ; out listen address?
+	bne atn50       ; nope
+;
+	lda #1          ; yes
+	sta lsnact
+	lda #0
+	sta tlkact
+	beq atn95       ;jump
+;
+atn50	tax             ; test if sa
+	and #$60
+	cmp #$60        ; sa = $60 + n
+	bne atn120      ;did not get a valid command
 ;
 ;
-; ATN GONE , DO WHAT WE WHERE TOLD TO DO
+	txa             ; a sa for me
+	sta orgsa
+	and #$0f        ; strip junk
+	sta sa
+;
+	lda orgsa       ; test if close
+	and #$f0
+	cmp #$e0
+	bne atn122      ; no
+;
+	cli
+	jsr close       ; close the file
+	sei
+;
+; warning:::close doesn't return in time for atn122:::
+;
+atn95	bit pb          ; test atn still here
+	bmi atn30
 ;
 ;
-ATNS20	LDA #0          ; CLEAR ATN MODE
-	STA ATNMOD
+; atn gone , do what we where told to do
 ;
-	LDA PB          ; ATN GONE , RELEASE ATN ACK
-	AND #$FF-ATNA
-	STA PB
 ;
-	LDA LSNACT      ; LISTEN ?
-	BEQ ATN100
+atns20	lda #0          ; clear atn mode
+	sta atnmod
 ;
-	JSR LISTEN
-	JMP IDLE
+	lda pb          ; atn gone , release atn ack
+	and #$ff-atna
+	sta pb
 ;
-ATN100	LDA TLKACT      ; TALK?
-	BEQ ATN110
+	lda lsnact      ; listen ?
+	beq atn100
 ;
-	JSR DATHI       ; RELEASE DATA LINE
-	JSR CLKLOW      ; PULL CLOCK LOW
+	jsr listen
+	jmp idle
 ;
-	JSR TALK
-ATN110	JMP ILERR       ; RELEASE ALL LINES AND GO TO IDLE
+atn100	lda tlkact      ; talk?
+	beq atn110
 ;
-; FIX SO (DEVICE NOT PRESENT) ERRORS REPORTED
+	jsr dathi       ; release data line
+	jsr clklow      ; pull clock low
 ;
-ATN120	LDA #$10        ;KILL ALL BUT ATNAK
-	STA PB
-ATN122	BIT PB
-	BPL ATNS20      ;EXIT OUT SAME WAY AFTER ATN DONE
-	BMI ATN122      ;JMP
+	jsr talk
+atn110	jmp ilerr       ; release all lines and go to idle
 ;
-.END
-; RSR 12/8/80 FIX INVERTED LOGIC
-; RSR 12/16/80 FIX BAD LOGIC
-; RSR 12/31/80 FIX EOIFLG AND LOGIC
+; fix so (device not present) errors reported
+;
+atn120	lda #$10        ;kill all but atnak
+	sta pb
+atn122	bit pb
+	bpl atns20      ;exit out same way after atn done
+	bmi atn122      ;jmp
+;
+.end
+; rsr 12/8/80 fix inverted logic
+; rsr 12/16/80 fix bad logic
+; rsr 12/31/80 fix eoiflg and logic

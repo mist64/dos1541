@@ -1,179 +1,179 @@
-.PAGE 'ADDREL'
+.page 'addrel'
 ;*********************************
-;* ADDREL: ADD BLOCKS TO RELATIVE*
-;*         FILE.                 *
-;*   VARS:                       *
-;*   REGS:                       *
+;* addrel: add blocks to relative*
+;*         file.                 *
+;*   vars:                       *
+;*   regs:                       *
 ;*                               *
 ;*********************************
 ;
-ADDREL
-	JSR SETDRN
-	JSR SSEND       ;SET UP END OF FILE
-	JSR POSBUF
-	JSR DBSET
-	LDA SSIND
-	STA R1          ;SAVE SS INDEX
-	LDA SSNUM
-	STA R0          ;SAVE SS NUMBER
-	LDA #0
-	STA R2          ;CLEAR FLAG FOR ONE BLOCK
+addrel
+	jsr setdrn
+	jsr ssend       ;set up end of file
+	jsr posbuf
+	jsr dbset
+	lda ssind
+	sta r1          ;save ss index
+	lda ssnum
+	sta r0          ;save ss number
+	lda #0
+	sta r2          ;clear flag for one block
 ;
-	LDA #0          ;CLEAR FOR CALCULATION...
-	STA RECPTR      ;...TO 1ST BYTE IN RECORD
-	JSR FNDREL      ;CALC SS PTRS
-ADDR1	; ENTRY FOR REL RECORD FIX
-	JSR NUMFRE      ;CALC AVAILABLE...
+	lda #0          ;clear for calculation...
+	sta recptr      ;...to 1st byte in record
+	jsr fndrel      ;calc ss ptrs
+addr1	; entry for rel record fix
+	jsr numfre      ;calc available...
 ;
-	LDY LINDX       ;RECORD SPAN?
-	LDX RS,Y
-	DEX
-	TXA
-	CLC
-	ADC RELPTR
-	BCC AR10        ;NO SPAN
+	ldy lindx       ;record span?
+	ldx rs,y
+	dex
+	txa
+	clc
+	adc relptr
+	bcc ar10        ;no span
 ;
-	INC SSIND       ;INC SS PTRS & CHECK
-	INC SSIND       ;INC SS PTRS & CHECK
-	BNE AR10
-	INC SSNUM
-	LDA #SSIOFF
-	STA SSIND
-AR10
-	LDA R1
-	CLC
-	ADC #2
-	JSR SETSSP
+	inc ssind       ;inc ss ptrs & check
+	inc ssind       ;inc ss ptrs & check
+	bne ar10
+	inc ssnum
+	lda #ssioff
+	sta ssind
+ar10
+	lda r1
+	clc
+	adc #2
+	jsr setssp
 ;
-	LDA SSNUM
-	CMP #NSSL
-	BCC AR25        ;VALID RANGE
+	lda ssnum
+	cmp #nssl
+	bcc ar25        ;valid range
 ;
-AR20
-	LDA #BIGFIL
-	JSR CMDERR      ;TOO MANY SS'S
-AR25
-	LDA SSIND       ;CALC # BLOCKS NEEDED...
-	SEC             ;...& CHECK AGAINST AVAIL.
-	SBC R1
-	BCS AR30
-	SBC #SSIOFF-1
-	CLC
-AR30
-	STA T3          ;# SS INDICES
-	LDA SSNUM
-	SBC R0
-	STA T4          ;# SS NEEDED
+ar20
+	lda #bigfil
+	jsr cmderr      ;too many ss's
+ar25
+	lda ssind       ;calc # blocks needed...
+	sec             ;...& check against avail.
+	sbc r1
+	bcs ar30
+	sbc #ssioff-1
+	clc
+ar30
+	sta t3          ;# ss indices
+	lda ssnum
+	sbc r0
+	sta t4          ;# ss needed
 ;
-	LDX #0          ;CLEAR ACCUM.
-	STX T1
-	STX T2
-	TAX             ;.X=# SS
-	JSR SSCALC      ;CALC # OF BLOCKS NEEDED
+	ldx #0          ;clear accum.
+	stx t1
+	stx t2
+	tax             ;.x=# ss
+	jsr sscalc      ;calc # of blocks needed
 ;
-	LDA T2
-	BNE AR35
-	LDX T1
-	DEX
-	BNE AR35
+	lda t2
+	bne ar35
+	ldx t1
+	dex
+	bne ar35
 ;
-	INC R2
-AR35
-	CMP NBTEMP+1
-	BCC AR40        ;OK!!
-	BNE AR20
-	LDA NBTEMP
-	CMP T1
-	BCC AR20        ;NOT ENUF BLOCKS
-AR40
-	LDA #1
-	JSR DRDBYT      ;LOOK AT SECTOR LINK
-	CLC
-	ADC #1          ;+1 IS NR
-	LDX LINDX
-	STA NR,X
-	JSR NXTTS       ;GET NEXT BLOCK...
-	JSR SETLNK      ;...& SET LINK.
-	LDA R2
-	BNE AR50        ;ADD ONE BLOCK
+	inc r2
+ar35
+	cmp nbtemp+1
+	bcc ar40        ;ok!!
+	bne ar20
+	lda nbtemp
+	cmp t1
+	bcc ar20        ;not enuf blocks
+ar40
+	lda #1
+	jsr drdbyt      ;look at sector link
+	clc
+	adc #1          ;+1 is nr
+	ldx lindx
+	sta nr,x
+	jsr nxtts       ;get next block...
+	jsr setlnk      ;...& set link.
+	lda r2
+	bne ar50        ;add one block
 ;
-	JSR WRTOUT      ;WRITE CURRENT LAST REC
-AR45
-	JSR DBLBUF      ;SWITCH BUFS
-	JSR SETHDR      ;SET HDR FROM T & S
-	JSR NXTTS       ;GET ANOTHER
-	JSR SETLNK      ;SET UP LINK
-	JSR NULBUF      ;CLEAN IT OUT
-	JMP AR55
-AR50
-	JSR DBLBUF      ;SWITCH BUFS
-	JSR SETHDR      ;SET HDR FROM T & S
-	JSR NULBUF      ;CLEAN BUFFER
-	JSR NULLNK      ;LAST BLOCK =0,LSTCHR
-AR55
-	JSR WRTOUT      ;WRITE BUFFER
-	JSR GETLNK      ;GET T&S FROM LINK
-	LDA TRACK
-	PHA             ;SAVE 'EM
-	LDA SECTOR
-	PHA
-	JSR GETHDR      ;NOW GET HDR T&S
-	LDA SECTOR
-	PHA             ;SAVE 'EM
-	LDA TRACK
-	PHA
-	JSR GSSPNT      ;CHECK SS PTR
-	TAX
-	BNE AR60
+	jsr wrtout      ;write current last rec
+ar45
+	jsr dblbuf      ;switch bufs
+	jsr sethdr      ;set hdr from t & s
+	jsr nxtts       ;get another
+	jsr setlnk      ;set up link
+	jsr nulbuf      ;clean it out
+	jmp ar55
+ar50
+	jsr dblbuf      ;switch bufs
+	jsr sethdr      ;set hdr from t & s
+	jsr nulbuf      ;clean buffer
+	jsr nullnk      ;last block =0,lstchr
+ar55
+	jsr wrtout      ;write buffer
+	jsr getlnk      ;get t&s from link
+	lda track
+	pha             ;save 'em
+	lda sector
+	pha
+	jsr gethdr      ;now get hdr t&s
+	lda sector
+	pha             ;save 'em
+	lda track
+	pha
+	jsr gsspnt      ;check ss ptr
+	tax
+	bne ar60
 ;
-	JSR NEWSS       ;NEED ANOTHER SS
-	LDA #SSIOFF
-	JSR SETSSP      ;.A=BT VAL
-	INC R0          ;ADVANCE SS COUNT
-AR60
-	PLA
-	JSR PUTSS       ;RECORD T&S...
-	PLA
-	JSR PUTSS       ;...IN SS.
-	PLA             ;GET T&S FROM LINK
-	STA SECTOR
-	PLA
-	STA TRACK
-	BEQ AR65        ;T=0: THAT'S ALL!!
+	jsr newss       ;need another ss
+	lda #ssioff
+	jsr setssp      ;.a=bt val
+	inc r0          ;advance ss count
+ar60
+	pla
+	jsr putss       ;record t&s...
+	pla
+	jsr putss       ;...in ss.
+	pla             ;get t&s from link
+	sta sector
+	pla
+	sta track
+	beq ar65        ;t=0: that's all!!
 ;
-	LDA R0
-	CMP SSNUM
-	BNE AR45        ;NOT EVEN DONE YET
+	lda r0
+	cmp ssnum
+	bne ar45        ;not even done yet
 ;
-	JSR GSSPNT
-	CMP SSIND
-	BCC AR45        ;ALMOST DONE
-	BEQ AR50        ;ONE MORE BLOCK LEFT
-AR65
-	JSR GSSPNT
-	PHA
-	LDA #0
-	JSR SSDIR
-	LDA #0
-	TAY
-	STA (DIRBUF),Y
-	INY
-	PLA
-	SEC
-	SBC #1
-	STA (DIRBUF),Y
-	JSR WRTSS       ;WRITE SS
-	JSR WATJOB
-	JSR MAPOUT
-	JSR FNDREL
-	JSR DBLBUF      ;GET BACK TO LEADING BUFFER
-	JSR SSPOS
-	BVS AR70
-	JMP POSITN
-AR70
-	LDA #LRF
-	JSR SETFLG
-	LDA #NOREC
-	JSR CMDERR
-.END
-	JSR DBLBUF
+	jsr gsspnt
+	cmp ssind
+	bcc ar45        ;almost done
+	beq ar50        ;one more block left
+ar65
+	jsr gsspnt
+	pha
+	lda #0
+	jsr ssdir
+	lda #0
+	tay
+	sta (dirbuf),y
+	iny
+	pla
+	sec
+	sbc #1
+	sta (dirbuf),y
+	jsr wrtss       ;write ss
+	jsr watjob
+	jsr mapout
+	jsr fndrel
+	jsr dblbuf      ;get back to leading buffer
+	jsr sspos
+	bvs ar70
+	jmp positn
+ar70
+	lda #lrf
+	jsr setflg
+	lda #norec
+	jsr cmderr
+.end
+	jsr dblbuf

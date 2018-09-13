@@ -1,215 +1,215 @@
-.PAGE 'LCC.SEEK'
+.page 'lcc.seek'
 ;
 ;
 ;
-SEAK	LDX #90         ; SEARCH 90 HEADERS
-	STX TMP
+seak	ldx #90         ; search 90 headers
+	stx tmp
 ;
-	LDX #0          ;READ IN 8 GCR BYTES
+	ldx #0          ;read in 8 gcr bytes
 ;
-	LDA #$52        ; HEADER BLOCK ID
-	STA STAB
+	lda #$52        ; header block id
+	sta stab
 ;
-SEEK10	JSR SYNC        ; FIND SYNC CHAR
+seek10	jsr sync        ; find sync char
 ;
-	BVC *           ; WAIT FOR BLOCK ID
-	CLV
+	bvc *           ; wait for block id
+	clv
 ;
-	LDA DATA2
-	CMP STAB        ; TEST IF HEADER BLOCK
-	BNE SEEK20      ; NOT HEADER
+	lda data2
+	cmp stab        ; test if header block
+	bne seek20      ; not header
 ;
-SEEK15	BVC *
-	CLV             ; READ IN GCR HEADER
+seek15	bvc *
+	clv             ; read in gcr header
 ;
-	LDA DATA2
-	STA STAB+1,X
+	lda data2
+	sta stab+1,x
 ;
-	INX
-	CPX #7
-	BNE SEEK15
+	inx
+	cpx #7
+	bne seek15
 ;
-	JSR CNVBIN      ; CONVERT HEADER IN STAB TO BINARY IN HEADER
+	jsr cnvbin      ; convert header in stab to binary in header
 ;
-	LDY #4          ; COMPUTE CHECKSUM
-	LDA #0
+	ldy #4          ; compute checksum
+	lda #0
 ;
-SEEK30	EOR HEADER,Y
-	DEY
-	BPL SEEK30
+seek30	eor header,y
+	dey
+	bpl seek30
 ;
-	CMP #0          ; TEST IF OK
-	BNE CSERR       ; NOPE, CHECKSUM ERROR IN HEADER
+	cmp #0          ; test if ok
+	bne cserr       ; nope, checksum error in header
 ;
-	LDX CDRIVE      ; UPDATE DRIVE TRACK#
-	LDA HEADER+2
-	STA DRVTRK,X
+	ldx cdrive      ; update drive track#
+	lda header+2
+	sta drvtrk,x
 ;
-	LDA JOB         ; TEST IF A SEEK JOB
-	CMP #$30
-	BEQ ESEEK
+	lda job         ; test if a seek job
+	cmp #$30
+	beq eseek
 ;
-	LDA CDRIVE
-	ASL A           ; TEST IF CORRECT ID
-	TAY
-	LDA DSKID,Y
-	CMP HEADER
-	BNE BADID
-	LDA DSKID+1,Y
-	CMP HEADER+1
-	BNE BADID
+	lda cdrive
+	asl a           ; test if correct id
+	tay
+	lda dskid,y
+	cmp header
+	bne badid
+	lda dskid+1,y
+	cmp header+1
+	bne badid
 ;
-	JMP WSECT       ; FIND BEST SECTOR TO SERVICE
+	jmp wsect       ; find best sector to service
 ;
 ;
-SEEK20	DEC TMP         ; SEARCH MORE?
-	BNE SEEK10      ;YES
+seek20	dec tmp         ; search more?
+	bne seek10      ;yes
 ;
-	LDA #2          ; CANT FIND A SECTOR
-	JSR ERRR
+	lda #2          ; cant find a sector
+	jsr errr
 ;
 ;
-ESEEK	LDA HEADER      ;HARRIS FIX....
-	STA DSKID       ;....
-	LDA HEADER+1    ;....
-	STA DSKID+1     ;....
+eseek	lda header      ;harris fix....
+	sta dskid       ;....
+	lda header+1    ;....
+	sta dskid+1     ;....
 ;
-DONE	LDA #1          ; RETURN OK CODE
-	.BYTE SKIP2
+done	lda #1          ; return ok code
+	.byte skip2
 ;
-BADID	LDA #11         ; DISK ID MISMATCH
-	.BYTE SKIP2
+badid	lda #11         ; disk id mismatch
+	.byte skip2
 ;
-CSERR	LDA #9          ; CHECKSUM ERROR IN HEADER
-	JMP ERRR
+cserr	lda #9          ; checksum error in header
+	jmp errr
 ;
 ;
 ;
-WSECT	LDA #$7F        ; FIND BEST JOB
-	STA CSECT
+wsect	lda #$7f        ; find best job
+	sta csect
 ;
-	LDA HEADER+3    ; GET UPCOMING SECTOR #
-	CLC
-	ADC #2
-	CMP SECTR
-	BCC L460
+	lda header+3    ; get upcoming sector #
+	clc
+	adc #2
+	cmp sectr
+	bcc l460
 ;
-	SBC SECTR       ;WRAP AROUND
+	sbc sectr       ;wrap around
 ;
-L460	STA NEXTS       ; NEXT SECTOR
+l460	sta nexts       ; next sector
 ;
-	LDX #NUMJOB-1
-	STX JOBN
+	ldx #numjob-1
+	stx jobn
 ;
-	LDX #$FF
+	ldx #$ff
 ;
-L480	JSR SETJB
-	BPL L470
+l480	jsr setjb
+	bpl l470
 ;
-	STA WORK
-	AND #1
-	CMP CDRIVE      ; TEST IF SAME DRIVE
-	BNE L470        ; NOPE
+	sta work
+	and #1
+	cmp cdrive      ; test if same drive
+	bne l470        ; nope
 ;
-	LDY #0          ; TEST IF SAME TRACK
-	LDA (HDRPNT),Y
-	CMP TRACC
-	BNE L470
+	ldy #0          ; test if same track
+	lda (hdrpnt),y
+	cmp tracc
+	bne l470
 ;
-	LDA JOB         ; TEST IF EXECUTE JOB
-	CMP #EXECD
-	BEQ L465
+	lda job         ; test if execute job
+	cmp #execd
+	beq l465
 ;
-	LDY #1
-	SEC
-	LDA (HDRPNT),Y
-	SBC NEXTS
-	BPL L465
+	ldy #1
+	sec
+	lda (hdrpnt),y
+	sbc nexts
+	bpl l465
 ;
-	CLC
-	ADC SECTR
+	clc
+	adc sectr
 ;
-L465	CMP CSECT
-	BCS L470
+l465	cmp csect
+	bcs l470
 ;
-	PHA             ; SAVE IT
-	LDA JOB
-	BEQ TSTRDJ      ; MUST BE A READ
+	pha             ; save it
+	lda job
+	beq tstrdj      ; must be a read
 ;
-	PLA
-	CMP #WRTMIN     ; [IF(CSECT<9)RETURN;
-	BCC L470        ; [IF(CSECT>12)RETURN;
+	pla
+	cmp #wrtmin     ; [if(csect<9)return;
+	bcc l470        ; [if(csect>12)return;
 ;
-	CMP #WRTMAX
-	BCS L470
+	cmp #wrtmax
+	bcs l470
 ;
-DOITT	STA CSECT       ;ITS BETTER
-	LDA JOBN
-	TAX
-	ADC #>BUFS
-	STA BUFPNT+1
+doitt	sta csect       ;its better
+	lda jobn
+	tax
+	adc #>bufs
+	sta bufpnt+1
 ;
-	BNE L470
+	bne l470
 ;
-TSTRDJ	PLA
-	CMP #RDMAX      ; IF(CSECT>6)RETURN;
-	BCC DOITT
+tstrdj	pla
+	cmp #rdmax      ; if(csect>6)return;
+	bcc doitt
 ;
 ;
-L470	DEC JOBN
-	BPL L480
+l470	dec jobn
+	bpl l480
 ;
-	TXA             ; TEST IF A JOB TO DO
-	BPL L490
+	txa             ; test if a job to do
+	bpl l490
 ;
-	JMP END         ; NO JOB FOUND
+	jmp end         ; no job found
 ;
-L490	STX JOBN
-	JSR SETJB
-	LDA JOB
-	JMP REED
+l490	stx jobn
+	jsr setjb
+	lda job
+	jmp reed
 ;
 ;
 ;
 ;
-CNVBIN	LDA BUFPNT
-	PHA
-	LDA BUFPNT+1
-	PHA             ; SAVE BUFFER PNTR
+cnvbin	lda bufpnt
+	pha
+	lda bufpnt+1
+	pha             ; save buffer pntr
 ;
-	LDA #<STAB
-	STA BUFPNT      ; POINT AT GCR CODE
-	LDA #>STAB
-	STA BUFPNT+1
+	lda #<stab
+	sta bufpnt      ; point at gcr code
+	lda #>stab
+	sta bufpnt+1
 ;
-	LDA #0
-	STA GCRPNT
+	lda #0
+	sta gcrpnt
 ;
-	JSR GET4GB      ; CONVERT 4 BYTES
+	jsr get4gb      ; convert 4 bytes
 ;
-	LDA BTAB+3
-	STA HEADER+2
+	lda btab+3
+	sta header+2
 ;
-	LDA BTAB+2
-	STA HEADER+3
+	lda btab+2
+	sta header+3
 ;
-	LDA BTAB+1
-	STA HEADER+4
+	lda btab+1
+	sta header+4
 ;
 ;
-	JSR GET4GB      ; GET 2 MORE
+	jsr get4gb      ; get 2 more
 ;
-	LDA BTAB        ; GET ID
-	STA HEADER+1
-	LDA BTAB+1
-	STA HEADER
+	lda btab        ; get id
+	sta header+1
+	lda btab+1
+	sta header
 ;
-	PLA
-	STA BUFPNT+1    ;RESTORE POINTER
-	PLA
-	STA BUFPNT
+	pla
+	sta bufpnt+1    ;restore pointer
+	pla
+	sta bufpnt
 ;
-	RTS
+	rts
 ;
 ;
 ;
@@ -217,4 +217,4 @@ CNVBIN	LDA BUFPNT
 ;
 ;
 ;
-.END
+.end

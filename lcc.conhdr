@@ -1,57 +1,57 @@
-.PAGE 'LCC.CONHDR'
+.page 'lcc.conhdr'
 ;
 ;
 ;
-;    *CONHDR
+;    *conhdr
 ;
-;    CONVERT HEADER
-;    INTO GCR SEARCH IMAGE
-;    AND PLACE IN STAB
+;    convert header
+;    into gcr search image
+;    and place in stab
 ;
-;   IMAGE CONTAINS :
+;   image contains :
 ;
-;   00 ID ID TR SC CS HBID
-;
-;
-CONHDR	LDA BUFPNT+1    ;SAVE BUFFER POINTER
-	STA SAVPNT+1
-;
-	LDA #>STAB
-	STA BUFPNT+1
-;
-	LDA #<STAB
-	STA GCRPNT
-;
-	LDA HBID
-	STA BTAB
-;
-	LDA HEADER+4
-	STA BTAB+1
-;
-	LDA HEADER+3
-	STA BTAB+2
-;
-	LDA HEADER+2
-	STA BTAB+3
-;
-	JSR PUT4BG
-;
-	LDA HEADER+1
-	STA BTAB
-;
-	LDA HEADER
-	STA BTAB+1
-;
-	LDA #0
-	STA BTAB+2
-	STA BTAB+3
-;
-	JSR PUT4BG
-;
-	LDA SAVPNT+1    ;RESTORE BUFFER POINTER
-	STA BUFPNT+1
-;
-	RTS
+;   00 id id tr sc cs hbid
 ;
 ;
-.END
+conhdr	lda bufpnt+1    ;save buffer pointer
+	sta savpnt+1
+;
+	lda #>stab
+	sta bufpnt+1
+;
+	lda #<stab
+	sta gcrpnt
+;
+	lda hbid
+	sta btab
+;
+	lda header+4
+	sta btab+1
+;
+	lda header+3
+	sta btab+2
+;
+	lda header+2
+	sta btab+3
+;
+	jsr put4bg
+;
+	lda header+1
+	sta btab
+;
+	lda header
+	sta btab+1
+;
+	lda #0
+	sta btab+2
+	sta btab+3
+;
+	jsr put4bg
+;
+	lda savpnt+1    ;restore buffer pointer
+	sta bufpnt+1
+;
+	rts
+;
+;
+.end

@@ -1,60 +1,60 @@
-.PAGE 'MEM-RD,WRT
-; MEMORY ACCESS COMMANDS
-;  "-" MUST BE 2ND CHAR
-MEM	LDA CMDBUF+1
-	CMP #'-
-	BNE MEMERR
+.page 'mem-rd,wrt
+; memory access commands
+;  "-" must be 2nd char
+mem	lda cmdbuf+1
+	cmp #'-
+	bne memerr
 ;
-	LDA CMDBUF+3    ;SET ADDRESS IN TEMP
-	STA TEMP
-	LDA CMDBUF+4
-	STA TEMP+1
+	lda cmdbuf+3    ;set address in temp
+	sta temp
+	lda cmdbuf+4
+	sta temp+1
 ;
-	LDY #0
-	LDA CMDBUF+2
-	CMP #'R
-	BEQ MEMRD       ;READ
-	JSR KILLP       ;KILL PROTECT
-	CMP #'W
-	BEQ MEMWRT      ;WRITE
-	CMP #'E
-	BNE MEMERR      ;ERROR
-; EXECUTE
-MEMEX	JMP (TEMP)
-.SKIP
-MEMRD
-	LDA (TEMP),Y
-	STA DATA
-	LDA CMDSIZ
-	CMP #6
-	BCC M30
+	ldy #0
+	lda cmdbuf+2
+	cmp #'r
+	beq memrd       ;read
+	jsr killp       ;kill protect
+	cmp #'w
+	beq memwrt      ;write
+	cmp #'e
+	bne memerr      ;error
+; execute
+memex	jmp (temp)
+.skip
+memrd
+	lda (temp),y
+	sta data
+	lda cmdsiz
+	cmp #6
+	bcc m30
 ;
-	LDX CMDBUF+5
-	DEX
-	BEQ M30
-	TXA
-	CLC
-	ADC TEMP
-	INC TEMP
-	STA LSTCHR+ERRCHN
-	LDA TEMP
-	STA CB+2
-	LDA TEMP+1
-	STA CB+3
-	JMP GE20
-M30
-	JSR FNDRCH
-	JMP GE15
-.SKIP
-MEMERR	LDA #BADCMD     ;BAD COMMAND
-	JMP CMDERR
-.SKIP
-MEMWRT	;WRITE
-M10	LDA CMDBUF+6,Y
-	STA (TEMP),Y    ;TRANSFER FROM CMDBUF
-	INY
-	CPY CMDBUF+5    ;# OF BYTES TO WRITE
-	BCC M10
-	RTS
-.SKIP
-.END
+	ldx cmdbuf+5
+	dex
+	beq m30
+	txa
+	clc
+	adc temp
+	inc temp
+	sta lstchr+errchn
+	lda temp
+	sta cb+2
+	lda temp+1
+	sta cb+3
+	jmp ge20
+m30
+	jsr fndrch
+	jmp ge15
+.skip
+memerr	lda #badcmd     ;bad command
+	jmp cmderr
+.skip
+memwrt	;write
+m10	lda cmdbuf+6,y
+	sta (temp),y    ;transfer from cmdbuf
+	iny
+	cpy cmdbuf+5    ;# of bytes to write
+	bcc m10
+	rts
+.skip
+.end

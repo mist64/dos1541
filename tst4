@@ -1,244 +1,244 @@
-.PAGE 'TST4'
+.page 'tst4'
 ;
-; GET NEXT CHAR FROM A CHANL
+; get next char from a chanl
 ;
-GBYTE	;GET THROUGH INTERNAL CHANNEL
-	JSR FNDRCH
-	JSR SETLDS
-	JSR GET
-	LDX LINDX
-	LDA CHNDAT,X
-	RTS
-;
-;
-GET	LDX LINDX
-	JSR TYPFIL      ;GET FILE TYPE
-	BNE GET00
-;
-	JMP RDREL
-GET00
-	LDA SA
-	CMP #$F
-	BEQ GETERC
-;
-	LDA CHNRDY,X    ;WAS LAST CHAR JUST SENT
-	AND #EOISND     ; JUST SENT EOI
-	BNE GET1        ;NOPE NOT THIS TIME
-;
-	JSR TYPFIL
-	CMP #DIRTYP
-	BNE GET0        ;NOT DIRECT TYPE
-;
-	LDA #RNDRDY     ; DIRECT FILE REMAINS ACTIVE
-	STA CHNRDY,X    ;TALKER LISTENER NOEOI
-	JMP RNDGET      ; PREPARE THE NEXT CHAR
-;
-GET0	LDA #NOTRDY     ;LST CHAR SENT,NOT READY
-	STA CHNRDY,X
-	RTS
+gbyte	;get through internal channel
+	jsr fndrch
+	jsr setlds
+	jsr get
+	ldx lindx
+	lda chndat,x
+	rts
 ;
 ;
-GET1	LDA SA          ;TEST IF A LOAD
-	BEQ GET6        ;ITS A LOAD SA OF 0
+get	ldx lindx
+	jsr typfil      ;get file type
+	bne get00
 ;
-GET2	JSR TYPFIL      ; TST FOR RND FILE
-	CMP #4
-	BCC SEQGET      ;SEQ FILE CHAR GET
+	jmp rdrel
+get00
+	lda sa
+	cmp #$f
+	beq geterc
 ;
-RNDGET	JSR GETPRE      ;DIRECT FILE GET
-	LDA BUFTAB,X
-	CMP LSTCHR,Y    ;UP TO LST CHAR YET
-	BNE RNGET1      ;NOT YET
+	lda chnrdy,x    ;was last char just sent
+	and #eoisnd     ; just sent eoi
+	bne get1        ;nope not this time
 ;
-	LDA #0          ;READ THE WHOLE THING
-	STA BUFTAB,X    ;WRAP PNTR TO 0
-RNGET1
-	INC BUFTAB,X    ;GET THE NEXT CHAR
-RNGET2
-	LDA (BUFTAB,X)
-RNGET4
-	STA CHNDAT,Y    ;SAVE CHAR IN
-	LDA BUFTAB,X
-	CMP LSTCHR,Y
-	BNE RNGET3
+	jsr typfil
+	cmp #dirtyp
+	bne get0        ;not direct type
 ;
-	LDA #RNDEOI
-	STA CHNRDY,Y    ;THIS IS LAST CHAR
-RNGET3	RTS             ;SEND EOI WITH IT
+	lda #rndrdy     ; direct file remains active
+	sta chnrdy,x    ;talker listener noeoi
+	jmp rndget      ; prepare the next char
+;
+get0	lda #notrdy     ;lst char sent,not ready
+	sta chnrdy,x
+	rts
 ;
 ;
-SEQGET	JSR RDBYT       ;READ THE NEXT BYTE
-GET3	LDX LINDX
-	STA CHNDAT,X    ;STORE IN CHNDAT
-	RTS
+get1	lda sa          ;test if a load
+	beq get6        ;its a load sa of 0
+;
+get2	jsr typfil      ; tst for rnd file
+	cmp #4
+	bcc seqget      ;seq file char get
+;
+rndget	jsr getpre      ;direct file get
+	lda buftab,x
+	cmp lstchr,y    ;up to lst char yet
+	bne rnget1      ;not yet
+;
+	lda #0          ;read the whole thing
+	sta buftab,x    ;wrap pntr to 0
+rnget1
+	inc buftab,x    ;get the next char
+rnget2
+	lda (buftab,x)
+rnget4
+	sta chndat,y    ;save char in
+	lda buftab,x
+	cmp lstchr,y
+	bne rnget3
+;
+	lda #rndeoi
+	sta chnrdy,y    ;this is last char
+rnget3	rts             ;send eoi with it
 ;
 ;
-GET6	LDA DIRLST      ;TEST IF DIR LSTING
-	BEQ SEQGET      ;NO, ITS NOT
-	JSR GETDIR      ;YES IT IS,GET DIR CHAR
-	JMP GET3
-;
-GETERC
-	JSR GETPNT
-	CMP #<ERRBUF-1
-	BNE GE10
-	LDA DIRBUF+1
-	CMP #>ERRBUF
-	BNE GE10
-;
-	LDA #CR
-	STA DATA
-	JSR ERROFF
-	LDA #0
-	JSR ERRTS0
-	DEC CB+2
-	LDA #EOIOUT
-	BNE GE30        ;(JUMP)
-;
-GE10
-	JSR GETBYT
-	STA DATA
-	BNE GE20
-GE15
-	LDA #<ERRBUF-1
-	JSR SETPNT
-	LDA #>ERRBUF
-	STA BUFTAB+1,X
-GE20
-	LDA #RDYTLK
-GE30
-	STA CHNRDY+ERRCHN
-	LDA DATA
-	STA CHNDAT+ERRCHN
-	RTS
+seqget	jsr rdbyt       ;read the next byte
+get3	ldx lindx
+	sta chndat,x    ;store in chndat
+	rts
 ;
 ;
-; READ NEXT BUFFER OF A FILE
-; FOLLOW LINKS IN FIRST TWO BYTES
-; END OF FILE IF 1ST BYTE=0
-; 2ND CHAR LENGTH
+get6	lda dirlst      ;test if dir lsting
+	beq seqget      ;no, its not
+	jsr getdir      ;yes it is,get dir char
+	jmp get3
 ;
-NXTBUF	JSR GETACT
-	ASL A
-	TAX
-	LDA #0
-	STA BUFTAB,X
-	LDA (BUFTAB,X)
-	BEQ NXTB1
-	DEC BUFTAB,X
-	JMP RDBYT
-NXTB1	RTS
+geterc
+	jsr getpnt
+	cmp #<errbuf-1
+	bne ge10
+	lda dirbuf+1
+	cmp #>errbuf
+	bne ge10
 ;
-; DIRECT BLOCK READ
+	lda #cr
+	sta data
+	jsr erroff
+	lda #0
+	jsr errts0
+	dec cb+2
+	lda #eoiout
+	bne ge30        ;(jump)
 ;
-;
-DRTRD	LDA #READ
-	BNE DRT
-; DIRECT BLOCK WRITE
-;
-; DIRECT BLOCK WRITE
-DRTWRT	LDA #WRITE
-DRT	ORA DRVNUM
-	STA CMD
-	LDA JOBNUM
-	JSR SETH
-	LDX JOBNUM
-	JMP DOIT2
-; OPEN INTERNAL READ CHANL (SA=16)
-;
-OPNIRD
-	LDA #1
-OPNTYP
-	STA TYPE
-	LDA #IRSA
-	STA SA
-	JSR OPNRCH
-	LDA #2
-	JMP SETPNT
-; OPEN INTERNAL WRITE CHANL (SA=16)
+ge10
+	jsr getbyt
+	sta data
+	bne ge20
+ge15
+	lda #<errbuf-1
+	jsr setpnt
+	lda #>errbuf
+	sta buftab+1,x
+ge20
+	lda #rdytlk
+ge30
+	sta chnrdy+errchn
+	lda data
+	sta chndat+errchn
+	rts
 ;
 ;
-OPNIWR	LDA #IWSA
-	STA SA
-	JMP OPNWCH
+; read next buffer of a file
+; follow links in first two bytes
+; end of file if 1st byte=0
+; 2nd char length
 ;
-; ALLOCATE NEXT DIRECTORY BLOCK ON 18
-;  AND MARK AS USED IN BAM
+nxtbuf	jsr getact
+	asl a
+	tax
+	lda #0
+	sta buftab,x
+	lda (buftab,x)
+	beq nxtb1
+	dec buftab,x
+	jmp rdbyt
+nxtb1	rts
 ;
-NXDRBK	JSR CURBLK
-	LDA #1
-	STA TEMP
-	LDA SECINC
-	PHA
-	LDA #3          ;  INCR SECTOR BY 3 IN DIRECTORY
-	STA SECINC
-	JSR NXTDS
-	PLA
-	STA SECINC
-	LDA #0
-	JSR SETPNT
-	LDA TRACK
-	JSR PUTBYT
-	LDA SECTOR
-	JSR PUTBYT
-	JSR WRTBUF
-	JSR WATJOB
-	LDA #0
-	JSR SETPNT
-NXDB1	JSR PUTBYT
-	BNE NXDB1
-	JSR PUTBYT
-	LDA #$FF
-	JMP PUTBYT
+; direct block read
 ;
 ;
-; .A=NEW PNTR VALUE
+drtrd	lda #read
+	bne drt
+; direct block write
 ;
-SETPNT	STA TEMP
-	JSR GETACT
-	ASL A
-	TAX
-	LDA BUFTAB+1,X
-	STA DIRBUF+1
-	LDA TEMP
-	STA BUFTAB,X
-	STA DIRBUF
-	RTS
+; direct block write
+drtwrt	lda #write
+drt	ora drvnum
+	sta cmd
+	lda jobnum
+	jsr seth
+	ldx jobnum
+	jmp doit2
+; open internal read chanl (sa=16)
+;
+opnird
+	lda #1
+opntyp
+	sta type
+	lda #irsa
+	sta sa
+	jsr opnrch
+	lda #2
+	jmp setpnt
+; open internal write chanl (sa=16)
+;
+;
+opniwr	lda #iwsa
+	sta sa
+	jmp opnwch
+;
+; allocate next directory block on 18
+;  and mark as used in bam
+;
+nxdrbk	jsr curblk
+	lda #1
+	sta temp
+	lda secinc
+	pha
+	lda #3          ;  incr sector by 3 in directory
+	sta secinc
+	jsr nxtds
+	pla
+	sta secinc
+	lda #0
+	jsr setpnt
+	lda track
+	jsr putbyt
+	lda sector
+	jsr putbyt
+	jsr wrtbuf
+	jsr watjob
+	lda #0
+	jsr setpnt
+nxdb1	jsr putbyt
+	bne nxdb1
+	jsr putbyt
+	lda #$ff
+	jmp putbyt
+;
+;
+; .a=new pntr value
+;
+setpnt	sta temp
+	jsr getact
+	asl a
+	tax
+	lda buftab+1,x
+	sta dirbuf+1
+	lda temp
+	sta buftab,x
+	sta dirbuf
+	rts
 ;
 ;
 ;
-; FREE THE INTERNAL CHANL (SA=16)
+; free the internal chanl (sa=16)
 ;
-FREICH	LDA #IRSA
-	STA SA
-	JSR FRECHN
-	LDA	#IWSA
-	STA	SA
-	JMP	FRECHN
+freich	lda #irsa
+	sta sa
+	jsr frechn
+	lda	#iwsa
+	sta	sa
+	jmp	frechn
 ;
-; READ THE ACTIVE BUFFER POINTER
+; read the active buffer pointer
 ;
-GETPNT	JSR GETACT
-SETDIR
-GP1	ASL A
-	TAX
-	LDA BUFTAB+1,X
-	STA DIRBUF+1
-	LDA BUFTAB,X
-	STA DIRBUF
-	RTS
+getpnt	jsr getact
+setdir
+gp1	asl a
+	tax
+	lda buftab+1,x
+	sta dirbuf+1
+	lda buftab,x
+	sta dirbuf
+	rts
 ;
-; DIRECT READ BYTE, .A=BYTE# TO READ
+; direct read byte, .a=byte# to read
 ;
-DRDBYT	STA TEMP+2
-	JSR GETACT
-	TAX
-	LDA BUFIND,X
-	STA TEMP+3
-	LDY #0
-	LDA (TEMP+2),Y
-	RTS
-; INDEX TABLE CONTAINING HIGH
-; BYTE ADDRESS OF BUFFERS
+drdbyt	sta temp+2
+	jsr getact
+	tax
+	lda bufind,x
+	sta temp+3
+	ldy #0
+	lda (temp+2),y
+	rts
+; index table containing high
+; byte address of buffers
 ;
-.END
+.end

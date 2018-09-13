@@ -1,153 +1,153 @@
-.PAGE 'REL2'
+.page 'rel2'
 ;**********************************
 ;*
-;* RELPUT
+;* relput
 ;*
 ;*
 ;**********************************
 ;*
 ;*
-RELPUT	JSR SDIRTY      ;WRITE DATA TO BUFFER
-	JSR GETACT
-	ASL A
-	TAX
-	LDA DATA
-	STA (BUFTAB,X)
+relput	jsr sdirty      ;write data to buffer
+	jsr getact
+	asl a
+	tax
+	lda data
+	sta (buftab,x)
 ;
-	LDY BUFTAB,X    ;INC THE POINTER
-	INY
-	BNE RELP05
-	LDY LINDX
-	LDA NR,Y
-	BEQ RELP07
+	ldy buftab,x    ;inc the pointer
+	iny
+	bne relp05
+	ldy lindx
+	lda nr,y
+	beq relp07
 ;
-RELP06
-	LDY #2
-RELP05
-	TYA
-	LDY LINDX
+relp06
+	ldy #2
+relp05
+	tya
+	ldy lindx
 ;
-	CMP NR,Y        ;TEST IF NR=POINTER
-	BNE RELP10      ;NO,SET NEW POINTER
+	cmp nr,y        ;test if nr=pointer
+	bne relp10      ;no,set new pointer
 ;
-RELP07	LDA #OVRFLO     ;YES,SET OVERFLOW
-	JMP SETFLG
+relp07	lda #ovrflo     ;yes,set overflow
+	jmp setflg
 ;
-RELP10	;WRITE BACK NEW POINTER
-	INC BUFTAB,X
+relp10	;write back new pointer
+	inc buftab,x
 ;
-	BNE RELP20      ;TEST IF =0
-	JSR NRBUF       ;PREPARE NXT BUFFER
+	bne relp20      ;test if =0
+	jsr nrbuf       ;prepare nxt buffer
 ;
-RELP20	RTS
+relp20	rts
 ;*
 ;*
 ;*
 ;*********************************
 ;*
-;*  WRTREL
+;*  wrtrel
 ;*
 ;*
 ;*********************************
 ;*
 ;*
-WRTREL
-	LDA #LRF+OVRFLO ;CHECK ALL FLAGS
-	JSR TSTFLG
-	BNE WR50        ;SOME FLAG IS SET
-WR10
-	LDA DATA        ;READY TO PUT DATA
-	JSR RELPUT
-WR20
-	LDA EOIFLG
-	BEQ WR40        ;EOI WAS SENT
-	RTS
-WR30
-	LDA #OVRFLO
-	JSR TSTFLG
-	BEQ WR40        ;NO REC OVERFLOW
-	LDA #RECOVF
-	STA ERWORD      ;SET ERROR FOR END OF PRINT
-WR40
-	JSR CLREC       ;CLEAR REST OF RECORD
-	JSR RD40
-	LDA ERWORD
-	BEQ WR45
-	JMP CMDERR
-WR45
-	JMP OKERR
+wrtrel
+	lda #lrf+ovrflo ;check all flags
+	jsr tstflg
+	bne wr50        ;some flag is set
+wr10
+	lda data        ;ready to put data
+	jsr relput
+wr20
+	lda eoiflg
+	beq wr40        ;eoi was sent
+	rts
+wr30
+	lda #ovrflo
+	jsr tstflg
+	beq wr40        ;no rec overflow
+	lda #recovf
+	sta erword      ;set error for end of print
+wr40
+	jsr clrec       ;clear rest of record
+	jsr rd40
+	lda erword
+	beq wr45
+	jmp cmderr
+wr45
+	jmp okerr
 ;
 ;
-WR50
-	AND #LRF
-	BNE WR60        ;LAST REC, ADD
-	LDA EOIFLG
-	BEQ WR30
-WR51
-	RTS
+wr50
+	and #lrf
+	bne wr60        ;last rec, add
+	lda eoiflg
+	beq wr30
+wr51
+	rts
 ;
-WR60
-	LDA DATA
-	PHA
-	JSR ADDREL      ;ADD TO FILE
-	PLA
-	STA DATA
-	LDA #LRF
-	JSR CLRFLG
-	JMP WR10
+wr60
+	lda data
+	pha
+	jsr addrel      ;add to file
+	pla
+	sta data
+	lda #lrf
+	jsr clrflg
+	jmp wr10
 ;*
 ;*
 ;*
 ;********************************
 ;*
-;*   CLREC
+;*   clrec
 ;*
 ;*********************************
 ;
-CLREC	LDA #OVRFLO     ;PUT 0'S INTO REST OF RECORD
-	JSR TSTFLG
-	BNE CLR10
+clrec	lda #ovrflo     ;put 0's into rest of record
+	jsr tstflg
+	bne clr10
 ;
-	LDA #0
-	STA DATA
-	JSR RELPUT
+	lda #0
+	sta data
+	jsr relput
 ;
-	JMP CLREC
+	jmp clrec
 ;
-CLR10	RTS
+clr10	rts
 ;
 ;
 ;*
 ;*
 ;*******************************
 ;*
-;*   SDIRTY
+;*   sdirty
 ;*
 ;*******************************
 ;*
 ;
-SDIRTY	LDA #DYFILE
-	JSR SETFLG
-	JSR GAFLGS
-	ORA #$40
-	LDX LBUSED
-	STA BUF0,X
-	RTS
+sdirty	lda #dyfile
+	jsr setflg
+	jsr gaflgs
+	ora #$40
+	ldx lbused
+	sta buf0,x
+	rts
 ;
 ;*
 ;*
 ;*******************************
 ;*
-;*   CDIRTY
+;*   cdirty
 ;*
 ;*******************************
 ;*
 ;
-CDIRTY	JSR GAFLGS
-	AND #$BF
-	LDX LBUSED
-	STA BUF0,X
-	RTS
+cdirty	jsr gaflgs
+	and #$bf
+	ldx lbused
+	sta buf0,x
+	rts
 ;
 ;
-.END
+.end

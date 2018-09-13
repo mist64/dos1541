@@ -1,73 +1,73 @@
-.PAGE 'IDLE'
-.SKIP3
-; IDLE LOOP, WAITING FOR SOMETHING TO DO
-IDLE	LDA CMDWAT      ; TEST FOR PENDING COMMAND
-	BEQ IDL1        ; NO COMMAND WAITING
-	SEI
-	LDA #0
-	STA CMDWAT
-	STA NMIFLG      ;CLEAR DEBOUNCE
-	JSR PARSXQ      ; PARSE AND XEQ COMMAND
-IDL1	CLI             ;TEST FOR DRIVE RUNNING OR OPENFILE
-	LDA #14
-	STA TEMP+3
-	LDA #0          ;IF FILE OPEN, TURN ON ACT LED
-	STA TEMP
-	STA TEMP+1
-IDL2	LDX TEMP+3      ;LOOK THRU LINTAB
-	LDA LINTAB,X    ;FOR ACTIVE FILE
-	CMP #$FF
-	BEQ IDL3
-	AND #$3F
-	STA LINDX
-	JSR GETACT
-	TAX
-	LDA LSTJOB,X    ;DETERMINE WHICH DRV IT IS ON
-	AND #1
-	TAX
-	INC TEMP,X
-IDL3	DEC TEMP+3      ;SET FLAG INDICATING DRV
-	BPL IDL2        ;HAS FILE OPEN
-	LDY #BFCNT-1    ;LOOK THRU JOB QUE FOR
-IDL4	LDA JOBS,Y      ; FOR JOBS STILL RUNNING
-	BPL IDL5
-	AND #1
-	TAX
-	INC TEMP,X      ;SET FLAG INDICATING DRIVE
-IDL5	DEY             ;IS ACTIVE
-	BPL IDL4
-	LDA LEDPRT
-	AND #$FF-LED1-LED0
-	PHA
-	LDA #0
-	STA DRVNUM
-	LDA TEMP
-	BEQ IDL7
-	LDA WPSW
-	BEQ IDL6
-	SEI
-	JSR CLDCHN
-	CLI
-IDL6
-	PLA             ;TURN ON LED IF DRIVE FLAG
-	ORA #LED0       ; IF NOT 0
-	PHA
-IDL7
-	INC DRVNUM
-	LDA TEMP+1
-	BEQ IDL9
-	LDA WPSW+1
-	BEQ IDL8
-	SEI
-	JSR CLDCHN
-	CLI
-IDL8
-	PLA
-	ORA #LED1
-	PHA
-IDL9
-	PLA
-	STA LEDPRT
-	JMP IDL1        ;BACK TO TOP OF LOP
+.page 'idle'
+.skip3
+; idle loop, waiting for something to do
+idle	lda cmdwat      ; test for pending command
+	beq idl1        ; no command waiting
+	sei
+	lda #0
+	sta cmdwat
+	sta nmiflg      ;clear debounce
+	jsr parsxq      ; parse and xeq command
+idl1	cli             ;test for drive running or openfile
+	lda #14
+	sta temp+3
+	lda #0          ;if file open, turn on act led
+	sta temp
+	sta temp+1
+idl2	ldx temp+3      ;look thru lintab
+	lda lintab,x    ;for active file
+	cmp #$ff
+	beq idl3
+	and #$3f
+	sta lindx
+	jsr getact
+	tax
+	lda lstjob,x    ;determine which drv it is on
+	and #1
+	tax
+	inc temp,x
+idl3	dec temp+3      ;set flag indicating drv
+	bpl idl2        ;has file open
+	ldy #bfcnt-1    ;look thru job que for
+idl4	lda jobs,y      ; for jobs still running
+	bpl idl5
+	and #1
+	tax
+	inc temp,x      ;set flag indicating drive
+idl5	dey             ;is active
+	bpl idl4
+	lda ledprt
+	and #$ff-led1-led0
+	pha
+	lda #0
+	sta drvnum
+	lda temp
+	beq idl7
+	lda wpsw
+	beq idl6
+	sei
+	jsr cldchn
+	cli
+idl6
+	pla             ;turn on led if drive flag
+	ora #led0       ; if not 0
+	pha
+idl7
+	inc drvnum
+	lda temp+1
+	beq idl9
+	lda wpsw+1
+	beq idl8
+	sei
+	jsr cldchn
+	cli
+idl8
+	pla
+	ora #led1
+	pha
+idl9
+	pla
+	sta ledprt
+	jmp idl1        ;back to top of lop
 ;
-.END
+.end

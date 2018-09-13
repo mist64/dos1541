@@ -1,12 +1,12 @@
-KILLP	;KILL PROTECTION
-; PHA
-; LDA #1
-; STA CFLG2 ;TELL CONTOLLER
-;KILLP2
-; LDA CFLG2 ;WAIT UNTIL HE'S GOT IT
-; BNE KILLP2
+killp	;kill protection
+; pha
+; lda #1
+; sta cflg2 ;tell contoller
+;killp2
+; lda cflg2 ;wait until he's got it
+; bne killp2
 ;
-; PLA
-	RTS
+; pla
+	rts
 ;
-.END
+.end

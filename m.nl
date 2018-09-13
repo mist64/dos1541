@@ -1,2 +1,2 @@
-.OPT NOLIST
-.FILE MASTER
+.opt nolist
+.file master

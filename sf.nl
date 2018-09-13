@@ -1,2 +1,2 @@
-.OPT NOL
-.FILE SFDOS
+.opt nol
+.file sfdos

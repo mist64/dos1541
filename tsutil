@@ -1,192 +1,192 @@
-.PAGE 'TSUTIL'
+.page 'tsutil'
 ;*
 ;*
 ;*********************************
 ;*
-;*  SCRUB
+;*  scrub
 ;*
-;*  WRITE OUT BUFFER IF DIRTY
+;*  write out buffer if dirty
 ;*
 ;*********************************
 ;*
 ;*
-SCRUB
-	JSR GAFLGS
-	BVC SCR1        ;NOT DIRTY
+scrub
+	jsr gaflgs
+	bvc scr1        ;not dirty
 ;
-	JSR WRTOUT
-	JSR WATJOB
-SCR1	RTS
+	jsr wrtout
+	jsr watjob
+scr1	rts
 ;*
 ;*
 ;*********************************
 ;*
-;*  SETLNK
+;*  setlnk
 ;*
-;*  PUT TRACK,SECTOR INTO BUFFER
+;*  put track,sector into buffer
 ;*
 ;*********************************
 ;*
 ;*
-SETLNK	JSR SET00
+setlnk	jsr set00
 ;
-	LDA TRACK
-	STA (DIRBUF),Y
-	INY
-	LDA SECTOR
-	STA (DIRBUF),Y
-	JMP SDIRTY
+	lda track
+	sta (dirbuf),y
+	iny
+	lda sector
+	sta (dirbuf),y
+	jmp sdirty
 ;
 ;*
 ;*
 ;********************************
 ;*
-;*  GETLNK
+;*  getlnk
 ;*
-;*  GET LINK FROM BUFFER INTO
-;*  TRACK AND SECTOR
+;*  get link from buffer into
+;*  track and sector
 ;*
 ;********************************
 ;*
 ;*
-GETLNK	JSR SET00
+getlnk	jsr set00
 ;
-	LDA (DIRBUF),Y
-	STA TRACK
-	INY
-	LDA (DIRBUF),Y
-	STA SECTOR
-	RTS
+	lda (dirbuf),y
+	sta track
+	iny
+	lda (dirbuf),y
+	sta sector
+	rts
 ;*
 ;*
 ;********************************
 ;*
-;*  NULLNK
+;*  nullnk
 ;*
-;*  SET TRACK LINK=0 & SECTOR
-;*  LINK=LAST NON-ZERO CHAR.
+;*  set track link=0 & sector
+;*  link=last non-zero char.
 ;*
 ;*********************************
 ;*
 ;*
-NULLNK
-	JSR SET00
-	LDA #0
-	STA (DIRBUF)Y
-	INY
-	LDX LINDX
-	LDA NR,X
-	TAX
-	DEX
-	TXA
-	STA (DIRBUF)Y
-	RTS
+nullnk
+	jsr set00
+	lda #0
+	sta (dirbuf)y
+	iny
+	ldx lindx
+	lda nr,x
+	tax
+	dex
+	txa
+	sta (dirbuf)y
+	rts
 ;
 ;*
 ;*
 ;*******************************
 ;*
-;* SET00
+;* set00
 ;*
-;* SETUP UP POINTER TO BUFFER
+;* setup up pointer to buffer
 ;*
 ;*******************************
 ;*
 ;*
-SET00	JSR GETACT
-	ASL	A
-	TAX
-	LDA BUFTAB+1,X
-	STA DIRBUF+1
-	LDA #0
-	STA DIRBUF
-	LDY #0
-	RTS
+set00	jsr getact
+	asl	a
+	tax
+	lda buftab+1,x
+	sta dirbuf+1
+	lda #0
+	sta dirbuf
+	ldy #0
+	rts
 ;
 ;*
 ;*
 ;*******************************
 ;*
-;*  GETHDR
+;*  gethdr
 ;*
-;*  READ TRACK,SETOR FROM HEADER
+;*  read track,setor from header
 ;*
 ;*******************************
 ;*
 ;*
-CURBLK	JSR FNDRCH
-GETHDR	JSR GETACT
-	STA JOBNUM
-	ASL A
-	TAY
-	LDA HDRS,Y      ;4/12**************
-	STA TRACK
-	LDA HDRS+1,Y    ;4/12**************
-	STA SECTOR
-	RTS
+curblk	jsr fndrch
+gethdr	jsr getact
+	sta jobnum
+	asl a
+	tay
+	lda hdrs,y      ;4/12**************
+	sta track
+	lda hdrs+1,y    ;4/12**************
+	sta sector
+	rts
 ;
 ;*
 ;*
 ;******************************
 ;*
-;* WRTAB,RDAB  WRTOUT,RDIN
-;* WRTSS,RDSS
+;* wrtab,rdab  wrtout,rdin
+;* wrtss,rdss
 ;*
 ;******************************
 ;*
 ;*
-WRTAB	LDA #WRITE
-	STA CMD
-	BNE SJ10
+wrtab	lda #write
+	sta cmd
+	bne sj10
 ;
-RDAB	LDA #READ
-	STA CMD
-	BNE SJ10
+rdab	lda #read
+	sta cmd
+	bne sj10
 ;
-WRTOUT	LDA #WRITE
-	STA CMD
-	BNE SJ20
+wrtout	lda #write
+	sta cmd
+	bne sj20
 ;
-RDIN	LDA #READ
-	STA CMD
-	BNE SJ20
+rdin	lda #read
+	sta cmd
+	bne sj20
 ;
-WRTSS	LDA #WRITE
-	STA CMD
-	BNE RDS5
+wrtss	lda #write
+	sta cmd
+	bne rds5
 ;
-RDSS	LDA #READ
-RDS5	STA CMD
-	LDX LINDX
-	LDA SS,X
-	TAX
-	BPL SJ30        ;WAS...BNE SJ30
+rdss	lda #read
+rds5	sta cmd
+	ldx lindx
+	lda ss,x
+	tax
+	bpl sj30        ;was...bne sj30
 ;
-SJ10	JSR SETHDR
-	JSR GETACT
-	TAX
-	LDA DRVNUM
-	STA LSTJOB,X
-SJ20	JSR CDIRTY
-	JSR GETACT
-	TAX
-SJ30	JMP SETLJB
+sj10	jsr sethdr
+	jsr getact
+	tax
+	lda drvnum
+	sta lstjob,x
+sj20	jsr cdirty
+	jsr getact
+	tax
+sj30	jmp setljb
 ;*
 ;*
 ;*
 ;***************************
 ;*
-;*     RDLNK
+;*     rdlnk
 ;*
 ;***************************
 ;*
 ;*
-RDLNK	LDA #0
-	JSR SETPNT
-	JSR GETBYT
-	STA TRACK
-	JSR GETBYT
-	STA SECTOR
-	RTS
+rdlnk	lda #0
+	jsr setpnt
+	jsr getbyt
+	sta track
+	jsr getbyt
+	sta sector
+	rts
 ;
-.END
+.end

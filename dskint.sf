@@ -1,286 +1,286 @@
-.PAGE 'DSKINT.SF'
+.page 'dskint.sf'
 ;
-; ERROR DISPLAY ROUTINE
-; BLINKS THE (ERROR #)+1 IN ALL THREE LEDS
+; error display routine
+; blinks the (error #)+1 in all three leds
 ;
-PEZRO	LDX #0          ;ERROR #1 FOR ZERO PAGE
-	.BYTE $2C       ;SKIP NEXT TWO BYTES
-PERR	LDX TEMP        ;GET ERROR #
-	TXS             ;USE STACK AS STORAGE REG.
-PE20	TSX             ;RESTORE ERROR #
-PE30	LDA #LED0+LED1
-	ORA LEDPRT
-	JMP PEA7A       ;TURN ON LED !!!!PATCH SO DDRB LED IS OUTPUT!!!!
-REA7D	TYA             ;CLEAR INNER CTR !!!!PATCH RETURN!!!!
-PD10	CLC
-PD20	ADC #1          ;COUNT INNER CTR
-	BNE PD20
-	DEY             ;DONE ?
-	BNE PD10        ;NO
+pezro	ldx #0          ;error #1 for zero page
+	.byte $2c       ;skip next two bytes
+perr	ldx temp        ;get error #
+	txs             ;use stack as storage reg.
+pe20	tsx             ;restore error #
+pe30	lda #led0+led1
+	ora ledprt
+	jmp pea7a       ;turn on led !!!!patch so ddrb led is output!!!!
+rea7d	tya             ;clear inner ctr !!!!patch return!!!!
+pd10	clc
+pd20	adc #1          ;count inner ctr
+	bne pd20
+	dey             ;done ?
+	bne pd10        ;no
 ;
-	LDA LEDPRT
-	AND #$FF-LED0-LED1
-	STA LEDPRT      ;TURN OFF ALL LEDS
-PE40	;WAIT
-	TYA             ;CLEAR INNER CTR
-PD11	CLC
-PD21	ADC #1          ;COUNT INNER CTR
-	BNE PD21
-	DEY             ;DONE ?
-	BNE PD11        ;NO
+	lda ledprt
+	and #$ff-led0-led1
+	sta ledprt      ;turn off all leds
+pe40	;wait
+	tya             ;clear inner ctr
+pd11	clc
+pd21	adc #1          ;count inner ctr
+	bne pd21
+	dey             ;done ?
+	bne pd11        ;no
 ;
-	DEX             ;BLINKED # ?
-	BPL PE30        ;NO - BLINK AGAIN
-	CPX #$FC        ;WAITED BETWEEN COUNTS ?
-	BNE PE40        ;NO
-	BEQ PE20        ;ALWAYS - ALL AGAIN
-.SKIP 3
-DSKINT
-	SEI
-	CLD
-	LDX #$FF
-	STX DDRA1
-	INX             ;LET .X:=0
+	dex             ;blinked # ?
+	bpl pe30        ;no - blink again
+	cpx #$fc        ;waited between counts ?
+	bne pe40        ;no
+	beq pe20        ;always - all again
+.skip 3
+dskint
+	sei
+	cld
+	ldx #$ff
+	stx ddra1
+	inx             ;let .x:=0
 ;
 ;
 ;*********************************
 ;
-; POWER UP DIAGNOSTIC
+; power up diagnostic
 ;
 ;*********************************
 ;
-	LDY #0
-	LDX #0
-PU10	TXA             ;FILL Z-PAGE ACCEND PATTERN
-	STA $0,X
-	INX
-	BNE PU10
-PU20	TXA             ;CHECK PATTERN BY INC...
-	CMP $0,X        ;...BACK TO ORIG #
-	BNE PEZRO       ;BAD BITS
-PU30
-	INC $0,X        ;BUMP CONTENTS
-	INY
-	BNE PU30        ;NOT DONE
+	ldy #0
+	ldx #0
+pu10	txa             ;fill z-page accend pattern
+	sta $0,x
+	inx
+	bne pu10
+pu20	txa             ;check pattern by inc...
+	cmp $0,x        ;...back to orig #
+	bne pezro       ;bad bits
+pu30
+	inc $0,x        ;bump contents
+	iny
+	bne pu30        ;not done
 ;
-	CMP $0,X        ;CHECK FOR GOOD COUNT
-	BNE PEZRO       ;SOMETHING'S WRONG
+	cmp $0,x        ;check for good count
+	bne pezro       ;something's wrong
 ;
-	STY $0,X        ;LEAVE Z-PAGE ZEROED
-	LDA $0,X        ;CHECK IT
-	BNE PEZRO       ;WRONG
+	sty $0,x        ;leave z-page zeroed
+	lda $0,x        ;check it
+	bne pezro       ;wrong
 ;
-	INX             ;NEXT!
-	BNE PU20        ;NOT ALL DONE
+	inx             ;next!
+	bne pu20        ;not all done
 ;
 ;
-; TEST TWO 64K-BIT ROMS
+; test two 64k-bit roms
 ;
-; ENTER X=START PAGE
-; EXIT IF OK
+; enter x=start page
+; exit if ok
 ;
-RM10	INC TEMP        ;NEXT ERROR #
-	STX IP+1        ;SAVE PAGE, START X=0
-	LDA #0
-	STA IP          ;ZERO LO INDIRECT
-	TAY
-	LDX #32         ;32 PAGES IN 8K ROM
-	CLC
-RT10	DEC IP+1        ;DO IT BACKWARDS
-RT20	ADC (IP),Y      ;TOTAL CHECKSUM IN A
-	INY
-	BNE RT20
-	DEX
-	BNE RT10
-	ADC #0          ;ADD IN LAST CARRY
-	TAX             ;SAVE LOWER PAGE IN X
-	CMP IP+1        ;CORRECT ?
-	BNE PERR2       ;NO - SHOW ERROR NUMBER
+rm10	inc temp        ;next error #
+	stx ip+1        ;save page, start x=0
+	lda #0
+	sta ip          ;zero lo indirect
+	tay
+	ldx #32         ;32 pages in 8k rom
+	clc
+rt10	dec ip+1        ;do it backwards
+rt20	adc (ip),y      ;total checksum in a
+	iny
+	bne rt20
+	dex
+	bne rt10
+	adc #0          ;add in last carry
+	tax             ;save lower page in x
+	cmp ip+1        ;correct ?
+	bne perr2       ;no - show error number
 ;
-	CPX #$C0        ;DONE BOTH ROMS ?
-	BNE RM10        ;NO
-.SKIP 3
-; TEST ALL COMMON RAM
+	cpx #$c0        ;done both roms ?
+	bne rm10        ;no
+.skip 3
+; test all common ram
 ;
-CR20	LDA #$01        ;START OF 1ST BLOCK
-CR30	STA IP+1        ;SAVE PAGE #
-	INC TEMP        ;BUMP ERROR #
-; ENTER X=# OF PAGES IN BLOCK
-;  IP PTR TO FIRST PAGE IN BLOCK
-; EXIT IF OK
+cr20	lda #$01        ;start of 1st block
+cr30	sta ip+1        ;save page #
+	inc temp        ;bump error #
+; enter x=# of pages in block
+;  ip ptr to first page in block
+; exit if ok
 ;
-RAMTST	LDX #7          ;SAVE PAGE COUNT
-RA10	TYA             ;FILL WITH ADR SENSITIVE PATTERN
-	CLC
-	ADC IP+1
-	STA (IP),Y
-	INY
-	BNE RA10
-	INC IP+1
-	DEX
-	BNE RA10
-	LDX #7          ;RESTORE PAGE COUNT
-RA30	DEC IP+1        ;CHECK PATTERN BACKWARDS
-RA40	DEY
-	TYA             ;GEN PATTERN AGAIN
-	CLC
-	ADC IP+1
-	CMP (IP),Y      ;OK ?
-	BNE PERR2       ;NO - SHOW ERROR #
-	EOR #$FF        ;YES - TEST INVERSE PATTERN
-	STA (IP),Y
-	EOR (IP),Y      ;OK ?
-	STA (IP),Y      ;LEAVE MEMORY ZERO
-	BNE PERR2       ;NO - SHOW ERROR #
-	TYA
-	BNE RA40
-	DEX
-	BNE RA30
+ramtst	ldx #7          ;save page count
+ra10	tya             ;fill with adr sensitive pattern
+	clc
+	adc ip+1
+	sta (ip),y
+	iny
+	bne ra10
+	inc ip+1
+	dex
+	bne ra10
+	ldx #7          ;restore page count
+ra30	dec ip+1        ;check pattern backwards
+ra40	dey
+	tya             ;gen pattern again
+	clc
+	adc ip+1
+	cmp (ip),y      ;ok ?
+	bne perr2       ;no - show error #
+	eor #$ff        ;yes - test inverse pattern
+	sta (ip),y
+	eor (ip),y      ;ok ?
+	sta (ip),y      ;leave memory zero
+	bne perr2       ;no - show error #
+	tya
+	bne ra40
+	dex
+	bne ra30
 ;
-	BEQ DIAGOK
+	beq diagok
 ;
-PERR2	JMP PERR
-.SKIP 3
+perr2	jmp perr
+.skip 3
 ;
-DIAGOK
-	LDX #TOPWRT
-	TXS
-	LDA LEDPRT      ;CLEAR LEDS
-	AND #$FF-LED0-LED1
-	STA LEDPRT
+diagok
+	ldx #topwrt
+	txs
+	lda ledprt      ;clear leds
+	and #$ff-led0-led1
+	sta ledprt
 ;
-	LDA #1          ; NEG EDGE OF ATN
-	STA PCR1
-	LDA #%10000010
-	STA IFR1
-	STA IER1
-	LDA PB          ;COMPUTE PRIMARY ADDR
-	AND #%01100000  ;PB5 AND PB6 ARE UNUSED LINE
-	ASL A           ;SHIFT TO LOWER
-	ROL A
-	ROL A
-	ROL A
-	ORA #$48        ;TALK ADDRESS
-	STA TLKADR
-	EOR #$60        ;LISTEN ADDRESS
-	STA LSNADR
+	lda #1          ; neg edge of atn
+	sta pcr1
+	lda #%10000010
+	sta ifr1
+	sta ier1
+	lda pb          ;compute primary addr
+	and #%01100000  ;pb5 and pb6 are unused line
+	asl a           ;shift to lower
+	rol a
+	rol a
+	rol a
+	ora #$48        ;talk address
+	sta tlkadr
+	eor #$60        ;listen address
+	sta lsnadr
 ;
-; INITIALIZE BUFFER PNTR TABLE
+; initialize buffer pntr table
 ;
-INTTAB	LDX #0
-	LDY #0
-INTT1	LDA #0
-	STA BUFTAB,X
-	INX
-	LDA BUFIND,Y
-	STA BUFTAB,X
-	INX
-	INY
-	CPY #BFCNT
-	BNE INTT1
+inttab	ldx #0
+	ldy #0
+intt1	lda #0
+	sta buftab,x
+	inx
+	lda bufind,y
+	sta buftab,x
+	inx
+	iny
+	cpy #bfcnt
+	bne intt1
 ;
-	LDA #<CMDBUF    ;SET PNTR TO CMDBUF
-	STA BUFTAB,X
-	INX
-	LDA #>CMDBUF
-	STA BUFTAB,X
-	INX
-	LDA #<ERRBUF    ;SET PNTR TO ERRBUF
-	STA BUFTAB,X
-	INX
-	LDA #>ERRBUF
-	STA BUFTAB,X
+	lda #<cmdbuf    ;set pntr to cmdbuf
+	sta buftab,x
+	inx
+	lda #>cmdbuf
+	sta buftab,x
+	inx
+	lda #<errbuf    ;set pntr to errbuf
+	sta buftab,x
+	inx
+	lda #>errbuf
+	sta buftab,x
 ;
-	LDA #$FF
-	LDX #MAXSA
-DSKIN1	STA LINTAB,X
-	DEX
-	BPL DSKIN1
+	lda #$ff
+	ldx #maxsa
+dskin1	sta lintab,x
+	dex
+	bpl dskin1
 ;
-	LDX #MXCHNS-1
-DSKIN2
-	STA BUF0,X      ;SET BUFFERS AS UNUSED
-	STA BUF1,X
-	STA SS,X
-	DEX
-	BPL DSKIN2
+	ldx #mxchns-1
+dskin2
+	sta buf0,x      ;set buffers as unused
+	sta buf1,x
+	sta ss,x
+	dex
+	bpl dskin2
 ;
-	LDA #BFCNT      ;SET BUFFER POINTERS
-	STA BUF0+CMDCHN
-	LDA #BFCNT+1
-	STA BUF0+ERRCHN
-	LDA #$FF
-	STA BUF0+BLINDX
-	STA BUF1+BLINDX
-.SKIP
-	LDA #ERRCHN
-	STA LINTAB+ERRSA
-	LDA #CMDCHN+$80
-	STA LINTAB+CMDSA
-	LDA #LXINT      ;LINDX 0 TO 5 FREE
-	STA LINUSE
-.SKIP
-	LDA #RDYLST
-	STA CHNRDY+CMDCHN
-	LDA #RDYTLK
-	STA CHNRDY+ERRCHN
-	LDA #$E0
-	STA BUFUSE
-	LDA #$FF
-	STA BUFUSE+1
-	LDA #1
-	STA WPSW
-	STA WPSW+1
-	JSR USRINT      ;INIT USER JMP
-	JSR LRUINT
-;
-;**********************************
-;
-; CONTROLLER INITIALIZATION
+	lda #bfcnt      ;set buffer pointers
+	sta buf0+cmdchn
+	lda #bfcnt+1
+	sta buf0+errchn
+	lda #$ff
+	sta buf0+blindx
+	sta buf1+blindx
+.skip
+	lda #errchn
+	sta lintab+errsa
+	lda #cmdchn+$80
+	sta lintab+cmdsa
+	lda #lxint      ;lindx 0 to 5 free
+	sta linuse
+.skip
+	lda #rdylst
+	sta chnrdy+cmdchn
+	lda #rdytlk
+	sta chnrdy+errchn
+	lda #$e0
+	sta bufuse
+	lda #$ff
+	sta bufuse+1
+	lda #1
+	sta wpsw
+	sta wpsw+1
+	jsr usrint      ;init user jmp
+	jsr lruint
 ;
 ;**********************************
 ;
-	JSR CNTINT
-.SKIP 3
-; SET INDIRECT VECTORS
-	LDA #<DIAGOK
-	STA VNMI
-	LDA #>DIAGOK
-	STA VNMI+1
+; controller initialization
 ;
-	LDA #10         ;SET UP SECTOR OFFSET
-	STA SECINC
-	LDA #5
-	STA REVCNT      ;SET UP RECOVERY COUNT
-.SKIP
+;**********************************
+;
+	jsr cntint
+.skip 3
+; set indirect vectors
+	lda #<diagok
+	sta vnmi
+	lda #>diagok
+	sta vnmi+1
+;
+	lda #10         ;set up sector offset
+	sta secinc
+	lda #5
+	sta revcnt      ;set up recovery count
+.skip
 ;*
 ;*******************************
 ;*
-;*    SETERR
-;*    SET UP POWER ON ERROR MSG
+;*    seterr
+;*    set up power on error msg
 ;*
-;*    CBM DOS V2.0 (C)1979
+;*    cbm dos v2.0 (c)1979
 ;*
 ;*******************************
 ;*
 ;*
 ;
-SETERR	LDA #$73
-	JSR ERRTS0
+seterr	lda #$73
+	jsr errts0
 ;
 ;
-;MUST BE CONTIGUOUS TO .FILE IDLE
-;
-;********************************
-; INIT THE SERIAL BUS
+;must be contiguous to .file idle
 ;
 ;********************************
-	LDA #%00011010  ; ATNA,CLKOUT,DATOUT
-	STA DDRB1
+; init the serial bus
 ;
-	LDA #$00        ; DATA HI, CLOCK HI,ATNA HI
-	STA PB
+;********************************
+	lda #%00011010  ; atna,clkout,datout
+	sta ddrb1
 ;
-	JSR BOOT
+	lda #$00        ; data hi, clock hi,atna hi
+	sta pb
 ;
-.END
+	jsr boot
+;
+.end

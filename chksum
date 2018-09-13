@@ -1,48 +1,48 @@
-.PAGE 'CHKSUM
-	*= $BF00
-	SEI
-	LDX #$FF
-	TXS
-	CLD
-	LDA #0
-	STA CCHKSM
-	CMP CCHKSM
-CHKPRO
-	BNE CHKPRO
-	LDA #$C0
-	JSR GENCHK
-	STA CCHKSM
-	LDA #0
-	STA ECHKSM
-	CMP ECHKSM
-	BNE CHKPRO
-	LDA #$E0
-	JSR GENCHK
-	STA ECHKSM
-	JMP *
+.page 'chksum
+	*= $bf00
+	sei
+	ldx #$ff
+	txs
+	cld
+	lda #0
+	sta cchksm
+	cmp cchksm
+chkpro
+	bne chkpro
+	lda #$c0
+	jsr genchk
+	sta cchksm
+	lda #0
+	sta echksm
+	cmp echksm
+	bne chkpro
+	lda #$e0
+	jsr genchk
+	sta echksm
+	jmp *
 ;
-GENCHK	;.A=ADDRESS
-	CLC
-	PHA
-	STA TEMP+1
-	LDA #0
-	STA TEMP
-	LDX #32
-	LDY #0
-CHK1
-	ADC (TEMP)Y
-	INY
-	BNE CHK1
+genchk	;.a=address
+	clc
+	pha
+	sta temp+1
+	lda #0
+	sta temp
+	ldx #32
+	ldy #0
+chk1
+	adc (temp)y
+	iny
+	bne chk1
 ;
-	INC TEMP+1
-	DEX
-	BNE CHK1
+	inc temp+1
+	dex
+	bne chk1
 ;
-	ADC #0
-	STA TEMP+1
-	PLA
-	SEC
-	SBC TEMP+1
-	SBC #0          ;.A=CHECKSUM BYTE
-	RTS
-.END
+	adc #0
+	sta temp+1
+	pla
+	sec
+	sbc temp+1
+	sbc #0          ;.a=checksum byte
+	rts
+.end

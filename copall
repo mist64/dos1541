@@ -1,103 +1,103 @@
-.PAGE 'COPY ALL'
+.page 'copy all'
 ;
-; SET UP SUBROUTINE
+; set up subroutine
 ;
-PUPS1	LDA #0
-	STA REC
-	STA DRVCNT
-	STA FILTRK
-	STA FILTRK+1
-	LDA FILDRV+1    ;GET DRIVE NUMBER
-	AND #1          ;ONLY
-	STA DRVNUM
-	ORA #1
-	STA DELSEC      ;NONZERO
-	LDA FILTBL+1    ;FN1=FN2
-	STA FILTBL
-	RTS
+pups1	lda #0
+	sta rec
+	sta drvcnt
+	sta filtrk
+	sta filtrk+1
+	lda fildrv+1    ;get drive number
+	and #1          ;only
+	sta drvnum
+	ora #1
+	sta delsec      ;nonzero
+	lda filtbl+1    ;fn1=fn2
+	sta filtbl
+	rts
 ;
-.END
-.PAGE 'COPY ALL'
+.end
+.page 'copy all'
 ;
-; COPY DISK TO DISK ROUTINES
+; copy disk to disk routines
 ;
-CPYDTD	LDA FILTBL+1    ;SAVE IN TEMP
-	STA TEMP
-	LDY #40         ;40 CHAR BUFFER
-	LDX CMDSIZ      ;PREP TO MOVE
-	STY CMDSIZ      ;END OF FILENAME2
-MOVLP1	DEY
-	DEX
-	LDA CMDBUF,X    ;MOV FN LIFO
-	STA CMDBUF,Y
-	CPX TEMP        ;ACTUAL F2 VAL
-	BNE MOVLP1
-	STY FILTBL+1    ;POINTER TO F2
-MOVLP2	JSR OPTSCH
-	JSR PUPS1       ;SETUP FIRST PASS
-	JSR FFST        ;FIRST MATCH
-	BPL FIXIT       ;ENTRY FOUND?
-	BMI ENDIT       ;NO
+cpydtd	lda filtbl+1    ;save in temp
+	sta temp
+	ldy #40         ;40 char buffer
+	ldx cmdsiz      ;prep to move
+	sty cmdsiz      ;end of filename2
+movlp1	dey
+	dex
+	lda cmdbuf,x    ;mov fn lifo
+	sta cmdbuf,y
+	cpx temp        ;actual f2 val
+	bne movlp1
+	sty filtbl+1    ;pointer to f2
+movlp2	jsr optsch
+	jsr pups1       ;setup first pass
+	jsr ffst        ;first match
+	bpl fixit       ;entry found?
+	bmi endit       ;no
 ;
-EXLP0	PLA             ;PULL NEEDED VARS
-	STA DIRSEC
-	PLA
-	STA FILTBL+1
-	PLA
-	STA LSTBUF
-	PLA
-	STA FILCNT
-	PLA
-	STA INDEX
-	PLA
-	STA FOUND
-	PLA
-	STA DELIND
-	PLA
-	STA DRVFLG
+exlp0	pla             ;pull needed vars
+	sta dirsec
+	pla
+	sta filtbl+1
+	pla
+	sta lstbuf
+	pla
+	sta filcnt
+	pla
+	sta index
+	pla
+	sta found
+	pla
+	sta delind
+	pla
+	sta drvflg
 ;
-EXLP1	JSR PUPS1       ;SET UP VARS
-	JSR FFRE        ;NEXT MATCH
-	BPL FIXIT       ;FOUND ONE?
-ENDIT	JMP ENDCMD      ;NO! SO BYE
+exlp1	jsr pups1       ;set up vars
+	jsr ffre        ;next match
+	bpl fixit       ;found one?
+endit	jmp endcmd      ;no! so bye
 ;
-FIXIT	LDA DRVFLG      ;PUSH NEEDED VARS
-	PHA
-	LDA DELIND
-	PHA
-	LDA FOUND
-	PHA
-	LDA INDEX
-	PHA
-	LDA FILCNT
-	PHA
-	LDA LSTBUF
-	PHA
-	LDA FILTBL+1
-	PHA
-	LDA DIRSEC
-	PHA
+fixit	lda drvflg      ;push needed vars
+	pha
+	lda delind
+	pha
+	lda found
+	pha
+	lda index
+	pha
+	lda filcnt
+	pha
+	lda lstbuf
+	pha
+	lda filtbl+1
+	pha
+	lda dirsec
+	pha
 ;
-EXLP2	JSR TRFNME      ;TRANSFER NAME
-	LDA #1          ;FAKE OUT LOOKUP
-	STA F1CNT
-	STA F2CNT
-	JSR LOOKUP
-	LDA #1
-	STA F1CNT
-	LDA #2          ;REAL
-	STA F2CNT
-	JSR CY          ;COPY IT
-	JMP EXLP0       ;NEXT ONE FOLKS
+exlp2	jsr trfnme      ;transfer name
+	lda #1          ;fake out lookup
+	sta f1cnt
+	sta f2cnt
+	jsr lookup
+	lda #1
+	sta f1cnt
+	lda #2          ;real
+	sta f2cnt
+	jsr cy          ;copy it
+	jmp exlp0       ;next one folks
 ;
-; TRANSFER NAME (DIRBUF) TO CMDBUF
+; transfer name (dirbuf) to cmdbuf
 ;
-TRFNME	LDY #3          ;BOTH INDEXES
-	STY FILTBL      ;BEGINING OF FILENAME1
-TRF0	LDA (DIRBUF)Y   ;MOVE IT
-	STA CMDBUF,Y
-	INY
-	CPY #19         ;ALL 16 CHARS PASSED?
-	BNE TRF0
-	RTS
-.END
+trfnme	ldy #3          ;both indexes
+	sty filtbl      ;begining of filename1
+trf0	lda (dirbuf)y   ;move it
+	sta cmdbuf,y
+	iny
+	cpy #19         ;all 16 chars passed?
+	bne trf0
+	rts
+.end

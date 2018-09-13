@@ -1,88 +1,88 @@
-.PAGE 'LCC.VAR'
+.page 'lcc.var'
 ;
-DRVST	*=*+2
-DRVTRK	*=*+2
-STAB	*=*+10
-;    VARIABLES
+drvst	*=*+2
+drvtrk	*=*+2
+stab	*=*+10
+;    variables
 ;
-; POINTERS
-SAVPNT	*=*+2
-BUFPNT	*=*+2
-HDRPNT	*=*+2
-;
-;
-GCRPNT	*=*+1
-GCRERR	*=*+1           ; INDICATES GCR DECODE ERROR
-BYTCNT	*=*+1
-BITCNT	*=*+1
-BID	*=*+1
-HBID	*=*+1
-CHKSUM	*=*+1
-HINIB	*=*+1
-BYTE	*=*+1
-DRIVE	*=*+1
-CDRIVE	*=*+1
-JOBN	*=*+1
-TRACC	*=*+1
-NXTJOB	*=*+1
-NXTRK	*=*+1
-SECTR	*=*+1
-WORK	*=*+1
-JOB	*=*+1
-CTRACK	*=*+1
-DBID	*=*+1           ; DATA BLOCK ID
-ACLTIM	*=*+1           ; ACEL TIME DELAY
-SAVSP	*=*+1           ; SAVE STACK POINTER
-STEPS	*=*+1           ; STEPS TO DESIRED TRACK
-TMP	*=*+1
-CSECT	*=*+1
-NEXTS	*=*+1
-NXTBF	*=*+1           ; POINTER AT NEXT GCR SOURCE BUFFER
-NXTPNT	*=*+1           ; AND NEXT GCR BYTE LOCATION IN BUFFER
-GCRFLG	*=*+1           ; BUFFER IN GCR IMAGE
-FTNUM	*=*+1           ; CURRENT FORMAT TRACK
-BTAB	*=*+4
-GTAB	*=*+8
-;
-AS	*=*+1           ; # OF STEPS TO ACEL
-AF	*=*+1           ; ACEL. FACTOR
-ACLSTP	*=*+1           ; STEPS TO GO
-RSTEPS	*=*+1           ; # OF RUN STEPS
-NXTST	*=*+2
-MINSTP	*=*+1           ; MIN REQIRED TO ACEL
+; pointers
+savpnt	*=*+2
+bufpnt	*=*+2
+hdrpnt	*=*+2
 ;
 ;
+gcrpnt	*=*+1
+gcrerr	*=*+1           ; indicates gcr decode error
+bytcnt	*=*+1
+bitcnt	*=*+1
+bid	*=*+1
+hbid	*=*+1
+chksum	*=*+1
+hinib	*=*+1
+byte	*=*+1
+drive	*=*+1
+cdrive	*=*+1
+jobn	*=*+1
+tracc	*=*+1
+nxtjob	*=*+1
+nxtrk	*=*+1
+sectr	*=*+1
+work	*=*+1
+job	*=*+1
+ctrack	*=*+1
+dbid	*=*+1           ; data block id
+acltim	*=*+1           ; acel time delay
+savsp	*=*+1           ; save stack pointer
+steps	*=*+1           ; steps to desired track
+tmp	*=*+1
+csect	*=*+1
+nexts	*=*+1
+nxtbf	*=*+1           ; pointer at next gcr source buffer
+nxtpnt	*=*+1           ; and next gcr byte location in buffer
+gcrflg	*=*+1           ; buffer in gcr image
+ftnum	*=*+1           ; current format track
+btab	*=*+4
+gtab	*=*+8
 ;
-;  CONSTANTS
-;
-OVRBUF	=$0100          ; TOP OF STACK
-NUMJOB	=6 ; NUMBER OF JOBS
-JMPC	=$50            ; JUMP COMMAND
-BUMPC	=$40            ; BUMP COMMAND
-EXECD	=$60            ; EXECUTE COMMAND
-BUFS	=$0300          ; START OF BUFFERS
-BUFF0	=BUFS
-BUFF1	=BUFS+$100
-BUFF2	=BUFS+$200
-TOLONG	=$2             ; FORMAT ERRORS
-TOMANY	=$3
-TOBIG	=$4
-TOSMAL	=$5
-NOTFND	=$6
-SKIP2	=$2C            ; BIT ABS
-TOPRD	=69             ; TOP OF READ OVERFLO BUFFER ON A READ
-TOPWRT	=69             ; TOP OF WRITE OVERFLO BUFFER ON A WRITE
-NUMSYN	= 5             ; GCR BYTE COUNT FOR SIZE OF SYNC AREA
-GAP1	= 10            ; GAP AFTER HEADER TO  CLEAR ERASE IN GCR BYTES
-GAP2	= 4             ; GAP AFTER DATA BLOCK MIN SIZE
-RDMAX	= 6             ; SECTOR DISTANCE WAIT
-WRTMIN	= 9
-WRTMAX	= 12
-TIM	=58             ;IRQ RATE FOR 15MS
+as	*=*+1           ; # of steps to acel
+af	*=*+1           ; acel. factor
+aclstp	*=*+1           ; steps to go
+rsteps	*=*+1           ; # of run steps
+nxtst	*=*+2
+minstp	*=*+1           ; min reqired to acel
 ;
 ;
+;
+;  constants
+;
+ovrbuf	=$0100          ; top of stack
+numjob	=6 ; number of jobs
+jmpc	=$50            ; jump command
+bumpc	=$40            ; bump command
+execd	=$60            ; execute command
+bufs	=$0300          ; start of buffers
+buff0	=bufs
+buff1	=bufs+$100
+buff2	=bufs+$200
+tolong	=$2             ; format errors
+tomany	=$3
+tobig	=$4
+tosmal	=$5
+notfnd	=$6
+skip2	=$2c            ; bit abs
+toprd	=69             ; top of read overflo buffer on a read
+topwrt	=69             ; top of write overflo buffer on a write
+numsyn	= 5             ; gcr byte count for size of sync area
+gap1	= 10            ; gap after header to  clear erase in gcr bytes
+gap2	= 4             ; gap after data block min size
+rdmax	= 6             ; sector distance wait
+wrtmin	= 9
+wrtmax	= 12
+tim	=58             ;irq rate for 15ms
 ;
 ;
 ;
 ;
-.END
+;
+;
+.end

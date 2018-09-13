@@ -1,252 +1,252 @@
-.PAGE 'PARSE & EXECUTE'
-;PARSE & EXECUTE STRING IN CMDBUF
-.SKIP
-PARSXQ
-	LDA #0
-	STA WBAM
-	LDA LSTDRV
-	STA DRVNUM
-	JSR OKERR
-	LDA ORGSA
-	BPL PS05
-	AND #$F
-	CMP #$F
-	BEQ PS05
-	JMP OPEN
-PS05	JSR CMDSET      ;SET VARIABLES,REGS
-	LDA (CB),Y
-	STA CHAR
-	LDX #NCMDS-1    ;SEARCH CMD TABLE
-PS10	LDA CMDTBL,X
-	CMP CHAR
-	BEQ PS20
-	DEX
-	BPL PS10
-	LDA #BADCMD     ;NO SUCH CMD
-	JMP CMDERR
-PS20	STX CMDNUM      ;X= CMD #
-.SKIP
-	CPX #PCMD       ;CMDS NOT PARSED
-	BCC PS30
-	JSR TAGCMD      ;SET TABLES, POINTERS &PATTERNS
-PS30	LDX CMDNUM
-	LDA CJUMPL,X
-	STA TEMP
-	LDA CJUMPH,X
-	STA TEMP+1
-	JMP (TEMP)      ;COMMAND TABLE JUMP
-.SKIP
-; SUCCESSFUL COMMAND TERMINATION
-ENDCMD
-	LDA #0
-	STA WBAM
-ENDSAV
-	LDA ERWORD
-	BNE CMDERR
+.page 'parse & execute'
+;parse & execute string in cmdbuf
+.skip
+parsxq
+	lda #0
+	sta wbam
+	lda lstdrv
+	sta drvnum
+	jsr okerr
+	lda orgsa
+	bpl ps05
+	and #$f
+	cmp #$f
+	beq ps05
+	jmp open
+ps05	jsr cmdset      ;set variables,regs
+	lda (cb),y
+	sta char
+	ldx #ncmds-1    ;search cmd table
+ps10	lda cmdtbl,x
+	cmp char
+	beq ps20
+	dex
+	bpl ps10
+	lda #badcmd     ;no such cmd
+	jmp cmderr
+ps20	stx cmdnum      ;x= cmd #
+.skip
+	cpx #pcmd       ;cmds not parsed
+	bcc ps30
+	jsr tagcmd      ;set tables, pointers &patterns
+ps30	ldx cmdnum
+	lda cjumpl,x
+	sta temp
+	lda cjumph,x
+	sta temp+1
+	jmp (temp)      ;command table jump
+.skip
+; successful command termination
+endcmd
+	lda #0
+	sta wbam
+endsav
+	lda erword
+	bne cmderr
 ;
-	LDY #0
-	TYA
-	STY TRACK
-.SKIP
-SCREND	STY SECTOR      ;SCRATCH ENTRY
-	STY CB
-	JSR ERRMSG
-	JSR ERROFF
-SCREN1
-	LDA DRVNUM
-	STA LSTDRV
-	TAX
-	LDA #0
-	STA NODRV,X
-	JSR CLRCB
-	JMP FREICH      ;FREE INTERNAL CHANNEL
+	ldy #0
+	tya
+	sty track
+.skip
+scrend	sty sector      ;scratch entry
+	sty cb
+	jsr errmsg
+	jsr erroff
+scren1
+	lda drvnum
+	sta lstdrv
+	tax
+	lda #0
+	sta nodrv,x
+	jsr clrcb
+	jmp freich      ;free internal channel
 ;
-CLRCB
-	LDY #CMDLEN-1
-	LDA #0
-CLRB2
-	STA CMDBUF,Y
-	DEY
-	BPL CLRB2
-	RTS
+clrcb
+	ldy #cmdlen-1
+	lda #0
+clrb2
+	sta cmdbuf,y
+	dey
+	bpl clrb2
+	rts
 ;
-; COMMAND LEVEL ERROR PROCESSING
-CMDERR	LDY #0
-	STY TRACK
-	STY SECTOR
-	JMP CMDER2
-.SKIP
-SIMPRS	LDX #0          ;SIMPLE PARSER
-	STX FILTBL
-	LDA #':
-	JSR PARSE
-	BEQ SP10
-	DEY
-	DEY
-	STY FILTBL
-SP10	JMP SETANY      ;SET DRIVE #
-.PAGE 'PARSE-TAGCMD'
-PRSCLN
-	LDY #0
-	LDX #0
-	LDA #':
-	JMP PARSE       ;FIND POS'N OF ":"
+; command level error processing
+cmderr	ldy #0
+	sty track
+	sty sector
+	jmp cmder2
+.skip
+simprs	ldx #0          ;simple parser
+	stx filtbl
+	lda #':
+	jsr parse
+	beq sp10
+	dey
+	dey
+	sty filtbl
+sp10	jmp setany      ;set drive #
+.page 'parse-tagcmd'
+prscln
+	ldy #0
+	ldx #0
+	lda #':
+	jmp parse       ;find pos'n of ":"
 ;
-;TAG COMMAND STRING
-;  SET UP CMD STRUCTURE
-;  IMAGE & FILE STREAM PTRS
+;tag command string
+;  set up cmd structure
+;  image & file stream ptrs
 ;
-.SKIP
-TAGCMD
-	JSR PRSCLN
-	BNE TC30
-TC25	LDA #NOFILE     ;NONE, NO FILES
-	JMP CMDERR
-TC30	DEY
-	DEY
-	STY FILTBL      ;":"-1 STARTS FS1
-	TXA
-	BNE TC25        ;ERR: "," BEFORE ":"
-TC35	LDA #'=         ;SEARCH: "="
-	JSR PARSE
-	TXA             ;?FILE COUNT= 1-1?
-	BEQ TC40
-	LDA #%01000000  ;G1-BIT
-TC40	ORA #%00100001  ;E1,^E2-BITS
-	STA IMAGE       ;FS STRUCTURE
-	INX
-	STX F1CNT
-	STX F2CNT       ;INIT FOR NO FS2
-	LDA PATFLG
-	BEQ TC50
-	LDA #%10000000  ;P1-BIT
-	ORA IMAGE
-	STA IMAGE
-	LDA #0
-	STA PATFLG      ;CLEAR PATTERN FLAG
-TC50	TYA             ;PTR TO FS2
-	BEQ TC75        ; FS2 NOT HERE
-	STA FILTBL,X
-	LDA F1CNT       ;FS2 IS HERE NOW,...
-	STA F2PTR       ;...NOW SET F2 PTR
-	LDA #$8D        ;FIND CR-SHIFTED
-	JSR PARSE       ;PARSE REST OF CMD STRING
-	INX             ;ADVANCE FILTBL PTR TO END
-	STX F2CNT       ;SAVE IT
-	DEX             ;RESTORE FOR TEST
-	LDA PATFLG      ;SAVE LAST PATTERN
-	BEQ TC60        ;?ANY PATTERNS?
-	LDA #%1000      ;YES, P2-BIT
-TC60	CPX F1CNT       ;?F2CNT=F1CNT+1?
-	BEQ TC70
-	ORA #%0100      ;G2-BIT
-TC70	ORA #%0011      ;E2-BIT,^E2-BIT
-	EOR IMAGE       ;EOR CLEARS ^E2-BIT
-	STA IMAGE
-TC75
-	LDA IMAGE
-	LDX CMDNUM
-	AND STRUCT,X    ;MATCH CMD TEMPLATE
-	BNE TC80
-	RTS
-TC80	STA ERWORD      ;**COULD BE WARNING
-	LDA #BADSYN     ;ERR: BAD SYNTAX
-	JMP CMDERR
-.SKIP
-.PAGE 'PARSE'
-;PARSE STRING
-;  LOOKS FOR SPECIAL CHARS,
-;  RETURNING WHEN VAR'BL CHAR
-;  IS FOUND
-;   A: VAR'BL CHAR
-;   X: IN,OUT: INDEX, FILTBL+1
-;   Y: IN: INDEX, CMDBUF
-;     OUT: NEW PTR, =0 IF NONE
-;         (Z=1) IF Y=0
-.SKIP
-PARSE	STA CHAR        ;SAVE VAR'BL CHAR
-PR10	CPY CMDSIZ      ;STAY IN STRING
-	BCS PR30
-	LDA (CB),Y      ;MATCH CHAR
-	INY
-	CMP CHAR
-	BEQ PR35        ;FOUND CHAR
-	CMP #'*         ;MATCH PATTERN CHARS
-	BEQ PR20
-	CMP #'? 
-	BNE PR25
-PR20	INC PATFLG      ;SET PATTERN FLAG
-PR25	CMP #',         ;MATCH FILE SEPARATOR
-	BNE PR10
-	TYA
-	STA FILTBL+1,X  ;PUT PTRS IN TABLE
-	LDA PATFLG      ;SAVE PATTERN FOR EA FILE
-	AND #$7F
-	BEQ PR28
-	LDA #$80        ;RETAIN PATTERN PRESENCE...
-	STA PATTYP,X
-	STA PATFLG      ;...BUT CLEAR COUNT
-PR28	INX
-	CPX #MXFILS-1
-	BCC PR10        ;NO MORE THAN MXFILS
-PR30	LDY #0          ;Y=0 (Z=1)
-PR35	LDA CMDSIZ
-	STA FILTBL+1,X
-	LDA PATFLG
-	AND #$7F
-	BEQ PR40
-	LDA #$80
-	STA PATTYP,X
-PR40	TYA             ;Z IS SET
-	RTS
-.SKIP
-;INITIALIZE COMMAND TABLES, PTRS, ETC.
-.SKIP
-CMDSET	LDY BUFTAB+CBPTR
-	BEQ CS08
-	DEY
-	BEQ CS07
-	LDA CMDBUF,Y
-	CMP #CR
-	BEQ CS08
-	DEY
-	LDA CMDBUF,Y
-	CMP #CR
-	BEQ CS08
-	INY
-CS07	INY
-CS08	STY CMDSIZ      ;SET CMD STRING SIZE
-.SKIP
-	CPY #CMDLEN+1
-	LDY #$FF
-	BCC CMDRST
-	STY CMDNUM
-	LDA #LONGLN     ;LONG LINE ERROR
-	JMP CMDERR
-;  CLEAR VARIABLES,TABLES
-CMDRST
-	LDY #0
-	TYA
-	STA BUFTAB+CBPTR
-	STA REC
-	STA TYPE
-	STA TYPFLG
-	STA F1PTR
-	STA F2PTR
-	STA F1CNT
-	STA F2CNT
-	STA PATFLG
-	STA ERWORD
-	LDX #MXFILS
-CS10	STA FILTBL-1,X
-	STA ENTSEC-1,X
-	STA ENTIND-1,X
-	STA FILDRV-1,X
-	STA PATTYP-1,X
-	STA FILTRK-1,X
-	STA FILSEC-1,X
-	DEX
-	BNE CS10
-	RTS
-.SKIP
-.END
+.skip
+tagcmd
+	jsr prscln
+	bne tc30
+tc25	lda #nofile     ;none, no files
+	jmp cmderr
+tc30	dey
+	dey
+	sty filtbl      ;":"-1 starts fs1
+	txa
+	bne tc25        ;err: "," before ":"
+tc35	lda #'=         ;search: "="
+	jsr parse
+	txa             ;?file count= 1-1?
+	beq tc40
+	lda #%01000000  ;g1-bit
+tc40	ora #%00100001  ;e1,^e2-bits
+	sta image       ;fs structure
+	inx
+	stx f1cnt
+	stx f2cnt       ;init for no fs2
+	lda patflg
+	beq tc50
+	lda #%10000000  ;p1-bit
+	ora image
+	sta image
+	lda #0
+	sta patflg      ;clear pattern flag
+tc50	tya             ;ptr to fs2
+	beq tc75        ; fs2 not here
+	sta filtbl,x
+	lda f1cnt       ;fs2 is here now,...
+	sta f2ptr       ;...now set f2 ptr
+	lda #$8d        ;find cr-shifted
+	jsr parse       ;parse rest of cmd string
+	inx             ;advance filtbl ptr to end
+	stx f2cnt       ;save it
+	dex             ;restore for test
+	lda patflg      ;save last pattern
+	beq tc60        ;?any patterns?
+	lda #%1000      ;yes, p2-bit
+tc60	cpx f1cnt       ;?f2cnt=f1cnt+1?
+	beq tc70
+	ora #%0100      ;g2-bit
+tc70	ora #%0011      ;e2-bit,^e2-bit
+	eor image       ;eor clears ^e2-bit
+	sta image
+tc75
+	lda image
+	ldx cmdnum
+	and struct,x    ;match cmd template
+	bne tc80
+	rts
+tc80	sta erword      ;**could be warning
+	lda #badsyn     ;err: bad syntax
+	jmp cmderr
+.skip
+.page 'parse'
+;parse string
+;  looks for special chars,
+;  returning when var'bl char
+;  is found
+;   a: var'bl char
+;   x: in,out: index, filtbl+1
+;   y: in: index, cmdbuf
+;     out: new ptr, =0 if none
+;         (z=1) if y=0
+.skip
+parse	sta char        ;save var'bl char
+pr10	cpy cmdsiz      ;stay in string
+	bcs pr30
+	lda (cb),y      ;match char
+	iny
+	cmp char
+	beq pr35        ;found char
+	cmp #'*         ;match pattern chars
+	beq pr20
+	cmp #'? 
+	bne pr25
+pr20	inc patflg      ;set pattern flag
+pr25	cmp #',         ;match file separator
+	bne pr10
+	tya
+	sta filtbl+1,x  ;put ptrs in table
+	lda patflg      ;save pattern for ea file
+	and #$7f
+	beq pr28
+	lda #$80        ;retain pattern presence...
+	sta pattyp,x
+	sta patflg      ;...but clear count
+pr28	inx
+	cpx #mxfils-1
+	bcc pr10        ;no more than mxfils
+pr30	ldy #0          ;y=0 (z=1)
+pr35	lda cmdsiz
+	sta filtbl+1,x
+	lda patflg
+	and #$7f
+	beq pr40
+	lda #$80
+	sta pattyp,x
+pr40	tya             ;z is set
+	rts
+.skip
+;initialize command tables, ptrs, etc.
+.skip
+cmdset	ldy buftab+cbptr
+	beq cs08
+	dey
+	beq cs07
+	lda cmdbuf,y
+	cmp #cr
+	beq cs08
+	dey
+	lda cmdbuf,y
+	cmp #cr
+	beq cs08
+	iny
+cs07	iny
+cs08	sty cmdsiz      ;set cmd string size
+.skip
+	cpy #cmdlen+1
+	ldy #$ff
+	bcc cmdrst
+	sty cmdnum
+	lda #longln     ;long line error
+	jmp cmderr
+;  clear variables,tables
+cmdrst
+	ldy #0
+	tya
+	sta buftab+cbptr
+	sta rec
+	sta type
+	sta typflg
+	sta f1ptr
+	sta f2ptr
+	sta f1cnt
+	sta f2cnt
+	sta patflg
+	sta erword
+	ldx #mxfils
+cs10	sta filtbl-1,x
+	sta entsec-1,x
+	sta entind-1,x
+	sta fildrv-1,x
+	sta pattyp-1,x
+	sta filtrk-1,x
+	sta filsec-1,x
+	dex
+	bne cs10
+	rts
+.skip
+.end

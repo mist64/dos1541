@@ -1,19 +1,19 @@
-.SKI 3
+.ski 3
 ;**************************************;
 ;*                                    *;
-;*           LOW COST FLOPPY          *;
-;*       FILE CONTROLLER  (6502)      *;
-;*             SA 200 DRIVE           *;
-;*       DISK OPERATING SYSTEM        *;
-;*            VERSION  2.6            *;
-;*       RELEASED   XXX XX, 1980      *;
-;*   MOS 6364 ROMS #901XXXX           *;
-;*                        -XX,-XX     *;
+;*           low cost floppy          *;
+;*       file controller  (6502)      *;
+;*             sa 200 drive           *;
+;*       disk operating system        *;
+;*            version  2.6            *;
+;*       released   xxx xx, 1980      *;
+;*   mos 6364 roms #901xxxx           *;
+;*                        -xx,-xx     *;
 ;*                                    *;
-;*  COPYRIGHT 1980                    *;
-;*        COMMODORE BUSINESS MACHINES *;
+;*  copyright 1980                    *;
+;*        commodore business machines *;
 ;*                                    *;
 ;*                                    *;
 ;**************************************;
-.PAGE ''
-.FILE MASTER.SF
+.page ''
+.file master.sf

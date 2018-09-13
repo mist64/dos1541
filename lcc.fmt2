@@ -1,302 +1,302 @@
-.PAGE 'LCC.FMT2'
+.page 'lcc.fmt2'
 ;
 ;
 ;
-DS08	LDA #$66        ; MIN BLOCK SIZE 282*5/4 -256=85
+ds08	lda #$66        ; min block size 282*5/4 -256=85
 ;
-	STA DTRCK
+	sta dtrck
 ;
-	LDX SECTR       ; TOTAL BYTES= MIN*#SECORS
-	LDY #0
-	TYA
+	ldx sectr       ; total bytes= min*#secors
+	ldy #0
+	tya
 ;
-DS10	CLC             ; MIN*#SECTORS
-	ADC DTRCK
-	BCC DS14
+ds10	clc             ; min*#sectors
+	adc dtrck
+	bcc ds14
 ;
-	INY             ;
+	iny             ;
 ;
-DS14	INY
-	DEX
-	BNE DS10
+ds14	iny
+	dex
+	bne ds10
 ;
-	EOR #$FF        ; GET 2S COMP
-	SEC
-	ADC #0
+	eor #$ff        ; get 2s comp
+	sec
+	adc #0
 ;
-	CLC
-	ADC TRAL+1
-	BCS DS15
+	clc
+	adc tral+1
+	bcs ds15
 ;
-	DEC TRAL
+	dec tral
 ;
-DS15	TAX
-	TYA
-	EOR #$FF
-	SEC
-	ADC #0
-	CLC
-	ADC TRAL
+ds15	tax
+	tya
+	eor #$ff
+	sec
+	adc #0
+	clc
+	adc tral
 ;
-	BPL DS17
+	bpl ds17
 ;
-	LDA #TOBIG      ; NOT ENOUGH SPACE
-	JMP FMTERR
+	lda #tobig      ; not enough space
+	jmp fmterr
 ;
-DS17	TAY
-	TXA
-	LDX #0
+ds17	tay
+	txa
+	ldx #0
 ;
-DS20	SEC
-	SBC SECTR
-	BCS DS22
+ds20	sec
+	sbc sectr
+	bcs ds22
 ;
-	DEY
-	BMI DS30
+	dey
+	bmi ds30
 ;
-DS22	INX
-	BNE DS20
+ds22	inx
+	bne ds20
 ;
-DS30	STX DTRCK
-	CPX #GAP2       ; TEST FOR MIN SIZE
-	BCS DS32
+ds30	stx dtrck
+	cpx #gap2       ; test for min size
+	bcs ds32
 ;
-	LDA #TOSMAL     ; GAP2 TO SMALL
-	JMP FMTERR
+	lda #tosmal     ; gap2 to small
+	jmp fmterr
 ;
-DS32	CLC
-	ADC SECTR
-	STA REMDR       ; GET REMAIDER SIZE
+ds32	clc
+	adc sectr
+	sta remdr       ; get remaider size
 ;
 ;
 ;
 ;
 ;
-;  CREATE HEADER IMAGES
+;  create header images
 ;
 ;
-	LDA #0
-	STA SECT
+	lda #0
+	sta sect
 ;
-	LDY #0
-	LDX DRIVE
+	ldy #0
+	ldx drive
 ;
-MAK10	LDA HBID        ; HBID CS S T ID ID 0F 0F
-	STA BUFF0,Y
-	INY
+mak10	lda hbid        ; hbid cs s t id id 0f 0f
+	sta buff0,y
+	iny
 ;
-	INY             ; SKIP CHECKSUM
+	iny             ; skip checksum
 ;
-	LDA SECT        ; STORE SECTOR #
-	STA BUFF0,Y
-	INY
+	lda sect        ; store sector #
+	sta buff0,y
+	iny
 ;
-	LDA FTNUM       ; STORE TRACK #
-	STA BUFF0,Y
-	INY
+	lda ftnum       ; store track #
+	sta buff0,y
+	iny
 ;
-	LDA DSKID+1,X   ; STORE ID LOW
-	STA BUFF0,Y
-	INY
+	lda dskid+1,x   ; store id low
+	sta buff0,y
+	iny
 ;
-	LDA DSKID,X     ; STORE ID HI
-	STA BUFF0,Y
-	INY
+	lda dskid,x     ; store id hi
+	sta buff0,y
+	iny
 ;
-	LDA #$0F        ; STORE GAP1 BYTES
-	STA BUFF0,Y
-	INY
-	STA BUFF0,Y
-	INY
+	lda #$0f        ; store gap1 bytes
+	sta buff0,y
+	iny
+	sta buff0,y
+	iny
 ;
-	LDA #0          ;CREATE CHECKSUM
-	EOR BUFF0-6,Y
-	EOR BUFF0-5,Y
-	EOR BUFF0-4,Y
-	EOR BUFF0-3,Y
+	lda #0          ;create checksum
+	eor buff0-6,y
+	eor buff0-5,y
+	eor buff0-4,y
+	eor buff0-3,y
 ;
-	STA BUFF0-7,Y   ; STORE CHECKSUM
+	sta buff0-7,y   ; store checksum
 ;
 ;
-	INC SECT        ; GOTO NEXT SECTOR
+	inc sect        ; goto next sector
 ;
-	LDA SECT        ; TEST IF DONE YET
-	CMP SECTR
-	BCC MAK10       ; MORE TO DO
+	lda sect        ; test if done yet
+	cmp sectr
+	bcc mak10       ; more to do
 ;
-	TYA             ; SAVE BLOCK SIZE
-	PHA
+	tya             ; save block size
+	pha
 ;
 ;
 ;
 ;
-;   CREATE DATA BLOCK OF ZERO
+;   create data block of zero
 ;
-	NOP             ; REPLACE EXTRA INX .X=0
-	TXA
+	nop             ; replace extra inx .x=0
+	txa
 ;
-CRTDAT	STA BUFF2,X
-	INX
-	BNE CRTDAT
+crtdat	sta buff2,x
+	inx
+	bne crtdat
 ;
 ;
-;  CONVERT HEADER BLOCK TO GCR
+;  convert header block to gcr
 ;
-	LDA #>BUFF0
-	STA BUFPNT+1    ; POINT AT BUFFER
+	lda #>buff0
+	sta bufpnt+1    ; point at buffer
 ;
-	JSR FBTOG       ; CONVERT TO GCR WITH NO BID CHAR
+	jsr fbtog       ; convert to gcr with no bid char
 ;
-	PLA             ;  RESTORE BLOCK SIZE
-	TAY             ; MOVE BUFFER UP 79 BYTES
-	DEY             ; FOR I=N-1 TO 0:MEM[I+69]:=MEM[I]:NEXT
-	JSR MOVUP       ;MOVE BUF0 UP 69 BYTES
+	pla             ;  restore block size
+	tay             ; move buffer up 79 bytes
+	dey             ; for i=n-1 to 0:mem[i+69]:=mem[i]:next
+	jsr movup       ;move buf0 up 69 bytes
 ;
-	JSR MOVOVR      ; MOVE OVRBUF UP TO BUFFER
+	jsr movovr      ; move ovrbuf up to buffer
 ;
 ;
 ;
-;   CONVERT DATA BLOCK TO GCR
-;   WRITE IMAGE
+;   convert data block to gcr
+;   write image
 ;
-;   LEAVE IT IN OVRBUF AND BUFFER
+;   leave it in ovrbuf and buffer
 ;
 ;
-	LDA #>BUFF2     ; POINT AT BUFFER
-	STA BUFPNT+1
+	lda #>buff2     ; point at buffer
+	sta bufpnt+1
 ;
 ;
-	JSR CHKBLK      ; GET BLOCK CHECKSUM
-	STA CHKSUM
-	JSR BINGCR
+	jsr chkblk      ; get block checksum
+	sta chksum
+	jsr bingcr
 ;
 ;
 ;
-;   START THE FORMAT NOW
+;   start the format now
 ;
-;   WRITE OUT SYNC HEADER GAP1
-;   DATA BLOCK
+;   write out sync header gap1
+;   data block
 ;
 ;
 ;
-	LDA #0          ; INIT COUNTER
-	STA HDRPNT
+	lda #0          ; init counter
+	sta hdrpnt
 ;
-	JSR CLEAR       ; CLEAR DISK
+	jsr clear       ; clear disk
 ;
-WRTSYN	LDA #$FF        ; WRITE SYNC
-	STA DATA2
+wrtsyn	lda #$ff        ; write sync
+	sta data2
 ;
-	LDX #NUMSYN     ; WRITE 4  SYNC
+	ldx #numsyn     ; write 4  sync
 ;
-WRTS10	BVC *
-	CLV
+wrts10	bvc *
+	clv
 ;
-	DEX
-	BNE WRTS10
+	dex
+	bne wrts10
 ;
-	LDX #10         ; WRITE OUT HEADER
-	LDY HDRPNT
+	ldx #10         ; write out header
+	ldy hdrpnt
 ;
-WRTS20	BVC *
-	CLV
+wrts20	bvc *
+	clv
 ;
-	LDA BUFF0,Y     ; GET HEADER DATA
-	STA DATA2
+	lda buff0,y     ; get header data
+	sta data2
 ;
-	INY
-	DEX
-	BNE WRTS20
+	iny
+	dex
+	bne wrts20
 ;
 ;
-; * WRITE OUT GAP1
+; * write out gap1
 ;
-	LDX #GAP1-2     ; WRITE  GCR BYTES
+	ldx #gap1-2     ; write  gcr bytes
 ;
-WRTS30	BVC *
-	CLV
+wrts30	bvc *
+	clv
 ;
-	LDA #$55
-	STA DATA2
+	lda #$55
+	sta data2
 ;
-	DEX
-	BNE WRTS30
+	dex
+	bne wrts30
 ;
 ;
 ;
-; * WRITE OUT DATA BLOCK
+; * write out data block
 ;
-	LDA #$FF        ; WRITE DATA BLOCK SYNC
+	lda #$ff        ; write data block sync
 ;
-	LDX #NUMSYN
+	ldx #numsyn
 ;
-DBSYNC	BVC *
-	CLV
+dbsync	bvc *
+	clv
 ;
-	STA DATA2
+	sta data2
 ;
-	DEX
-	BNE DBSYNC
+	dex
+	bne dbsync
 ;
-	LDX	#256-TOPWRT ; WRITE OUT OVRBUF
+	ldx	#256-topwrt ; write out ovrbuf
 ;
-WRTS40	BVC *
-	CLV
+wrts40	bvc *
+	clv
 ;
-	LDA OVRBUF,X
-	STA DATA2
+	lda ovrbuf,x
+	sta data2
 ;
-	INX
-	BNE WRTS40
+	inx
+	bne wrts40
 ;
 ;
-	LDY #0
+	ldy #0
 ;
-WRTS50	BVC *
-	CLV
+wrts50	bvc *
+	clv
 ;
-	LDA (BUFPNT),Y
-	STA DATA2
+	lda (bufpnt),y
+	sta data2
 ;
-	INY
-	BNE WRTS50
+	iny
+	bne wrts50
 ;
-	LDA #$55        ; WRITE GAP2(DTRCK)
-	LDX DTRCK
+	lda #$55        ; write gap2(dtrck)
+	ldx dtrck
 ;
-WGP2	BVC *
-	CLV
+wgp2	bvc *
+	clv
 ;
-	STA DATA2
-	DEX
-	BNE WGP2
+	sta data2
+	dex
+	bne wgp2
 ;
-; LDX #20 ; WRITE ERASE TRAIL GAP
-;WGP3 BVC *
-; CLV
-; DEX
-; BNE WGP3
+; ldx #20 ; write erase trail gap
+;wgp3 bvc *
+; clv
+; dex
+; bne wgp3
 ;
-	LDA HDRPNT      ; ADVANCE HEADER POINTER
-	CLC
-	ADC #10
-	STA HDRPNT
+	lda hdrpnt      ; advance header pointer
+	clc
+	adc #10
+	sta hdrpnt
 ;
 ;
 ;
-;  DONE WRITING SECTOR
+;  done writing sector
 ;
-	DEC SECT        ; GO TO NEXT ON
-	BNE WRTSYN      ; MORE TO DO
+	dec sect        ; go to next on
+	bne wrtsyn      ; more to do
 ;
-	BVC *           ; WAIT FOR LAST ONE TO WRITE
-	CLV
+	bvc *           ; wait for last one to write
+	clv
 ;
-	BVC *
-	CLV
+	bvc *
+	clv
 ;
-	JSR KILL        ; GOTO READ MODE
+	jsr kill        ; goto read mode
 ;
 ;
 ;
-.END
+.end

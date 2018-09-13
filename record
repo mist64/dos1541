@@ -1,147 +1,147 @@
-.PAGE 'RECORD'
+.page 'record'
 ;*********************************
-;* RECORD: POSITION RELATIVE     *
-;*         POINTERS TO GIVEN     *
-;*         RECORD NUMBER OR TO   *
-;*         LAST RECORD IF OUT OF *
-;*         RANGE.                *
-;*********************************
-;
-RECORD
-	JSR CMDSET      ;INIT TABLES, PTRS
-	LDA CMDBUF+1
-	STA SA
-	JSR FNDRCH
-	BCC R20         ;GOT CHANNEL'S LINDEX
-;
-	LDA #NOCHNL     ;NO VALID CHANNEL
-	JSR CMDERR
-R20
-	LDA #LRF+OVRFLO
-	JSR CLRFLG
-	JSR TYPFIL      ;GET FILE TYPE
-	BEQ R30         ;IT IS RELATIVE FILE
-;
-	LDA #MISTYP     ;WRONG TYPE
-	JSR CMDERR
-R30
-	LDA FILTYP,X
-	AND #1
-	STA DRVNUM
-	LDA CMDBUF+2
-	STA RECL,X      ;GET RECORD #
-	LDA CMDBUF+3
-	STA RECH,X
-	LDX LINDX       ;CLEAR CHNRDY TO RNDRDY
-	LDA #RNDRDY
-	STA CHNRDY,X
-;
-	LDA CMDBUF+4    ;GET OFFSET
-	BEQ R40
-	SEC
-	SBC #1
-	BEQ R40
-	CMP RS,X
-	BCC R35
-;
-	LDA #RECOVF
-	STA ERWORD
-	LDA #0
-R35
-R40
-	STA RECPTR      ;SET OFFSET
-	JSR FNDREL      ;CALC SS STUFF
-	JSR SSPOS       ;SET SS PTRS
-	BVC R50
-;
-	LDA #LRF        ;BEYOND THE END
-	JSR SETFLG      ;SET LAST REC FLAG
-	JMP RD05
-R50
-	JSR POSITN      ;POSITION TO RECORD
-	LDA #LRF
-	JSR TSTFLG
-	BEQ R60
-	JMP RD05
-R60
-	JMP ENDCMD      ;THAT'S ALL
-;
-;*********************************
-;* POSITN: POSITION RELATIVE     *
-;*         DATA BLOCK INTO ACTIVE*
-;*         BUFFER & NEXT BLOCK   *
-;*         INTO INACTIVE BUFFER. *
+;* record: position relative     *
+;*         pointers to given     *
+;*         record number or to   *
+;*         last record if out of *
+;*         range.                *
 ;*********************************
 ;
-POSITN
-; JSR RESTOR    ;RESTORE BUFFER AREAS
-	JSR POSBUF      ;POSITION BUFFERS
-	LDA RELPTR
-	JSR SETPNT      ;SET PTR FROM FNDREL
+record
+	jsr cmdset      ;init tables, ptrs
+	lda cmdbuf+1
+	sta sa
+	jsr fndrch
+	bcc r20         ;got channel's lindex
 ;
-	LDX LINDX
-	LDA RS,X
-	SEC             ;CALC THE OFFSET
-	SBC RECPTR
-	BCS P2
-	JMP BREAK       ;SHOULD NOT BE NEEDED
-P2
-	CLC
-	ADC RELPTR
-	BCC P30
-	ADC #1
-	SEC
-P30
-	JSR NXOUT       ;SET NR
-	JMP RD15
-	LDA #RECOVF
-	JSR CMDERR
-;* POSBUF: POSITION PROPER DATA  *
-;*         BLOCKS INTO BUFFERS   *
+	lda #nochnl     ;no valid channel
+	jsr cmderr
+r20
+	lda #lrf+ovrflo
+	jsr clrflg
+	jsr typfil      ;get file type
+	beq r30         ;it is relative file
+;
+	lda #mistyp     ;wrong type
+	jsr cmderr
+r30
+	lda filtyp,x
+	and #1
+	sta drvnum
+	lda cmdbuf+2
+	sta recl,x      ;get record #
+	lda cmdbuf+3
+	sta rech,x
+	ldx lindx       ;clear chnrdy to rndrdy
+	lda #rndrdy
+	sta chnrdy,x
+;
+	lda cmdbuf+4    ;get offset
+	beq r40
+	sec
+	sbc #1
+	beq r40
+	cmp rs,x
+	bcc r35
+;
+	lda #recovf
+	sta erword
+	lda #0
+r35
+r40
+	sta recptr      ;set offset
+	jsr fndrel      ;calc ss stuff
+	jsr sspos       ;set ss ptrs
+	bvc r50
+;
+	lda #lrf        ;beyond the end
+	jsr setflg      ;set last rec flag
+	jmp rd05
+r50
+	jsr positn      ;position to record
+	lda #lrf
+	jsr tstflg
+	beq r60
+	jmp rd05
+r60
+	jmp endcmd      ;that's all
+;
+;*********************************
+;* positn: position relative     *
+;*         data block into active*
+;*         buffer & next block   *
+;*         into inactive buffer. *
 ;*********************************
 ;
-POSBUF
-	LDA DIRBUF
-	STA R3
-	LDA DIRBUF+1
-	STA R4
-	JSR BHERE       ;IS BUFFER IN?
-	BNE P10         ;YES!
-	RTS
-P10
-	JSR SCRUB       ;CLEAN BUFFER
-	JSR GETLNK
-	LDA TRACK
-	BEQ P80
-	JSR BHERE2
-	BNE P75
-	JSR DBLBUF
-	JMP FREIAC
-P75
-	JSR FREIAC
+positn
+; jsr restor    ;restore buffer areas
+	jsr posbuf      ;position buffers
+	lda relptr
+	jsr setpnt      ;set ptr from fndrel
 ;
-P80
-	LDY #0          ;GET PROPER BLOCK
-	LDA (R3)Y
-	STA TRACK
-	INY
-	LDA (R3)Y
-	STA SECTOR
-	JMP STRDBL      ;GET NEXT BLOCK, TOO.
-;RTS
+	ldx lindx
+	lda rs,x
+	sec             ;calc the offset
+	sbc recptr
+	bcs p2
+	jmp break       ;should not be needed
+p2
+	clc
+	adc relptr
+	bcc p30
+	adc #1
+	sec
+p30
+	jsr nxout       ;set nr
+	jmp rd15
+	lda #recovf
+	jsr cmderr
+;* posbuf: position proper data  *
+;*         blocks into buffers   *
+;*********************************
 ;
-BHERE
-	JSR GETHDR      ;GET THE HEADER
-BHERE2
-	LDY #0
-	LDA (R3)Y
-	CMP TRACK
-	BEQ BH10        ;TEST SECTOR, TOO.
-	RTS
-BH10
-	INY
-	LDA (R3)Y
-	CMP SECTOR      ;SET .Z
-	RTS
+posbuf
+	lda dirbuf
+	sta r3
+	lda dirbuf+1
+	sta r4
+	jsr bhere       ;is buffer in?
+	bne p10         ;yes!
+	rts
+p10
+	jsr scrub       ;clean buffer
+	jsr getlnk
+	lda track
+	beq p80
+	jsr bhere2
+	bne p75
+	jsr dblbuf
+	jmp freiac
+p75
+	jsr freiac
 ;
-.END
+p80
+	ldy #0          ;get proper block
+	lda (r3)y
+	sta track
+	iny
+	lda (r3)y
+	sta sector
+	jmp strdbl      ;get next block, too.
+;rts
+;
+bhere
+	jsr gethdr      ;get the header
+bhere2
+	ldy #0
+	lda (r3)y
+	cmp track
+	beq bh10        ;test sector, too.
+	rts
+bh10
+	iny
+	lda (r3)y
+	cmp sector      ;set .z
+	rts
+;
+.end

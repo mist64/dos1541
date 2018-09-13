@@ -1,47 +1,47 @@
-.PAGE 'SSEND'
+.page 'ssend'
 ;*********************************
-;* SSEND: POSITION SS & BUFTAB   *
-;*        TO END OF LAST RECORD. *
-;*   VARS:                       *
+;* ssend: position ss & buftab   *
+;*        to end of last record. *
+;*   vars:                       *
 ;*********************************
 ;
-SSEND
-	JSR SSSET
-	STA SSNUM
-	LDA #4
-	STA DIRBUF
-	LDY #SSIOFF-6
-	BNE SE20
-SE10
-	DEY
-	DEY
-	BMI BREAK
-SE20
-	LDA (DIRBUF)Y   ;LOOK FOR LAST SS #
-	BEQ SE10        ;T=0: NOT YET
-	TYA
-	LSR A
-	CMP SSNUM       ;CHECK SS #
-	BEQ SE30        ;THIS IS LAST SS
+ssend
+	jsr ssset
+	sta ssnum
+	lda #4
+	sta dirbuf
+	ldy #ssioff-6
+	bne se20
+se10
+	dey
+	dey
+	bmi break
+se20
+	lda (dirbuf)y   ;look for last ss #
+	beq se10        ;t=0: not yet
+	tya
+	lsr a
+	cmp ssnum       ;check ss #
+	beq se30        ;this is last ss
 ;
-	STA SSNUM
-	LDX LINDX
-	LDA SS,X
-	JSR IBRD        ;READ LAST SS
-SE30
-	LDY #0          ;SET SSIND
-	STY DIRBUF
-	LDA (DIRBUF)Y   ;DEBUG
-	BNE BREAK
-	INY
-	LDA (DIRBUF)Y
-	TAY             ;BACK UP TO TRACK
-	DEY
-	STY SSIND
-	TYA
-	JMP SETSSP
+	sta ssnum
+	ldx lindx
+	lda ss,x
+	jsr ibrd        ;read last ss
+se30
+	ldy #0          ;set ssind
+	sty dirbuf
+	lda (dirbuf)y   ;debug
+	bne break
+	iny
+	lda (dirbuf)y
+	tay             ;back up to track
+	dey
+	sty ssind
+	tya
+	jmp setssp
 ;
-BREAK
-	LDA #$67
-	JSR CMDER2
-.END
+break
+	lda #$67
+	jsr cmder2
+.end

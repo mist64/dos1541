@@ -1,105 +1,105 @@
-.PAGE 'ADDFIL'
-; ADD FILE TO DIRECTORY
-.SKIP
-ADDFIL	LDA SA          ;SAVE VARIABLES 
-	PHA
-	LDA LINDX
-	PHA
-	LDA SECTOR
-	PHA
-	LDA TRACK
-	PHA
-	LDA #IRSA
-	STA SA
-	JSR CURBLK      ;USE LAST ACCESSED SEARCH
-	LDA TYPE
-	PHA
-	LDA FILDRV
-	AND #1
-	STA DRVNUM
-	LDX JOBNUM
-	EOR LSTJOB,X
-	LSR A
-	BCC AF08        ;SAME DRIVE AS REQUIRED
-.SKIP
-	LDX #1
-	STX DELIND      ;LOOK FOR DELETED ENTRY
-	JSR SRCHST
-	BEQ AF15        ;ALL FULL, NEW SECTOR 
-	BNE AF20        ;FOUND ONE
-.SKIP
-AF08	LDA DELSEC
-	BEQ AF10        ;DELETED ENTRY NOT LOCATED
-	CMP SECTOR
-	BEQ AF20        ;SECTOR IS RESIDENT
-	STA SECTOR
-	JSR DRTRD       ;READ SECTOR IN
-	JMP AF20
-.SKIP
-AF10	LDA #1          ;FIND DELETED ENTRY
-	STA DELIND
-	JSR SEARCH
-	BNE AF20
-AF15	JSR NXDRBK      ;ALL FULL, NEW SECTOR
-	LDA SECTOR
-	STA DELSEC
-	LDA #2
-	STA DELIND
-AF20	LDA DELIND
-	JSR SETPNT
-	PLA
-	STA TYPE        ;SET TYPE
-	CMP #RELTYP
-	BNE AF25
-	ORA #$80
-AF25
-	JSR PUTBYT
-	PLA
-	STA FILTRK      ;...TABLE & ENTRY
-	JSR PUTBYT
-	PLA
-	STA FILSEC      ;SET SECTOR LINK IN...
-	JSR PUTBYT      ;...TABLE & ENTRY
-	JSR GETACT
-	TAY
-	LDA FILTBL
-	TAX
-	LDA #16
-	JSR TRNAME      ;TRANSFER NAME
-	LDY #16
-	LDA #0          ;CLEAR # OF BLOCKS &...
-AF30	STA (DIRBUF),Y  ;...& REPLACE LINKS
-	INY
-	CPY #27
-	BCC AF30
-	LDA TYPE        ;A RELATIVE FILE ?
-	CMP #RELTYP
-	BNE AF50        ;NO
-	LDY #16         ;YES
-	LDA TRKSS       ;GET SS TRACK
-	STA (DIRBUF),Y  ;PUT IN DIRECTORY
-	INY
-	LDA SECSS       ;GET SS SECTOR
-	STA (DIRBUF),Y  ;PUT IN
-	INY
-	LDA REC         ;GET RECORD SIZE
-	STA (DIRBUF),Y
-AF50	JSR DRTWRT      ;WRITE IT OUT
-	PLA
-	STA LINDX
-	TAX
-	PLA
-	STA SA
-	LDA DELSEC
-	STA ENTSEC
-	STA DSEC,X
-	LDA DELIND
-	STA ENTIND
-	STA DIND,X
-	LDA TYPE
-	STA PATTYP
-	LDA DRVNUM
-	STA FILDRV
-	RTS
+.page 'addfil'
+; add file to directory
+.skip
+addfil	lda sa          ;save variables 
+	pha
+	lda lindx
+	pha
+	lda sector
+	pha
+	lda track
+	pha
+	lda #irsa
+	sta sa
+	jsr curblk      ;use last accessed search
+	lda type
+	pha
+	lda fildrv
+	and #1
+	sta drvnum
+	ldx jobnum
+	eor lstjob,x
+	lsr a
+	bcc af08        ;same drive as required
+.skip
+	ldx #1
+	stx delind      ;look for deleted entry
+	jsr srchst
+	beq af15        ;all full, new sector 
+	bne af20        ;found one
+.skip
+af08	lda delsec
+	beq af10        ;deleted entry not located
+	cmp sector
+	beq af20        ;sector is resident
+	sta sector
+	jsr drtrd       ;read sector in
+	jmp af20
+.skip
+af10	lda #1          ;find deleted entry
+	sta delind
+	jsr search
+	bne af20
+af15	jsr nxdrbk      ;all full, new sector
+	lda sector
+	sta delsec
+	lda #2
+	sta delind
+af20	lda delind
+	jsr setpnt
+	pla
+	sta type        ;set type
+	cmp #reltyp
+	bne af25
+	ora #$80
+af25
+	jsr putbyt
+	pla
+	sta filtrk      ;...table & entry
+	jsr putbyt
+	pla
+	sta filsec      ;set sector link in...
+	jsr putbyt      ;...table & entry
+	jsr getact
+	tay
+	lda filtbl
+	tax
+	lda #16
+	jsr trname      ;transfer name
+	ldy #16
+	lda #0          ;clear # of blocks &...
+af30	sta (dirbuf),y  ;...& replace links
+	iny
+	cpy #27
+	bcc af30
+	lda type        ;a relative file ?
+	cmp #reltyp
+	bne af50        ;no
+	ldy #16         ;yes
+	lda trkss       ;get ss track
+	sta (dirbuf),y  ;put in directory
+	iny
+	lda secss       ;get ss sector
+	sta (dirbuf),y  ;put in
+	iny
+	lda rec         ;get record size
+	sta (dirbuf),y
+af50	jsr drtwrt      ;write it out
+	pla
+	sta lindx
+	tax
+	pla
+	sta sa
+	lda delsec
+	sta entsec
+	sta dsec,x
+	lda delind
+	sta entind
+	sta dind,x
+	lda type
+	sta pattyp
+	lda drvnum
+	sta fildrv
+	rts
 ;
-.END
+.end
