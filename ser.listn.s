@@ -42,12 +42,14 @@ acp02a	jsr tstatn
 ;
 acp01
 acp03	lda pb          ; wait for clock high
-	and #clkin
+	eor #01        ; complement datain
+	lsr a          ; shift into carry
+	and #$02       ; clkin/2
 	bne acp03
 ;
-	lda pb          ; shift into carrry
-	eor #01         ;complement datain
-	lsr a
+	nop     	; fill space left by speed-up
+	nop     	; to fix pal vc20
+	nop     	;  901229-02 rom
 	ror data
 ;
 acp03a	jsr tstatn
