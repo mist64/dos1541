@@ -22,7 +22,12 @@ n101	and #1
 	jsr clrchn      ;clear all channels when formatting
 	lda #1          ;...in track, track=1
 	sta track
-	jsr format      ;transfer format to ram
+
+;--------- patch7 for format bug 10/17/83---
+;       jsr format      ; transfer format to ram
+	jsr patch7      ; set format flag
+;-------------------------------------------
+
 	jsr clrbam      ;zero bam
 	jmp n110
 n108	jsr initdr      ;clear directory only
