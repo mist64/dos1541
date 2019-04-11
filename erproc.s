@@ -32,7 +32,7 @@
 ; 70  no channels available
 ; 71  directory error
 ; 72  disk full
-; 73  cbm dos v2.6 v170
+; 73  cbm dos v2.6 1541
 ; 74  drive not ready
 ;  1  files scratched response
 badsyn	=$30
@@ -108,7 +108,7 @@ errtab	;" ok"
 ;" disk full"
 	.byt $72,$88," FUL",$cc
 ;"cbm dos v2.6 4030"
-	.byte $73,$c3,"BM DOS V2.6 V17",$b0
+	.byte $73,$c3,"BM DOS V2.6 154",$b1
 ;"drive not ready"
 	.byte $74,$c4,"RIVE",6," READ",$d9
 ; error token key words

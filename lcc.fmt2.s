@@ -131,7 +131,7 @@ mak10	lda hbid        ; hbid cs s t id id 0f 0f
 ;
 ;   create data block of zero
 ;
-	nop             ; replace extra inx .x=0
+	inx     	;  .x=0
 	txa
 ;
 crtdat	sta buff2,x

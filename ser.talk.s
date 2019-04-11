@@ -69,13 +69,11 @@ isrhi	jsr dathi
 ;
 isrclk	jsr clkhi       ; rising edge clock
 ;
-	nop
-	nop             ; settle time
-	nop
-	nop
+	lda  drvtrk+1   ; check speed flag
+	bne  isr03      ; no slow down
 ;
-	jsr clklow      ; pull clock low
-	jsr dathi       ; release data
+	jsr  slowd      ;  slow down
+isr03   jsr  clkdat     ;  pull clock low and release data
 ;
 	dec cont        ; more bits?
 	bne isr01       ; yes
