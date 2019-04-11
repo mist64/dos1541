@@ -94,7 +94,7 @@ kill	lda pcr2        ; disable write
 ;
 ;
 ;
-clear	lda pcr2        ; enable write
+xclear	lda pcr2        ; enable write
 	and #$ff-$e0
 	ora #$c0
 	sta pcr2
@@ -107,13 +107,13 @@ clear	lda pcr2        ; enable write
 ;
 	ldx #$28        ; $28*256 chars
 	ldy #00
-cler10	bvc *
+xcler10	bvc *
 	clv
 	dey
-	bne cler10
+	bne xcler10
 ;
 	dex
-	bne cler10
+	bne xcler10
 ;
 	rts
 ;

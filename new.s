@@ -8,7 +8,10 @@ new	jsr onedrv
 	jmp cmderr
 n101	and #1
 	sta drvnum
-	jsr setlds
+;
+;	jsr setlds
+	jsr ptch11      ; clr nodrv ***rom ds 01/21/85***
+;
 	lda drvnum
 	asl a
 	tax

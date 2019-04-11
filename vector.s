@@ -93,6 +93,8 @@ ptch92	lda pota1
 	lda dskcnt
 	and #3
 	bne ptch93
+	lda adrsed
+	bne ptch93
 	pla
 	tay
 	pla
@@ -105,7 +107,7 @@ ptch93	pla
 	pla
 	tax
 	inc steps
-	ldx $1C00
+	ldx dskcnt
 	dex
 	jmp pppppp
 ;
@@ -120,6 +122,107 @@ ptch10	jsr cntint      ; controller init.
 	lda #bump
 	sta jobs
 	rts
+;
+;
+;----------------------------------------------------
+;     patch 11  *rom ds 01/21/85*
+;
+ptch11  sta  nodrv      ; clr nodrv
+	jmp  setlds	; set leds
+;
+;
+;----------------------------------------------------
+;     patch 12  *rom ds 01/21/85*
+;
+ptch12  sta  adrsed	; set micro-stepping flag
+	jmp  hedoff	; move head now
+;
+;
+;----------------------------------------------------
+;     patch 13  *rom ds 01/21/85*
+;
+ptch13	jsr  hedoff     ; restore head
+	lda  #$00
+	sta  adrsed	; clear micro-stepping flag
+	rts
+;
+;
+;----------------------------------------------------
+;
+;     patch 54
+;
+ptch54  cmp #2		; error ?
+	bcc pth541
+;
+	cmp #15		; no drv condition ?
+	beq pth541
+;
+	jmp rtch54	; bad, try another
+pth541	jmp stl50	; ok
+;
+;
+;----------------------------------------------------
+;
+;     patch 31
+;
+ptch31	sei
+	ldx  #topwrt	; set stack pointer
+	txs
+	jmp  rtch31
+;
+;
+;----------------------------------------------------
+;
+;     patch 30
+;
+ptch30	bit pa1
+	jmp atnsrv
+
+;
+;
+;----------------------------------------------------
+;
+;     patch 50
+;
+ptch50	lda a:nodrv,x
+	rts
+;
+;----------------------------------------------------
+;
+;     patch 52
+;
+ptch52	ldx  drvnum	; get offset
+	lda a:nodrv,x
+	jmp  rtch52
+;
+;
+;----------------------------------------------------
+;
+;     patch 43
+;
+;
+ptch43  lda #0		; clr nodrv
+	sta a:nodrv,x
+	jmp  rtch43
+;
+;
+;----------------------------------------------------
+;
+;     patch 44
+;
+;
+ptch44  tya		; set/clr nodrv
+	sta a:nodrv,x
+	jmp rtch44
+;
+;
+;----------------------------------------------------
+;
+;     patch 51
+;
+ptch51	sta wpsw,x	; clr wp switch
+	sta a:nodrv,x
+	jmp rtch51
 
 ;
 ;default table for user command

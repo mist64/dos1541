@@ -71,25 +71,38 @@ or30
 ; lstjob,sets active buffer#,lstchr,
 ; buffer pointers in buftab=2
 ;
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;
 initp	ldx lindx
 	lda buf0,x
 	asl a
+	bmi initp1	; *** rom ds 02/27/85 ***
+;
 	tay
 	lda #2
 	sta buftab,y
-	lda buf1,x
+;
+initp1	lda buf1,x
 	ora #$80
 	sta buf1,x
 	asl a
+	bmi initp2	; *** rom ds 02/27/85 ***
+;
 	tay
 	lda #2
 	sta buftab,y
-	lda #0
+initp2	lda #0
 	sta nbkl,x
-	sta nbkh,x
-	lda #0
-	sta lstchr,x
-	rts
+;
+	jmp ptch41	; *** rom ds 02/27/85 ***
+	nop		; fill
+;
+;       sta  nbkh,x
+;       lda  #0
+;       sta  lstchr,x
+;       rts
+;
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 ;
 ;
 ; open a write chanl with 2 buffers

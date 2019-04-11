@@ -298,8 +298,18 @@ stl30	;steal the buffer if no error
 stl40
 	lda jobs,x
 	bmi stl40       ;wait till done
-	cmp #2          ;errors?
-	bcc stl50       ;ok
+
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+	jmp ptch54	; *** rom ds 06/18/85 ***
+	nop
+;       cmp #2          ; errors?
+;       bcc stl50       ; ok
+
+rtch54			; return
+
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
 	ldx t0
 	cpx #mxchns+1
 	bcc stl10       ;check opposite slot

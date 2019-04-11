@@ -73,11 +73,11 @@ toprd	=69             ; top of read overflo buffer on a read
 topwrt	=69             ; top of write overflo buffer on a write
 numsyn	= 5             ; gcr byte count for size of sync area
 gap1	= 11            ; gap after header to  clear erase in gcr bytes
-gap2	= 4             ; gap after data block min size
+gap2	= 2             ; gap after data block min size
 rdmax	= 6             ; sector distance wait
 wrtmin	= 9
 wrtmax	= 12
-tim	=32             ;irq rate for 8ms
+tim	=58             ;irq rate for 15ms
 ;
 ;
 ;

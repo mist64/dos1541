@@ -229,14 +229,21 @@ err10
 	jmp idle
 ; convert hex to bcd
 hexdec	tax
-	lda #0
-	sed
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;
+	jmp ptch67	; *** rom ds 05/15/86 ***
+;       lda #0
+;       sed
+;
 hex0	cpx #0
 	beq hex5
 	clc
 	adc #1
 	dex
 	jmp hex0
+;
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;
 hex5	cld
 ; convert bcd to ascii dec
 ;  return bcd in .x

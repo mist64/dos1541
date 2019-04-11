@@ -285,7 +285,10 @@ bw10	lda #0          ;set record size
 bw20	jsr drtwrt      ;write block
 	pla
 	tax
-	jsr rnget2
+;
+;       jsr rnget2
+	jsr ptch15	; fix for block read *rom ds 01/22/85*
+;
 	jmp endcmd
 ;user dirct write, no lstchr
 ublkwt	jsr blkpar

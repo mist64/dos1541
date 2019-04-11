@@ -139,9 +139,15 @@ ra40	dey
 perr2	jmp perr
 ;
 diagok
-	ldx #topwrt
-	txs
-	lda ledprt      ;clear leds
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;
+	jmp ptch31	; *** rom ds 05/01/85 ***
+;       ldx #topwrt
+;       txs
+;
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;
+rtch31	lda ledprt      ;clear leds
 	and #$ff-led0-led1
 	sta ledprt
 ;

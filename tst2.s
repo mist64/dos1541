@@ -272,8 +272,17 @@ initdr
 	sta dskver,x    ;set up disk version #
 ;
 	lda #0
-	sta wpsw,x      ;clear wp switch
-	sta nodrv,x     ;clear not active flag
+
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+	jmp ptch51	; *** rom ds 05/01/85 ***
+	nop		; fill
+;       sta wpsw,x      ; clear wp switch
+;       sta nodrv,x     ; clear not active flag
+rtch51			; ret address
+
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
 ; count the number of free blocks here
 ;
 nfcalc

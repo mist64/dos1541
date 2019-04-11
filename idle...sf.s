@@ -17,7 +17,13 @@ idl1	cli             ;test for drive running or openfile
 	lda atnpnd
 	beq idl01
 ;
-	jmp atnsrv      ;service atn irq
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;
+	jmp ptch30	; *rom ds 02/04/85*
+;       jmp atnsrv      ; service atn irq
+;
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;
 idl01
 	cli
 	lda #14

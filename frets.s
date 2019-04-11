@@ -62,8 +62,15 @@ use20
 	lda ndbh,x
 	bne userts
 	lda ndbl,x
-	cmp #3
-	bcs userts
+;
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;
+	jmp ptch66	; *** rom ds 04/25/86 ***
+	nop		; fill
+;       cmp #3
+;       bcs userts
+;
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 ;
 	lda #dskful
 	jsr errmsg
@@ -127,8 +134,17 @@ setbam	;set bam image in memory
 	pha
 	lda t1
 	pha
-	ldx drvnum
-	lda nodrv,x
+;
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;
+	jmp ptch52	; *** rom ds 05/01/85 ***
+	nop		; fill
+;       ldx drvnum
+;       lda nodrv,x
+rtch52			; ret address
+;
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;
 	beq sbm10
 ;
 	lda #nodriv     ;no drive

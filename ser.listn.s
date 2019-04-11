@@ -129,7 +129,12 @@ tstrtn	rts             ; still in atn  mode
 tsta50	lda pb          ; not atnmode
 	bpl tstrtn      ; no atn present
 ;
-	jmp atnsrv      ; do atn command
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;
+	jmp ptch30	; *** rom ds 03/12/85 ***
+;       jmp atnsrv      ;  do atn command
+;
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 ;
 tatn20	jmp atns20
 ;

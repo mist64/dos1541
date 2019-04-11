@@ -51,8 +51,17 @@ scren1
 	lda drvnum
 	sta lstdrv
 	tax
-	lda #0
-	sta nodrv,x
+
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+	jmp ptch43	; *** rom ds 05/01/85 ***
+	nop		; fill
+;       lda #0
+;       sta nodrv,x
+rtch43
+
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
 	jsr clrcb
 	jmp freich      ;free internal channel
 ;

@@ -343,12 +343,26 @@ autoi
 	ldy #0          ;set .y false
 auto1
 	ldx drvnum
-	tya
-	sta nodrv,x     ;set condn of no-drive
+
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+	jmp ptch44	; *** rom ds 05/01/85 ***
+;       tya
+;       sta nodrv,x    ; set condn of no-drive
+rtch44			; ret address
+
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
 	bne auto2       ;no need to init crud!
 ;
 	jsr initdr      ;init that drive
 auto2
 	ldx drvnum
-	lda nodrv,x     ;return no-drive condn
-	rts
+
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+	jmp ptch50	; *** rom ds 05/01/85 ***
+;       lda nodrv,x     ; return no-drive condn
+;       rts
+
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>

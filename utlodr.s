@@ -130,7 +130,7 @@ boot3
 ;sta cmdbuf ;set filename for any match
 ;jmp boot4
 ;---------rom -05 fix 8/18/83---------------
-	.byte   $60,$ea,$ea,$ea,$ea,$ea,$ea,$ea
+	.byte   $4c,$59,$ea,$ea,$ea,$ea,$ea,$ea
 	.byte   $ea,$ea,$ea,$ea,$ea,$ea,$ea,$ea
 	.byte   $ea,$ea,$ea,$ea,$ea,$ea,$ea,$ea
 	.byte   $ea,$ea,$ea,$ea,$ea,$ea,$ea,$ea

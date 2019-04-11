@@ -34,7 +34,7 @@ cntint	lda #%01101111  ; data direction
 ;--------9/25 rom05-bc-------------
 	lda #0
 	sta t1ll2
-	lda #tim        ; / 8 ms /irq
+	lda #tim        ; / 15 ms /irq
 	sta t1hl2
 	sta t1hc2       ; get 6522's attention
 ;----------------------------------
