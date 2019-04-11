@@ -37,8 +37,8 @@ dskint
 	sei
 	cld
 	ldx #$ff
-	stx ddra1
-	inx             ;let .x:=0
+	jmp patch5      ; *** rom ds 8/18/83 ***
+dkit10	inx		; fill
 ;
 ;
 ;*********************************
@@ -267,11 +267,12 @@ seterr	lda #$73
 ; init the serial bus
 ;
 ;********************************
-	lda #%00011010  ; atna,clkout,datout
-	sta ddrb1
 ;
-	lda #$00        ; data hi, clock hi,atna hi
+;-------rom -05 8/18/83-----------------
+	lda #$00       ;  data hi, clock hi,atna hi
 	sta pb
-;
+	lda #%00011010 ;  atna,clkout,datout
+	sta ddrb1
+;---------------------------------------
 	jsr boot
 ;

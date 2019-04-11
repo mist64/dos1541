@@ -107,28 +107,35 @@
 boot2
 	rts             ;exit
 ;
+;***rom -05 fix 8/18/83
 boot	;power-on diag sense loader
-	lda pb          ;get port data
-	tax             ;save for later
-	and #clkin      ;check for clk to gnd
-	beq boot2       ;no...exit
-	txa
-	and #datin      ;check for data to gnd
-	beq boot2       ;no...exit
-	cli             ;so backgnd will run!
+;lda pb ;get port data
+;tax ;save for later
+;and #clkin ;check for clk to gnd
+;beq boot2 ;no...exit
+;txa
+;and #datin ;check for data to gnd
+;beq boot2 ;no...exit
+;cli ;so backgnd will run!
 ;
 ;boot clip must be on
 boot3
-	lda pb
-	and #clkin+datin
-	bne boot3       ;wait untill removed?
+;lda pb
+;and #clkin+datin
+;bne boot3 ;wait untill removed?
 ;
-	inc f2cnt       ;set # files
-	inc cmdsiz      ;set # of chars
-	lda #'*
-	sta cmdbuf      ;set filename for any match
-;
-	jmp boot4
+;inc f2cnt ;set # files
+;inc cmdsiz ;set # of chars
+;lda #'*
+;sta cmdbuf ;set filename for any match
+;jmp boot4
+;---------rom -05 fix 8/18/83---------------
+	.byte   $60,$ea,$ea,$ea,$ea,$ea,$ea,$ea
+	.byte   $ea,$ea,$ea,$ea,$ea,$ea,$ea,$ea
+	.byte   $ea,$ea,$ea,$ea,$ea,$ea,$ea,$ea
+	.byte   $ea,$ea,$ea,$ea,$ea,$ea,$ea,$ea
+	.byte   $ea,$ea,$60
+;--------------------------------------------
 ;
 ;
 ;*entry point

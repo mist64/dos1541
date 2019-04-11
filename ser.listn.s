@@ -12,7 +12,10 @@ acp00a	jsr tstatn
 	jsr dathi       ; make data line hi
 ;
 	lda #1          ; wait 255 us
-	sta t1hc1
+;
+;------rom -05 8/18/83-------------
+	jmp patch6
+;----------------------------------
 ;
 acp00	jsr tstatn
 	lda ifr1

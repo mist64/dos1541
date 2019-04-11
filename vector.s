@@ -32,6 +32,35 @@ nnmi	lda cmdbuf+2   ; new nmi routine check for
 nnmi10  sta drvtrk+1
 	rts
 ;
+;
+;---------------------------------------------------
+;      patch 5   *rom-05 8/18/83*
+;
+;clock line hi on pwr on
+;
+patch5	stx  ddra1      ; set direction
+	lda  #$02       ; set clock high
+
+	sta  pb
+
+ptch22r	lda  #$1a       ; set ddra reg b
+	sta  ddrb1
+	jmp  dkit10     ; return
+;
+;
+;---------------------------------------------------
+;      patch 6   *rom ds 8/18/83*
+;
+;fix eoi timing to wait all devices
+;
+;
+patch6 	lda  pb         ; test data line
+	and  #$01       ; every one rdy ?
+	bne  patch6
+	lda  #$01       ; wait 255 usec
+	sta  t1hc1      ; set timer
+	jmp  acp00      ; return
+;
 ;default table for user command
 ;
 .segment "SFFE6"

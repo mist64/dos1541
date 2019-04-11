@@ -209,7 +209,8 @@ cmder3
 ;   and release channel
 tlkerr
 	jsr fndrch
-	jsr iterr
+;       jsr iterr 		; *** rom - 05 fix 8/18/83 ***
+	.byte  $ea,$ea,$ea      ; fill in 'jsr'
 	bne tlerr       ;finish
 ; listener error recovery
 ;  if command channel, release rfd
@@ -217,7 +218,8 @@ tlkerr
 ;   and release channel
 lsnerr
 	jsr fndwch
-	jsr ilerr
+;       jsr ilerr 		; *** rom - 05 fix 8/18/83 ***
+	.byte  $ea,$ea,$ea      ; fill in 'jsr'
 tlerr
 	jsr typfil
 	cmp #reltyp
