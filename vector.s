@@ -69,6 +69,57 @@ patch6 	lda pb         ; test data line
 patch7	lda #$ff       ; clear format flags
 	sta ftnum      ;
 	jmp format     ; transfer format to ram
+;
+;
+;----------------------------------------------------
+;
+;     patch 9   *rom ds 09/12/84*
+;
+patch9	txa
+	pha
+	tya
+	pha
+	ldx #1
+ptch91	ldy #100
+ptch92	lda pota1
+	cmp pota1
+	bne ptch93
+	dey
+	bne ptch92
+	dex
+	bne ptch91
+	and #1
+	beq ptch93
+	lda dskcnt
+	and #3
+	bne ptch93
+	pla
+	tay
+	pla
+	tax
+	lda #$00
+	sta steps
+	jmp end33
+ptch93	pla
+	tay
+	pla
+	tax
+	inc steps
+	ldx $1C00
+	dex
+	jmp pppppp
+;
+;
+;----------------------------------------------------
+;
+;     patch 10  *rom ds 01/22/85*
+;
+ptch10	jsr cntint      ; controller init.
+	lda #1
+	sta hdrs
+	lda #bump
+	sta jobs
+	rts
 
 ;
 ;default table for user command

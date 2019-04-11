@@ -36,7 +36,7 @@ pd21	adc #1          ;count inner ctr
 dskint
 	sei
 	cld
-	ldx #$ff
+	ldx #$fe
 	jmp patch5      ; *** rom ds 8/18/83 ***
 dkit10	inx		; fill
 ;
@@ -234,7 +234,8 @@ dskin2
 ;
 ;**********************************
 ;
-	jsr cntint
+	jsr ptch10      ; *** rom ds 05/01/85 controller init ***
+;       jsr cntint
 ; set indirect vectors
 	lda #<diagok
 	sta vnmi

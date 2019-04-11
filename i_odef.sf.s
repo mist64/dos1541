@@ -33,6 +33,7 @@ acr1	.res 1          ; aux control reg
 pcr1	.res 1
 ifr1	.res 1
 ier1	.res 1
+pota1   .res 1          ; bit 0: track 0 sense, 1=trk0
 ;
 ;
 ;

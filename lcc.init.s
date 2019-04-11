@@ -31,11 +31,13 @@ cntint	lda #%01101111  ; data direction
 	lda #$41        ; cont irq, latch mode
 	sta acr2
 ;
+;--------9/25 rom05-bc-------------
 	lda #0
 	sta t1ll2
-	lda #tim        ; 20 ms /irq
+	lda #tim        ; / 8 ms /irq
 	sta t1hl2
 	sta t1hc2       ; get 6522's attention
+;----------------------------------
 ;
 	lda #$7f        ; clear all irq sources
 	sta ier2

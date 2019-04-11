@@ -77,7 +77,7 @@ gap2	= 4             ; gap after data block min size
 rdmax	= 6             ; sector distance wait
 wrtmin	= 9
 wrtmax	= 12
-tim	=58             ;irq rate for 15ms
+tim	=32             ;irq rate for 8ms
 ;
 ;
 ;
