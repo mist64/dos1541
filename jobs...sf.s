@@ -203,10 +203,7 @@ rec1
 	sbc offset,y
 	sta toff        ;keep track of all offsets
 	lda offset,y
-;
-	jsr ptch12	; set micro-stepping flag *rom-05ds 01/21/85*
-;       jsr hedoff
-;
+	jsr hedoff
 	inc eptr        ;bump table ptr
 	jsr dorec       ;do the recovery
 	cmp #2          ;error code < 2?
@@ -217,10 +214,7 @@ rec1
 	bne rec1        ;null indicates end
 rec3
 	lda toff
-;
-	jsr ptch13	; clr micro-stepping flag *rom-05ds 01/21/85*
-;       jsr hedoff
-;
+	jsr hedoff
 	lda jobs,x
 	cmp #2
 	bcc rec9        ;no error

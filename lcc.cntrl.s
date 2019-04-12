@@ -129,11 +129,7 @@ gotu	ldx #4          ; set track and sectr
 	lda (hdrpnt),y
 	sta tracc
 ;
-;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-;
-gotu10  cmp trackn-1,x  ; *** rom ds 11/7/86 ***, set density for tracks > 35
-;
-;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+gotu10	cmp trknum-1,x
 	dex
 	bcs gotu10
 ;

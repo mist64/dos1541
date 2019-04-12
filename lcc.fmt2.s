@@ -57,11 +57,8 @@ ds22	inx
 	bne ds20
 ;
 ds30	stx dtrck
-;
-;-----rom05-bc---09/12/84------
 	cpx #gap2       ; test for min size
 	bcs ds32
-;------------------------------
 ;
 	lda #tosmal     ; gap2 to small
 	jmp fmterr

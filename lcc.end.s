@@ -110,18 +110,10 @@ inac20	; calc the # of run steps
 dostep	lda steps
 	bpl stpin
 ;
-;---------rom05-bc 09/12/84--------
-;stpout inc steps
-;	ldx dskcnt
-;	dex
-;	jmp stp
-
-stpout	jmp patch9      ; check track 0 (photo sensor)
-	nop     	;
-	nop     	;
-	nop     	;
-pppppp	jmp stp         ; goto step
-;----------------------------------
+stpout	inc steps
+	ldx dskcnt
+	dex
+	jmp stp
 ;
 short	lda steps
 	bne dostep

@@ -4,7 +4,10 @@
 ;*=*+$3a1
 cchksm	.byte 0
 
-	.byte $46
+	.byte $e0
+
+	.byte "COPYRIGHT (C)1982,1985,1987 COMMODORE ELECTRONICS, LTD.", cr
+	.byte "ALL RIGHTS RESERVED", cr
 
 clear	lda pcr2        ; enable write
 	and #$ff-$e0
@@ -34,7 +37,7 @@ cler10	bvc *
 ;     patch 15  *rom ds 01/21/85*
 ;
 ptch15	ldy  lindx
-	jmp  rndget
+	jmp  rnget2
 ;
 ;
 ;----------------------------------------------------
@@ -82,10 +85,5 @@ ptch66
 pth661	lda #1
 	rts
 ;
-	  ; track cutoffs
-trackn  .byte 41,31,25,18
 
-	.byte "COPYRIGHT (C)1985 COMMODORE ELECTRONICS, LTD.", cr
-	.byte "ALL RIGHTS RESERVED", cr
-
-freec0	.res 103        ; c0 patch space
+freec0	.res 97        ; c0 patch space

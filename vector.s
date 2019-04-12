@@ -72,79 +72,10 @@ patch7	lda #$ff       ; clear format flags
 ;
 ;
 ;----------------------------------------------------
-;
-;     patch 9   *rom ds 09/12/84*
-;
-patch9	txa
-	pha
-	tya
-	pha
-	ldx #1
-ptch91	ldy #100
-ptch92	lda pota1
-	cmp pota1
-	bne ptch93
-	dey
-	bne ptch92
-	dex
-	bne ptch91
-	and #1
-	beq ptch93
-	lda dskcnt
-	and #3
-	bne ptch93
-	lda adrsed
-	bne ptch93
-	pla
-	tay
-	pla
-	tax
-	lda #$00
-	sta steps
-	jmp end33
-ptch93	pla
-	tay
-	pla
-	tax
-	inc steps
-	ldx dskcnt
-	dex
-	jmp pppppp
-;
-;
-;----------------------------------------------------
-;
-;     patch 10  *rom ds 01/22/85*
-;
-ptch10	jsr cntint      ; controller init.
-	lda #1
-	sta hdrs
-	lda #bump
-	sta jobs
-	rts
-;
-;
-;----------------------------------------------------
 ;     patch 11  *rom ds 01/21/85*
 ;
-ptch11  sta  nodrv      ; clr nodrv
-	jmp  setlds	; set leds
-;
-;
-;----------------------------------------------------
-;     patch 12  *rom ds 01/21/85*
-;
-ptch12  sta  adrsed	; set micro-stepping flag
-	jmp  hedoff	; move head now
-;
-;
-;----------------------------------------------------
-;     patch 13  *rom ds 01/21/85*
-;
-ptch13	jsr  hedoff     ; restore head
-	lda  #$00
-	sta  adrsed	; clear micro-stepping flag
-	rts
+ptch11	sta nodrv       ; clr nodrv
+	jmp setlds	; set leds
 ;
 ;
 ;----------------------------------------------------
